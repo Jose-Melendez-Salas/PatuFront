@@ -85,6 +85,7 @@ const AccesosMaestros = ({ nombreUsuario }) => {
             <main className="p-5">
                 <h1 className="text-3xl font-bold mb-3">Accesos Maestros</h1>
                 <p>Aquí irá el contenido de esta sección.</p>
+
             </main>
         </>
     )

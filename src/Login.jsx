@@ -12,7 +12,7 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (correo.trim() === '' || contraseña.trim() === '') {
+    if (!correo.trim() || !contraseña.trim()) {
       setError('Por favor completa todos los campos.')
       return
     }
@@ -34,7 +34,7 @@ const Login = ({ onLogin }) => {
       setError('')
       onLogin?.(correo)
       alert(`¡Bienvenido ${correo}!`)
-      console.log('Respuesta del backend:', data)
+      window.location.href = "/accesosMaestros"
     } catch (err) {
       console.error(err)
       setError('No se pudo conectar con el servidor')
@@ -64,92 +64,75 @@ const Login = ({ onLogin }) => {
           </div>
 
           {/* Lado derecho: formulario */}
-          <div className="flex-1 flex flex-col items-center justify-center p-10">
-            <div className="bg-white rounded-4xl shadow-3xl p-10 w-full max-w-md animate-fadeIn border-7 border-gray-300">
-              <h2 className="text-4xl font-bold mb-6 text-center border-b-5 border-yellow-400 pb-1">
+          <div className="flex-1 flex flex-col items-center justify-center p-10 md:-ml-30">
+            <div className="bg-white rounded-3xl shadow-3xl p-10 w-full max-w-3xl animate-fadeIn border-7 border-gray-300 flex flex-col items-center">
+              <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2 w-full">
                 Iniciar Sesión
               </h2>
 
-              <form className="flex flex-col" onSubmit={handleSubmit}>
-                <label className="flex flex-col text-lg mb-4 text-gray-700 font-medium">
+              <form className="flex flex-col items-center gap-6 w-full" onSubmit={handleSubmit}>
+                <label className="text-gray-700 font-medium w-4/5 flex flex-col">
                   Correo Electrónico:
                   <input
                     type="text"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
                     placeholder="Correo Electrónico"
-                    className="p-3 mt-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
                   />
                 </label>
 
-                <label className="flex flex-col text-lg mb-4 text-gray-700 font-medium">
+                <label className="text-gray-700 font-medium w-4/5 flex flex-col">
                   Contraseña:
-                  <div className="mt-2 flex items-center border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-purple-400">
+                  <div className="flex items-center border border-gray-300 rounded-2xl mt-2 w-full">
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={contraseña}
                       onChange={(e) => setContraseña(e.target.value)}
                       placeholder="Ingresa tu contraseña aquí"
-                      className="flex-1 p-3 text-base rounded-l-xl outline-none"
+                      className="flex-1 p-4 rounded-l-2xl outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="flex items-center justify-center px-3"
+                      className="px-4"
                       tabIndex={-1}
                     >
                       <img
                         src={ojoImg}
                         alt={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                        className={`w-6 h-6 transition-opacity ${showPassword ? 'opacity-50' : 'opacity-100'
-                          }`}
+                        className="w-6 h-6"
                       />
                     </button>
                   </div>
                 </label>
 
-                <a href="#" className="text-gray-400 underline text-center mb-2">
-                  ¿Olvidaste tu contraseña?
-                </a>
-
-                {/* Mensaje de error centrado arriba del botón */}
-                {error && (
-                  <p className="text-red-600 text-sm text-center mb-4 mt-2">
-                    {error}
-                  </p>
-                )}
+                {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
                 <button
                   type="submit"
-                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-6 rounded-xl font-bold text-2xl transition-colors mt-2 mx-auto"
+                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4"
                 >
                   Iniciar Sesión
                 </button>
               </form>
-            </div>
 
-            <p className="mt-6 text-sm text-center w-full max-w-md font-medium">
-              ¿No tienes cuenta?{' '}
-              <a href="#" className="text-purple-600 underline font-medium">
-                Regístrate aquí
-              </a>
-            </p>
+              <p className="mt-6 text-sm text-center w-4/5 font-medium">
+                ¿No tienes cuenta?{' '}
+                <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
+                  Regístrate aquí
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </main>
 
       {/* Animación */}
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeIn {
-            animation: fadeIn 0.5s ease-out;
-          }
-        `}
-      </style>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+      `}</style>
     </div>
   )
 }
