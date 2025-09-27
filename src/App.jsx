@@ -4,7 +4,9 @@ import Login from './Login'
 import Registro from './Registro'
 import AccesosMaestros from './accesosMaestros'
 import Pruebas from './Pruebas'
-
+import RecuperarContra from './RecuperarContra'
+import EventoCalendario from './EventoCalendario'
+import Calendario from './Calendario'
 function App() {
 
   return (
@@ -17,7 +19,9 @@ function App() {
         <Route path="/Registro" element={<Registro />} />
         <Route path="/AccesosMaestros" element={<AccesosMaestros />} />
         <Route path="/Pruebas" element={<Pruebas />} />
-
+        <Route path="/RecuperarContra" element={<RecuperarContra />} />
+        <Route path="/EventoCalendario" element={<EventoCalendario />} />
+        <Route path="/Calendario" element={<Calendario />} />
 
       </Routes>
 
