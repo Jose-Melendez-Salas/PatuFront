@@ -7,13 +7,14 @@ import Pruebas from './Pruebas'
 import RecuperarContra from './RecuperarContra'
 import EventoCalendario from './EventoCalendario'
 import Calendario from './Calendario'
-function App() {
+import Grupos from './Grupos'
+import ListaAlumnos from './ListaAlumnos' // Importar ListaAlumnos
+import FichaAlumno from './FichaAlumno'
 
+function App() {
   return (
     <Router>
-
-      <Routes> {/* Aqui van a meter las diferentes rutas de sus pantallas*/}
-
+      <Routes> 
         <Route path="/" element={<Login />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Registro" element={<Registro />} />
@@ -22,11 +23,14 @@ function App() {
         <Route path="/RecuperarContra" element={<RecuperarContra />} />
         <Route path="/EventoCalendario" element={<EventoCalendario />} />
         <Route path="/Calendario" element={<Calendario />} />
-
+        <Route path="/Grupos" element={<Grupos />} />
+        <Route path="/alumnos/:matricula/ficha" element={<FichaAlumno />} />
+        <Route path="/ListaAlumnos/:codigoGrupo" element={<ListaAlumnos />} />
+        
       </Routes>
-
     </Router>
   )
 }
 
 export default App
+
