@@ -109,6 +109,16 @@ const Login = ({ onLogin }) => {
 
                 {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
+                {/* Olvidaste tu contraseña */}
+                <div className="w-4/5 text-center">
+                  <a
+                    href="/RecuperarContra"
+                    className="text-lg text-gray-400 underline font-medium hover:text-gray-600"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+
                 <button
                   type="submit"
                   className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4"
@@ -117,14 +127,16 @@ const Login = ({ onLogin }) => {
                 </button>
               </form>
 
-              <p className="mt-6 text-sm text-center w-4/5 font-medium">
-                ¿No tienes cuenta?{' '}
-                <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
-                  Regístrate aquí
-                </a>
-              </p>
+
             </div>
+            <p className="mt-6 text-medium text-center w-4/5 font-medium">
+              ¿No tienes cuenta?{' '}
+              <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
+                Regístrate aquí
+              </a>
+            </p>
           </div>
+
         </div>
       </main>
 

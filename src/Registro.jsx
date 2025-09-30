@@ -125,7 +125,7 @@ const Registro = () => {
                 <button type="submit" className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-1/2">Comenzar</button>
               </form>
 
-              <p className="mt-6 text-sm text-center font-medium">
+              <p className="mt-6 text-medium text-center font-medium">
                 ¿Ya tienes cuenta?{' '}
                 <Link to="/Login" className="text-[#4F3E9B] underline font-medium">
                   Inicia sesión
