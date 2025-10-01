@@ -18,21 +18,29 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      const res = await fetch('http://localhost:3001/login', {
+      const res = await fetch('https://apis-patu.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, contraseña })
+        body: JSON.stringify({
+          correo: correo,
+          password: contraseña // 👈 el backend espera "password", no "contraseña"
+        })
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        const data = await res.json()
+
         setError(data.message || 'Error en el inicio de sesión')
         return
       }
 
-      const data = await res.json()
+      localStorage.setItem('usuario', JSON.stringify(data.data)); // data.data debe incluir el nombre
+
       setError('')
+
       onLogin?.(correo)
+
       alert(`¡Bienvenido ${correo}!`)
       window.location.href = "/accesosMaestros"
     } catch (err) {
@@ -127,8 +135,8 @@ const Login = ({ onLogin }) => {
                 </button>
               </form>
 
-
             </div>
+
             <p className="mt-6 text-medium text-center w-4/5 font-medium">
               ¿No tienes cuenta?{' '}
               <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
