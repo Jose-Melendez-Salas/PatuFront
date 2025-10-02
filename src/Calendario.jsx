@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Calendar from 'react-calendar'
-import 'react-calendar/dist/Calendar.css' // Estilos base del calendario
+import 'react-calendar/dist/Calendar.css' 
 import logoImg from './assets/logo.png'
 import iconCasita from './assets/casita.png'
 import iconAlumnos from './assets/alumnos.png'
