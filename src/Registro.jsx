@@ -14,10 +14,12 @@ const Registro = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
+  const [usuarioRegistrado, setUsuarioRegistrado] = useState(null) // ✅ para guardar la info del backend
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Validación mínima en frontend
     if (!nombre.trim() || !apellidoP.trim() || !correo.trim() || !contraseña.trim() || !confirmar.trim()) {
       setError('Por favor completa todos los campos obligatorios.')
       return
@@ -33,14 +35,8 @@ const Registro = () => {
       return
     }
 
-    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/
-    if (!regex.test(contraseña)) {
-      setError('La contraseña debe contener al menos 8 caracteres, incluyendo una letra mayúscula y un carácter especial.')
-      return
-    }
-
     try {
-      const res = await fetch('http://localhost:3001/registro', {
+      const res = await fetch('https://apis-patu.onrender.com/api/usuarios/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -48,17 +44,26 @@ const Registro = () => {
           apellido_paterno: apellidoP,
           apellido_materno: apellidoM,
           correo,
-          contraseña
+          password: contraseña,
+          rol: "alumno",
+          estado: "activo"
         })
       })
+
+      const data = await res.json()
+
       if (!res.ok) {
-        const data = await res.json()
         setError(data.message || 'Error en el registro')
         return
       }
-      const data = await res.json()
+
+      // Guardamos la respuesta completa del backend
+      setUsuarioRegistrado(data.data)
+
+      localStorage.setItem('usuario', JSON.stringify({ nombre: data.data.nombre }));
+
       setError('')
-      alert(`¡Bienvenido ${nombre}!`)
+      alert(`¡Usuario ${data.data.nombre} registrado con éxito!`)
       window.location.href = "/Login"
     } catch (err) {
       console.error(err)
@@ -95,7 +100,7 @@ const Registro = () => {
                 </label>
 
                 <label className="text-gray-700 font-medium w-4/5">Apellido materno:
-                  <input type="text" value={apellidoM} onChange={e => setApellidoM(e.target.value)} placeholder="Ingresa tu apellido materno aquí (opcional)" className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                  <input type="text" value={apellidoM} onChange={e => setApellidoM(e.target.value)} placeholder="Ingresa tu apellido materno aquí" className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400" />
                 </label>
 
                 <label className="text-gray-700 font-medium w-4/5">Correo Electrónico: <span className="text-red-500">*</span>
@@ -125,7 +130,14 @@ const Registro = () => {
                 <button type="submit" className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-1/2">Comenzar</button>
               </form>
 
-              <p className="mt-6 text-sm text-center font-medium">
+              {usuarioRegistrado && (
+                <div className="mt-6 bg-gray-100 p-4 rounded-xl text-sm">
+                  <h3 className="font-bold mb-2">Datos del usuario registrado:</h3>
+                  <pre className="overflow-x-auto">{JSON.stringify(usuarioRegistrado, null, 2)}</pre>
+                </div>
+              )}
+
+              <p className="mt-6 text-medium text-center font-medium">
                 ¿Ya tienes cuenta?{' '}
                 <Link to="/Login" className="text-[#4F3E9B] underline font-medium">
                   Inicia sesión

@@ -18,21 +18,29 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      const res = await fetch('http://localhost:3001/login', {
+      const res = await fetch('https://apis-patu.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, contraseña })
+        body: JSON.stringify({
+          correo: correo,
+          password: contraseña // 👈 el backend espera "password", no "contraseña"
+        })
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        const data = await res.json()
+
         setError(data.message || 'Error en el inicio de sesión')
         return
       }
 
-      const data = await res.json()
+      localStorage.setItem('usuario', JSON.stringify(data.data)); // data.data debe incluir el nombre
+
       setError('')
+
       onLogin?.(correo)
+
       alert(`¡Bienvenido ${correo}!`)
       window.location.href = "/accesosMaestros"
     } catch (err) {
@@ -109,6 +117,16 @@ const Login = ({ onLogin }) => {
 
                 {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
+                {/* Olvidaste tu contraseña */}
+                <div className="w-4/5 text-center">
+                  <a
+                    href="/RecuperarContra"
+                    className="text-lg text-gray-400 underline font-medium hover:text-gray-600"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+
                 <button
                   type="submit"
                   className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4"
@@ -117,14 +135,16 @@ const Login = ({ onLogin }) => {
                 </button>
               </form>
 
-              <p className="mt-6 text-sm text-center w-4/5 font-medium">
-                ¿No tienes cuenta?{' '}
-                <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
-                  Regístrate aquí
-                </a>
-              </p>
             </div>
+
+            <p className="mt-6 text-medium text-center w-4/5 font-medium">
+              ¿No tienes cuenta?{' '}
+              <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
+                Regístrate aquí
+              </a>
+            </p>
           </div>
+
         </div>
       </main>
 

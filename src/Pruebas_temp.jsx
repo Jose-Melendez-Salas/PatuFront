@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import logoImg from './assets/logo.png'
 
-const Pruebas = () => {
+const Pruebas_temp = () => {
     // Estados
     const [bitacoras, setBitacoras] = useState([])
     const [reportes, setReportes] = useState([])
@@ -171,4 +171,4 @@ const Pruebas = () => {
     )
 }
 
-export default Pruebas
+export default Pruebas_temp
