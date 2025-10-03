@@ -4,17 +4,17 @@ import ilustracionImg from './assets/ilustracion.png'
 import ojoImg from './assets/ojo.png'
 
 const Login = ({ onLogin }) => {
-  const [correo, setCorreo] = useState('')
-  const [contraseña, setContraseña] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
+  const [correo, setCorreo] = useState('');
+  const [contraseña, setContraseña] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!correo.trim() || !contraseña.trim()) {
-      setError('Por favor completa todos los campos.')
-      return
+      setError('⚠️ Por favor completa todos los campos.');
+      return;
     }
 
     try {
@@ -25,29 +25,37 @@ const Login = ({ onLogin }) => {
           correo: correo,
           password: contraseña // 👈 el backend espera "password", no "contraseña"
         })
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (!res.ok) {
-
-        setError(data.message || 'Error en el inicio de sesión')
-        return
+        setError(data.message || '❌ Error en el inicio de sesión');
+        return;
       }
 
-      localStorage.setItem('usuario', JSON.stringify(data.data)); // data.data debe incluir el nombre
+      // ✅ Guardar usuario + token en localStorage
+      localStorage.setItem(
+        'usuario',
+        JSON.stringify({
+          id: data.data.id,
+          correo: correo,
+          accessToken: data.data.accessToken
+        })
+      );
 
-      setError('')
+      setError('');
 
-      onLogin?.(correo)
+      // Notificar al componente padre
+      onLogin?.(correo);
 
-      alert(`¡Bienvenido ${correo}!`)
-      window.location.href = "/accesosMaestros"
+      alert(`✅ ¡Bienvenido ${correo}!`);
+      window.location.href = "/accesosMaestros"; // redirección
     } catch (err) {
-      console.error(err)
-      setError('No se pudo conectar con el servidor')
+      console.error(err);
+      setError('⚠️ No se pudo conectar con el servidor');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

@@ -10,59 +10,105 @@ import { FaSearch } from 'react-icons/fa';
 const EventoCalendario = ({ nombreUsuario }) => {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
-  // Campos del formulario
+  // Estados del formulario
   const [busqueda, setBusqueda] = useState('');
+  const [alumnoEncontrado, setAlumnoEncontrado] = useState(null);
+  const [errorBusqueda, setErrorBusqueda] = useState('');
   const [fecha, setFecha] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFin, setHoraFin] = useState('');
   const [tema, setTema] = useState('');
   const [comentarios, setComentarios] = useState('');
-  const [tipo, setTipo] = useState('');
 
   const toggleMenu = () => setMenuAbierto(!menuAbierto);
+
+  // 🔍 Buscar alumno por matrícula en la API
+  const handleBuscarAlumno = async () => {
+    try {
+      setErrorBusqueda('');
+      setAlumnoEncontrado(null);
+
+      if (!busqueda.trim()) {
+        setErrorBusqueda("⚠️ Ingresa una matrícula por favor");
+        return;
+      }
+
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario || !usuario.accessToken) {
+        setErrorBusqueda("⚠️ Debes iniciar sesión primero");
+        return;
+      }
+
+      const res = await fetch(
+        `https://apis-patu.onrender.com/api/alumnos/matricula/${busqueda}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${usuario.accessToken}`
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorBusqueda(data.message || "❌ Alumno no encontrado");
+        return;
+      }
+
+      setAlumnoEncontrado(data);
+    } catch (err) {
+      console.error(err);
+      setErrorBusqueda("⚠️ Error al conectar con la API");
+    }
+  };
 
   // Guardar evento en la API
   const handleGuardar = async () => {
     try {
-      const usuario = JSON.parse(localStorage.getItem('usuario'))
-      if (!usuario) {
-        alert("⚠️ No hay usuario logueado")
-        return
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario || !usuario.accessToken) {
+        alert("⚠️ No hay usuario logueado");
+        return;
+      }
+
+      if (!alumnoEncontrado) {
+        alert("⚠️ Debes buscar y seleccionar un alumno primero");
+        return;
       }
 
       const nuevoEvento = {
-        id_alumno: 1, // TODO: aquí deberías poner el alumno real seleccionado
+        id_alumno: alumnoEncontrado.id, // ✅ alumno real desde la API
         id_tutor: usuario.id,
         fecha,
         hora_inicio: horaInicio,
         hora_fin: horaFin,
         tema,
         comentarios
-      }
+      };
 
       const res = await fetch("https://apis-patu.onrender.com/api/sesiones", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${usuario.accessToken}` // Token JWT
+          "Authorization": `Bearer ${usuario.accessToken}`
         },
         body: JSON.stringify(nuevoEvento)
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "❌ Error al guardar el evento")
-        return
+        alert(data.message || "❌ Error al guardar el evento");
+        return;
       }
 
-      alert("✅ Evento guardado con éxito")
-      console.log("Evento creado:", data)
+      alert("✅ Evento guardado con éxito");
+      console.log("Evento creado:", data);
     } catch (err) {
-      console.error(err)
-      alert("⚠️ Error de conexión con el servidor")
+      console.error(err);
+      alert("⚠️ Error de conexión con el servidor");
     }
-  }
+  };
 
   return (
     <>
@@ -121,43 +167,48 @@ const EventoCalendario = ({ nombreUsuario }) => {
           {/* Buscar alumno */}
           <div className="mb-6">
             <label className="block text-xl font-bold mb-2">Alumno:</label>
-            <div className="relative">
+            <div className="relative flex gap-2">
               <input
                 type="text"
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Buscar alumno"
-                className="w-full p-4 pr-10 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-md"
+                placeholder="Buscar por matrícula"
+                className="flex-1 p-4 border border-gray-300 rounded-2xl shadow-md"
               />
-              <FaSearch className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <button
+                onClick={handleBuscarAlumno}
+                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 rounded-2xl font-bold"
+              >
+                <FaSearch />
+              </button>
             </div>
-          </div>
 
-          {/* Tipo */}
-          <div className="mb-6">
-            <label className="block text-xl font-bold mb-2">Tipo</label>
-            <select
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-md text-gray-500"
-            >
-              <option value="">Selecciona ...</option>
-              <option value="tutoria">Tutoría</option>
-              <option value="examen">Examen</option>
-              <option value="trabajo">Trabajo</option>
-            </select>
+            {/* Resultado de la búsqueda */}
+            {errorBusqueda && (
+              <p className="text-red-500 mt-2">{errorBusqueda}</p>
+            )}
+            {alumnoEncontrado && (
+              <div className="mt-3 p-3 bg-green-100 border border-green-400 rounded-xl">
+                <p><span className="font-bold">Nombre:</span> {alumnoEncontrado.nombre}</p>
+                <p><span className="font-bold">Matrícula:</span> {alumnoEncontrado.matricula}</p>
+              </div>
+            )}
           </div>
 
           {/* Tema */}
           <div className="mb-6">
             <label className="block text-xl font-bold mb-2">Tema</label>
-            <input
-              type="text"
+            <select
               value={tema}
               onChange={(e) => setTema(e.target.value)}
-              placeholder="Ej. Fundamentos de bases de datos"
-              className="w-full p-4 border border-gray-300 rounded-2xl"
-            />
+              className="w-full p-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-md text-gray-500"
+            >
+              <option value="">Selecciona ...</option>
+              <option value="seguimiento">Seguimiento</option>
+              <option value="general">General</option>
+              <option value="problemas academicos">Problemas académicos</option>
+              <option value="problemas personales">Problemas personales</option>
+            </select>
           </div>
 
           {/* Comentarios */}
@@ -214,7 +265,7 @@ const EventoCalendario = ({ nombreUsuario }) => {
         </div>
       </main>
     </>
-  )
-}
+  );
+};
 
-export default EventoCalendario
+export default EventoCalendario;
