@@ -12,26 +12,22 @@ import ListaAlumnos from './ListaAlumnos'
 import FichaAlumno from './FichaAlumno'
 
 function App() {
-
   return (
-
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Registro" element={<Registro />} />
+        <Route path="/RecuperarContra" element={<RecuperarContra />} />
         <Route path="/AccesosMaestros" element={<AccesosMaestros />} />
         <Route path="/Pruebas_temp" element={<Pruebas_temp />} />
-        <Route path="/RecuperarContra" element={<RecuperarContra />} />
         <Route path="/EventoCalendario" element={<EventoCalendario />} />
         <Route path="/Calendario" element={<Calendario />} />
         <Route path="/Grupos" element={<Grupos />} />
+        <Route path="/ListaAlumnos/:codigoGrupo" element={<ListaAlumnos />} />
+        <Route path="/alumnos/:matricula/ficha" element={<FichaAlumno />} />
         <Route path="/FichaAlumno" element={<FichaAlumno />} />
-        <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
-
-
       </Routes>
-
     </Router>
   )
 }
