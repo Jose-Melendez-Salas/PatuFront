@@ -1,20 +1,20 @@
-import React, { useState } from 'react'
-import logoImg from './assets/logo.png'
-import ilustracionImg from './assets/ilustracion.png'
-import ojoImg from './assets/ojo.png'
+import React, { useState } from 'react';
+import logoImg from './assets/logo.png';
+import ilustracionImg from './assets/ilustracion.png';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = ({ onLogin }) => {
-  const [correo, setCorreo] = useState('')
-  const [contraseña, setContraseña] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
+  const [correo, setCorreo] = useState('');
+  const [contraseña, setContraseña] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!correo.trim() || !contraseña.trim()) {
-      setError('Por favor completa todos los campos.')
-      return
+      setError('Por favor completa todos los campos.');
+      return;
     }
 
     try {
@@ -23,31 +23,37 @@ const Login = ({ onLogin }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           correo: correo,
-          password: contraseña // 👈 el backend espera "password", no "contraseña"
+          password: contraseña // backend espera "password"
         })
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (!res.ok) {
-
-        setError(data.message || 'Error en el inicio de sesión')
-        return
+        setError(data.message || 'Error en el inicio de sesión');
+        return;
       }
 
-      localStorage.setItem('usuario', JSON.stringify(data.data)); // data.data debe incluir el nombre
+      // Guardar datos por separado en localStorage
+      localStorage.setItem(
+        "usuario",
+        JSON.stringify({
+          id: data.data.id,
+          correo: correo,
+          accessToken: data.data.token
+        })
+      );
 
-      setError('')
+      setError('');
+      onLogin?.(correo);
 
-      onLogin?.(correo)
-
-      alert(`¡Bienvenido ${correo}!`)
-      window.location.href = "/accesosMaestros"
+      alert(`¡Bienvenido ${correo}!`);
+      window.location.href = "/accesosMaestros";
     } catch (err) {
-      console.error(err)
-      setError('No se pudo conectar con el servidor')
+      console.error(err);
+      setError('No se pudo conectar con el servidor');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -106,11 +112,7 @@ const Login = ({ onLogin }) => {
                       className="px-4"
                       tabIndex={-1}
                     >
-                      <img
-                        src={ojoImg}
-                        alt={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                        className="w-6 h-6"
-                      />
+                      {showPassword ? <EyeOff size={24} color="#4F3E9B" /> : <Eye size={24} color="#4F3E9B" />}
                     </button>
                   </div>
                 </label>
@@ -134,7 +136,6 @@ const Login = ({ onLogin }) => {
                   Iniciar Sesión
                 </button>
               </form>
-
             </div>
 
             <p className="mt-6 text-medium text-center w-4/5 font-medium">
@@ -144,7 +145,6 @@ const Login = ({ onLogin }) => {
               </a>
             </p>
           </div>
-
         </div>
       </main>
 
@@ -154,7 +154,7 @@ const Login = ({ onLogin }) => {
         .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
