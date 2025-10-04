@@ -63,7 +63,7 @@ const Registro = () => {
 
     setErrores(nuevosErrores);
 
-    // Campos obligatorios según rol
+    // Campos obligatorios según rol.
     let obligatorioCompleto = nombre && apellidoP && correo && contraseña && confirmar && rol !== '';
 
     if (rol === 'alumno') {
