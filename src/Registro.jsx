@@ -303,20 +303,19 @@ const Registro = () => {
 
 
       <style>{`
-  @keyframes fadeIn { from {opacity:0; transform: scale(0.95);} to {opacity:1; transform: scale(1);} }
-  .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
-  .tooltip { 
-    position: absolute; top: 100%; left: 0; 
-    background: #fef3c7; color: #92400e; 
-    border: 1px solid #facc15; 
-    padding: 4px 8px; border-radius: 8px; 
-    font-size: 0.8rem; 
-    margin-top: 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    z-index: 10;
-  }
-`}</style>
-
+        @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        .tooltip { 
+          position: absolute; top: 100%; left: 0; 
+          background: #fef3c7; color: #92400e; 
+          border: 1px solid #facc15; 
+          padding: 4px 8px; border-radius: 8px; 
+          font-size: 0.8rem; 
+          margin-top: 4px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+          z-index: 10;
+        }
+      `}</style>
     </div>
   );
 };
