@@ -4,6 +4,7 @@ import patoImg from './assets/pato.png';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+
 const Registro = () => {
   const [nombre, setNombre] = useState('');
   const [apellidoP, setApellidoP] = useState('');
@@ -21,6 +22,8 @@ const Registro = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [formValido, setFormValido] = useState(false);
+  const [mostrarExito, setMostrarExito] = useState(false);
+
 
   const [errores, setErrores] = useState({
     correo: '',
@@ -97,8 +100,7 @@ const Registro = () => {
 
       const dataUsuario = await resUsuario.json();
 
-      // ----> AÑADE ESTE CONSOLE.LOG <----
-      console.log('Respuesta del registro de usuario:', dataUsuario);
+
 
       if (!resUsuario.ok) throw new Error(dataUsuario.message || 'Error registrando usuario');
 
@@ -139,24 +141,52 @@ const Registro = () => {
       }
 
 
+      // Guardar usuario general
       localStorage.setItem(
         "usuario",
         JSON.stringify({
-          usuario: {
-            id: usuarioId,
-            nombre,
-            apellido_paterno: apellidoP,
-            apellido_materno: apellidoM,
-            correo,
-            rol,
-            estado: 'activo'
-          },
-          detalle
+          id: usuarioId,
+          nombre,
+          apellido_paterno: apellidoP,
+          apellido_materno: apellidoM,
+          correo,
+          rol,
+          estado: 'activo'
         })
       );
 
-      alert('¡Registro exitoso!');
-      window.location.href = "/Login";
+      // Guardar tutor (solo si aplica)
+      if (rol === "tutor") {
+        localStorage.setItem(
+          "tutor",
+          JSON.stringify({
+            id: usuarioId,
+            telefono,
+            academia
+          })
+        );
+      }
+
+      // Guardar alumno (solo si aplica)
+      if (rol === "alumno") {
+        localStorage.setItem(
+          "alumno",
+          JSON.stringify({
+            id: usuarioId,
+            matricula,
+            carrera,
+            semestre,
+            id_tutor: 1
+          })
+        );
+      }
+
+
+      setMostrarExito(true);
+      setTimeout(() => {
+        window.location.href = "/Login";
+      }, 2500);
+
 
     } catch (err) {
       console.error(err);
@@ -255,20 +285,38 @@ const Registro = () => {
         </div>
       </main>
 
+      {mostrarExito && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-2xl p-10 w-[90%] max-w-md text-center border-4 border-[#3CB9A5] animate-fadeIn">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#3CB9A5] text-white text-4xl font-bold">
+                ✓
+              </div>
+              <h3 className="text-2xl font-bold text-[#4F3E9B]">¡Registro exitoso!</h3>
+              <p className="text-gray-700 text-lg">
+                Tu cuenta ha sido creada correctamente.<br />Redirigiendo al inicio de sesión...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       <style>{`
-        @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-        .tooltip { 
-          position: absolute; top: 100%; left: 0; 
-          background: #fef3c7; color: #92400e; 
-          border: 1px solid #facc15; 
-          padding: 4px 8px; border-radius: 8px; 
-          font-size: 0.8rem; 
-          margin-top: 4px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-          z-index: 10;
-        }
-      `}</style>
+  @keyframes fadeIn { from {opacity:0; transform: scale(0.95);} to {opacity:1; transform: scale(1);} }
+  .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+  .tooltip { 
+    position: absolute; top: 100%; left: 0; 
+    background: #fef3c7; color: #92400e; 
+    border: 1px solid #facc15; 
+    padding: 4px 8px; border-radius: 8px; 
+    font-size: 0.8rem; 
+    margin-top: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    z-index: 10;
+  }
+`}</style>
+
     </div>
   );
 };

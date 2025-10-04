@@ -8,13 +8,11 @@ import iconCerrarsesion from './assets/cerrarsesion.png';
 
 const Navbar = () => {
     const [menuAbierto, setMenuAbierto] = useState(false);
-    const [usuario, setUsuario] = useState(null);
-
-    useEffect(() => {
-        const token = localStorage.getItem('accessToken');
+    const [usuario, setUsuario] = useState(() => {
         const user = localStorage.getItem('usuario');
-        if (token && user) setUsuario(JSON.parse(user));
-    }, []);
+        return user ? JSON.parse(user) : null;
+    });
+
 
     const toggleMenu = () => setMenuAbierto(!menuAbierto);
 
