@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import logoImg from './assets/logo.png'
-import ilustracionImg from './assets/ilustracion.png'
-import ojoImg from './assets/ojo.png'
+import React, { useState } from 'react';
+import logoImg from './assets/logo.png';
+import { useNavigate } from 'react-router-dom';
+import ilustracionImg from './assets/ilustracion.png';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = ({ onLogin }) => {
   const [correo, setCorreo] = useState('');
@@ -9,11 +10,13 @@ const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!correo.trim() || !contraseña.trim()) {
-      setError('⚠️ Por favor completa todos los campos.');
+      setError('Por favor completa todos los campos.');
       return;
     }
 
@@ -23,37 +26,37 @@ const Login = ({ onLogin }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           correo: correo,
-          password: contraseña // 👈 el backend espera "password", no "contraseña"
+          password: contraseña // backend espera "password"
         })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || '❌ Error en el inicio de sesión');
+        setError(data.message || 'Error en el inicio de sesión');
         return;
       }
 
-      // ✅ Guardar usuario + token en localStorage
+      // Guardar datos por separado en localStorage
       localStorage.setItem(
-        'usuario',
+        "usuario",
         JSON.stringify({
           id: data.data.id,
-          correo: correo,
+          nombre: data.data.nombre,
+          rol: data.data.rol,
+          correo: data.data.correo,
           accessToken: data.data.accessToken
         })
       );
 
       setError('');
+      onLogin?.(data.data.nombre);
 
-      // Notificar al componente padre
-      onLogin?.(correo);
 
-      alert(`✅ ¡Bienvenido ${correo}!`);
-      window.location.href = "/accesosMaestros"; // redirección
+      navigate('/accesosMaestros');
     } catch (err) {
       console.error(err);
-      setError('⚠️ No se pudo conectar con el servidor');
+      setError('No se pudo conectar con el servidor');
     }
   };
 
@@ -87,8 +90,8 @@ const Login = ({ onLogin }) => {
               </h2>
 
               <form className="flex flex-col items-center gap-6 w-full" onSubmit={handleSubmit}>
-                <label className="text-gray-700 font-medium w-4/5 flex flex-col">
-                  Correo Electrónico:
+                <label className="text-gray-700 font-medium w-4/5 relative group">
+                  Correo Electrónico <span className="text-red-500">*</span>
                   <input
                     type="text"
                     value={correo}
@@ -96,6 +99,11 @@ const Login = ({ onLogin }) => {
                     placeholder="Correo Electrónico"
                     className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
                   />
+
+                  {/* Tooltip informativo */}
+                  <span className="absolute top-full left-0 mt-1 text-sm text-gray-600 bg-yellow-100 border border-yellow-400 px-3 py-1 rounded-xl shadow-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
+                    Debe ser un correo institucional <strong>@itsmante.edu.mx</strong>
+                  </span>
                 </label>
 
                 <label className="text-gray-700 font-medium w-4/5 flex flex-col">
@@ -114,11 +122,7 @@ const Login = ({ onLogin }) => {
                       className="px-4"
                       tabIndex={-1}
                     >
-                      <img
-                        src={ojoImg}
-                        alt={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                        className="w-6 h-6"
-                      />
+                      {showPassword ? <EyeOff size={24} color="#4F3E9B" /> : <Eye size={24} color="#4F3E9B" />}
                     </button>
                   </div>
                 </label>
@@ -142,7 +146,6 @@ const Login = ({ onLogin }) => {
                   Iniciar Sesión
                 </button>
               </form>
-
             </div>
 
             <p className="mt-6 text-medium text-center w-4/5 font-medium">
@@ -152,7 +155,6 @@ const Login = ({ onLogin }) => {
               </a>
             </p>
           </div>
-
         </div>
       </main>
 
@@ -162,7 +164,7 @@ const Login = ({ onLogin }) => {
         .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

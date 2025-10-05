@@ -22,7 +22,7 @@ const RecuperarContra = () => {
     }
 
     if (password !== confirmarPassword) {
-      setError('❌ Las contraseñas no coinciden.');
+      setError(' Las contraseñas no coinciden.');
       return;
     }
 
@@ -40,11 +40,11 @@ const RecuperarContra = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || '❌ Error al actualizar la contraseña');
+        setError(data.message || ' Error al actualizar la contraseña');
         return;
       }
 
-      setMensaje('✅ Contraseña actualizada exitosamente. Ahora puedes iniciar sesión.');
+      setMensaje(' Contraseña actualizada exitosamente. Ahora puedes iniciar sesión.');
       setCorreo('');
       setPassword('');
       setConfirmarPassword('');
