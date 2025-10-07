@@ -2,42 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Navbar from './Navbar.jsx';
 import { FaSearch } from 'react-icons/fa';
+import NoEncontrado from './assets/NoEncontrado.jpg'; // ✅ Ruta corregida
 
-// Componente para mostrar cada alumno en la lista
-const AlumnoFicha = ({ nombre, matricula }) => {
-  return (
-    <div className="flex justify-between items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
-      <div>
-        <h4 className="text-xl font-medium text-gray-800">{nombre}</h4>
-        <p className="text-sm text-gray-500">Matrícula: {matricula}</p>
-      </div>
-      {/* Link que lleva a la ficha individual del alumno */}
-      <Link
-        to={`/alumnos/${matricula}/ficha`}
-        className="text-blue-600 hover:text-blue-800 text-sm underline font-medium"
-      >
-        Ver ficha
-      </Link>
+// ✅ Componente para mostrar cada alumno
+const AlumnoFicha = ({ nombre, matricula }) => (
+  <div className="flex justify-between items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
+    <div>
+      <h4 className="text-xl font-medium text-gray-800">{nombre}</h4>
+      <p className="text-sm text-gray-500">Matrícula: {matricula}</p>
     </div>
-  );
-};
-
-//Agregar acces tokens de las apis 
+    <Link
+      to={`/alumnos/${matricula}/ficha`}
+      className="text-blue-600 hover:text-blue-800 text-sm underline font-medium"
+    >
+      Ver ficha
+    </Link>
+  </div>
+);
 
 const ListaAlumnos = () => {
-  // Sacamos el código del grupo desde la URL
-  const { codigoGrupo } = useParams();
+  const { codigoGrupo } = useParams(); // ✅ recibe el parámetro de la URL
 
-  // Estado donde guardaremos los alumnos traídos de la API
   const [alumnosData, setAlumnosData] = useState([]);
-  // Estado para la búsqueda de alumnos
   const [busqueda, setBusqueda] = useState('');
-  // Indicador de carga y error
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Título dinámico según el grupo
-  const tituloPagina = `Lista de alumnos – ${codigoGrupo || 'Grupo Desconocido'}`;
+  const tituloPagina = `Lista de alumnos – ${codigoGrupo || 'Grupo desconocido'}`;
 
   useEffect(() => {
     const fetchAlumnos = async () => {
@@ -45,33 +36,52 @@ const ListaAlumnos = () => {
         setLoading(true);
         setError(null);
 
-        // Aquí va la URL base + endpoint según tu API en Postman
-        const res = await fetch(`https://apis-patu.onrender.com/api/grupos/${codigoGrupo}/alumnos`);
+        const usuarioGuardado = localStorage.getItem('usuario');
+        if (!usuarioGuardado) {
+          setError('⚠️ No hay sesión activa. Inicia sesión de nuevo.');
+          setLoading(false);
+          return;
+        }
+
+        const usuario = JSON.parse(usuarioGuardado);
+        const token = usuario.accessToken;
+
+        // ✅ URL corregida con el parámetro codigoGrupo
+        const res = await fetch(
+          `https://apis-patu.onrender.com/api/grupo-alumnos/grupo/${codigoGrupo}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
         if (!res.ok) throw new Error('Error al traer los alumnos');
 
         const data = await res.json();
-        setAlumnosData(data); // Guardamos los alumnos
-        setLoading(false);
+        console.log('Respuesta API:', data);
+
+        // ✅ La API devuelve IDs; los mostramos temporalmente
+        setAlumnosData(data.data || []);
       } catch (err) {
-        console.error("Error al traer los alumnos:", err);
-        setError("No se pudieron cargar los alumnos");
+        console.error('Error al traer los alumnos:', err);
+        setError('❌ No se pudieron cargar los alumnos.');
+      } finally {
         setLoading(false);
       }
     };
 
-    if (codigoGrupo) {
-      fetchAlumnos();
-    }
+    if (codigoGrupo) fetchAlumnos();
   }, [codigoGrupo]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar fijo arriba */}
+    <div className="min-h-screen bg-gray-50 animate-fadeIn">
       <Navbar />
 
-      <main className="p-4 animate-fadeIn relative z-10">
+      <main className="p-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Título de la página y link para invitar alumno */}
+          {/* ✅ Título y botón */}
           <div className="flex justify-between items-end mb-1">
             <h2 className="text-3xl font-bold text-gray-800">{tituloPagina}</h2>
             <Link
@@ -84,7 +94,7 @@ const ListaAlumnos = () => {
 
           <div className="w-full h-1 bg-yellow-400 mb-8"></div>
 
-          {/* Buscador de alumnos */}
+          {/* ✅ Buscador */}
           <div className="relative mb-6">
             <input
               type="text"
@@ -96,46 +106,61 @@ const ListaAlumnos = () => {
             <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
 
-          {/* Mensaje de carga o error */}
+          {/* ✅ Mensajes de estado */}
           {loading && <p className="text-gray-600">Cargando alumnos...</p>}
           {error && <p className="text-red-600">{error}</p>}
 
-          {/* Listado de alumnos */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100">
-            {alumnosData
-              .filter(alumno =>
-                alumno.nombre.toLowerCase().includes(busqueda.toLowerCase())
-              )
-              .map((alumno, index) => (
-                <AlumnoFicha
-                  key={index}
-                  nombre={alumno.nombre}
-                  matricula={alumno.matricula}
-                />
-            ))}
-          </div>
+          {/* ✅ Grupo vacío */}
+          {!loading && !error && alumnosData.length === 0 && (
+            <div className="flex flex-col items-center text-center py-10">
+              <img
+                src={NoEncontrado}
+                alt="Sin alumnos"
+                className="w-64 mb-6 opacity-80"
+              />
+              <p className="text-lg font-semibold text-gray-700 mb-6">
+                Este grupo está vacío
+              </p>
+              <Link to="/InvitarAlumno">
+                <button
+                  type="button"
+                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Invitar alumnos
+                </button>
+              </Link>
+            </div>
+          )}
 
-          {/* Mostramos el código del grupo */}
+          {/* ✅ Lista de alumnos */}
+          {!loading && alumnosData.length > 0 && (
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100">
+              {alumnosData
+                .filter((alumno) =>
+                  alumno.id_alumno
+                    ?.toString()
+                    .toLowerCase()
+                    .includes(busqueda.toLowerCase())
+                )
+                .map((alumno, index) => (
+                  <AlumnoFicha
+                    key={index}
+                    nombre={`Alumno ${alumno.id_alumno}`}
+                    matricula={alumno.id_alumno}
+                  />
+                ))}
+            </div>
+          )}
+
           {codigoGrupo && (
             <p className="mt-4 text-sm text-gray-500">
               Mostrando lista para el grupo con código: {codigoGrupo}
             </p>
           )}
         </div>
-
-        {/* Animación suave al entrar */}
-        <style jsx>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-        `}</style>
       </main>
     </div>
   );
 };
 
 export default ListaAlumnos;
-
-

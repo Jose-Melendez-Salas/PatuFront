@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { 
-    BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer 
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { FaPlus } from 'react-icons/fa';
 import Navbar from './Navbar.jsx';
 
@@ -11,7 +9,7 @@ const BitacoraFicha = ({ tipo, observaciones, fecha, color }) => (
     <div className={`p-4 mb-4 rounded-xl shadow-md transition-shadow hover:shadow-lg`} style={{ border: `2px solid ${color}` }}>
         <div className="flex justify-between items-start mb-1">
             <h4 className="font-bold text-base text-gray-800">{tipo}</h4>
-            <span className="text-xs text-gray-500 whitespace-nowrap" style={{ color: color }}>{fecha}</span>
+            <span className="text-xs text-gray-500 whitespace-nowrap" style={{ color }}>{fecha}</span>
         </div>
         <p className="text-sm mt-1"><span className="font-semibold">Observaciones:</span> {observaciones}</p>
     </div>
@@ -20,7 +18,6 @@ const BitacoraFicha = ({ tipo, observaciones, fecha, color }) => (
 const FichaAlumno = () => {
     const { matricula } = useParams();
 
-    // Estados para guardar datos del alumno, bitácora y calificaciones
     const [alumnoData, setAlumnoData] = useState(null);
     const [bitacoraData, setBitacoraData] = useState([]);
     const [chartDataVisual, setChartDataVisual] = useState([]);
@@ -29,32 +26,47 @@ const FichaAlumno = () => {
 
     useEffect(() => {
         const fetchAlumno = async () => {
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
+            const token = usuario?.accessToken;
+
+            if (!token) {
+                setError("⚠️ No hay sesión activa. Por favor inicia sesión.");
+                setLoading(false);
+                return;
+            }
+
             try {
                 setLoading(true);
                 setError(null);
 
-                // API para traer la info del alumno
-                const resAlumno = await fetch(`https://apis-patu.onrender.com/api/usuarios/${matricula}`);
-                if (!resAlumno.ok) throw new Error('Error al traer la información del alumno');
+                // 1️⃣ Información del alumno
+                const resAlumno = await fetch(`https://apis-patu.onrender.com/usuarios/${matricula}`, {
+                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+                });
                 const alumnoJson = await resAlumno.json();
-                setAlumnoData(alumnoJson);
+                if (!resAlumno.ok) throw new Error(alumnoJson.message || "Error al cargar información del alumno");
+                setAlumnoData(alumnoJson.data);
 
-                // API para traer la bitácora del alumno
-                const resBitacora = await fetch(`https://apis-patu.onrender.com/api/bitacora/alumno/${matricula}`);
-                if (!resBitacora.ok) throw new Error('Error al traer la bitácora');
+                // 2️⃣ Bitácora del alumno
+                const resBitacora = await fetch(`https://apis-patu.onrender.com/bitacora/alumno/${matricula}`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
                 const bitacoraJson = await resBitacora.json();
-                setBitacoraData(bitacoraJson);
+                if (!resBitacora.ok) throw new Error(bitacoraJson.message || "Error al cargar bitácora");
+                setBitacoraData(bitacoraJson.data || []);
 
-                // API para traer calificaciones/inasistencias
-                const resCalificaciones = await fetch(`https://apis-patu.onrender.com/api/calificaciones/alumno/${matricula}`);
-                if (!resCalificaciones.ok) throw new Error('Error al traer calificaciones');
+                // 3️⃣ Calificaciones / Inasistencias
+                const resCalificaciones = await fetch(`https://apis-patu.onrender.com/calificaciones/alumno/${matricula}`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
                 const calificacionesJson = await resCalificaciones.json();
-                setChartDataVisual(calificacionesJson);
+                if (!resCalificaciones.ok) throw new Error(calificacionesJson.message || "Error al cargar calificaciones");
+                setChartDataVisual(calificacionesJson.data || []);
 
                 setLoading(false);
             } catch (err) {
                 console.error(err);
-                setError('No se pudo cargar la información del alumno');
+                setError(err.message || "❌ No se pudo cargar la información del alumno");
                 setLoading(false);
             }
         };
@@ -62,12 +74,12 @@ const FichaAlumno = () => {
         if (matricula) fetchAlumno();
     }, [matricula]);
 
-    // Etiquetas personalizadas para las barras del gráfico
+    // Etiquetas personalizadas para el gráfico
     const CustomBarLabel = ({ x, y, width, value }) => (
         <text x={x + width / 2} y={y} dy={-8} fill="#4F3E9B" fontSize={12} textAnchor="middle">{value}</text>
     );
 
-    // Mientras carga o hay error
+    // Estado de carga o error
     if (loading) return <p className="text-gray-600 p-4">Cargando información del alumno...</p>;
     if (error) return <p className="text-red-600 p-4">{error}</p>;
     if (!alumnoData) return null;
@@ -93,15 +105,20 @@ const FichaAlumno = () => {
                             <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col">
                                 <h3 className="text-2xl font-bold mb-4">Bitácora</h3>
                                 <div className="w-full max-w-xs h-1 bg-yellow-400 mb-4"></div>
-                                {bitacoraData.map((item, index) => (
-                                    <BitacoraFicha 
-                                        key={index} 
-                                        tipo={item.tipo} 
-                                        observaciones={item.observaciones} 
-                                        fecha={item.fecha}
-                                        color={item.color || '#3CB9A5'}
-                                    />
-                                ))}
+
+                                {bitacoraData.length === 0 
+                                    ? <p className="text-gray-500 text-center">No hay registros en la bitácora.</p>
+                                    : bitacoraData.map((item, index) => (
+                                        <BitacoraFicha 
+                                            key={index} 
+                                            tipo={item.tipo} 
+                                            observaciones={item.observaciones} 
+                                            fecha={item.fecha}
+                                            color={item.color || '#3CB9A5'}
+                                        />
+                                    ))
+                                }
+
                                 <Link 
                                     to={`/EventoCalendario/${alumnoData.matricula}`}
                                     className="flex items-center justify-center gap-2 mt-4 text-gray-800 font-bold hover:text-gray-900 transition-colors"
@@ -140,7 +157,10 @@ const FichaAlumno = () => {
                 </div>
 
                 <style jsx>{`
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes fadeIn { 
+                        from { opacity: 0; transform: translateY(10px); } 
+                        to { opacity: 1; transform: translateY(0); } 
+                    }
                     .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
                 `}</style>
             </main>
@@ -149,5 +169,3 @@ const FichaAlumno = () => {
 };
 
 export default FichaAlumno;
-
-
