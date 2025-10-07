@@ -108,23 +108,28 @@ const Login = ({ onLogin }) => {
 
                 <label className="text-gray-700 font-medium w-4/5 flex flex-col">
                   Contraseña:
-                  <div className="flex items-center border border-gray-300 rounded-2xl mt-2 w-full">
+                  <div className="relative w-full mt-2">
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={contraseña}
                       onChange={(e) => setContraseña(e.target.value)}
                       placeholder="Ingresa tu contraseña aquí"
-                      className="flex-1 p-4 rounded-l-2xl outline-none"
+                      className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 text-base sm:text-sm"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="px-4"
+                      className="absolute inset-y-0 right-4 flex items-center"
                       tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff size={24} color="#4F3E9B" /> : <Eye size={24} color="#4F3E9B" />}
+                      {showPassword ? (
+                        <EyeOff size={22} color="#4F3E9B" />
+                      ) : (
+                        <Eye size={22} color="#4F3E9B" />
+                      )}
                     </button>
                   </div>
+
                 </label>
 
                 {error && <p className="text-red-600 text-sm text-center">{error}</p>}
@@ -155,7 +160,6 @@ const Login = ({ onLogin }) => {
               </a>
             </p>
           </div>
-
         </div>
       </main>
 

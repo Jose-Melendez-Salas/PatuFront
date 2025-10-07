@@ -2,8 +2,6 @@ import React from 'react';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 import { UserCheck, FileText } from 'lucide-react';
 import Navbar from './Navbar'; // Importamos el navbar
-import { useNavigate } from "react-router-dom";
-
 
 const dataProblemas = [
     { name: 'Problemas Económicos', value: 60 },
@@ -47,7 +45,6 @@ const EventoCard = ({ evento }) => {
 };
 
 const AccesosMaestros = () => {
-    const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />
@@ -101,14 +98,9 @@ const AccesosMaestros = () => {
                         {eventos.map((evento, idx) => (
                             <EventoCard key={idx} evento={evento} />
                         ))}
-                    <button
-                    onClick={() => navigate("/Calendario")}
-                    className="text-blue-500 underline mt-2 text-xl text-right"
-                    >
-                    Ver agenda completa
-                    </button>
-
-
+                        <a href="/Calendario" className="text-blue-500 underline mt-2 text-xl text-right">
+                            Ver agenda completa
+                        </a>
                     </div>
                 </div>
             </main>

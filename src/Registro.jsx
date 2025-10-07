@@ -63,7 +63,7 @@ const Registro = () => {
 
     setErrores(nuevosErrores);
 
-    // Campos obligatorios según rol
+    // Campos obligatorios según roll
     let obligatorioCompleto = nombre && apellidoP && correo && contraseña && confirmar && rol !== '';
 
     if (rol === 'alumno') {
@@ -268,10 +268,12 @@ const Registro = () => {
                 <button
                   type="submit"
                   disabled={!formValido}
-                  className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-1/2 ${!formValido ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${!formValido ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                 >
                   Comenzar
                 </button>
+
               </form>
 
               <p className="mt-6 text-medium text-center font-medium">
@@ -342,18 +344,33 @@ const InputField = ({ label, value, onChange, error, tipo = "text", tooltip = fa
 const PasswordField = ({ label, value, onChange, error, show, setShow, obligatorio = false }) => (
   <label className="text-gray-700 font-medium w-4/5 relative">
     {label} {obligatorio && <span className="text-red-500">*</span>}
-    <div className="flex items-center border border-gray-300 rounded-2xl mt-2 w-full">
+
+    {/* Campo de contraseña responsivo */}
+    <div className="relative w-full mt-2">
       <input
         type={show ? 'text' : 'password'}
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={label}
-        className="flex-1 p-4 rounded-l-2xl outline-none"
+        className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 text-base sm:text-sm"
       />
-      <button type="button" onClick={() => setShow(!show)} className="px-4">
-        {show ? <EyeOff size={24} color="#4F3E9B" /> : <Eye size={24} color="#4F3E9B" />}
+
+      {/* Ícono del ojito dentro del input */}
+      <button
+        type="button"
+        onClick={() => setShow(!show)}
+        className="absolute inset-y-0 right-4 flex items-center"
+        tabIndex={-1}
+      >
+        {show ? (
+          <EyeOff size={22} color="#4F3E9B" className="transition-transform duration-200 hover:scale-110" />
+        ) : (
+          <Eye size={22} color="#4F3E9B" className="transition-transform duration-200 hover:scale-110" />
+        )}
       </button>
     </div>
+
     {error && value && <div className="tooltip">{error}</div>}
   </label>
 );
+
