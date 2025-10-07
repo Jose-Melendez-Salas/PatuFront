@@ -1,68 +1,60 @@
 import React, { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaSpinner } from 'react-icons/fa';
 import Navbar from './Navbar';
 
-const EventoCalendario = ({ nombreUsuario }) => {
+const EventoCalendario = () => {
   const [busqueda, setBusqueda] = useState('');
   const [personaEncontrada, setPersonaEncontrada] = useState(null);
   const [errorBusqueda, setErrorBusqueda] = useState('');
   const [fecha, setFecha] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
-  const [horaFin, setHoraFin] = useState('');
+  const [horaError, setHoraError] = useState('');
+  const [duracion, setDuracion] = useState('');
   const [tipo, setTipo] = useState('');
-  //const [comentarios, setComentarios] = useState('');
+  const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+  const [loading, setLoading] = useState(false);
 
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-
+  // 🔍 Buscar alumno o tutor según el rol
   const handleBuscar = async () => {
     try {
       setErrorBusqueda('');
       setPersonaEncontrada(null);
 
       if (!busqueda.trim()) {
-        setErrorBusqueda(
-          usuario.rol === 'tutor'
-            ? '⚠️ Ingresa una matrícula por favor'
-            : '⚠️ Ingresa el correo de tu tutor por favor'
-        );
+        setErrorBusqueda(' Ingresa un valor de búsqueda.');
         return;
       }
 
       if (!usuario || !usuario.accessToken) {
-        setErrorBusqueda('⚠️ Debes iniciar sesión primero');
-        return; 
+        setErrorBusqueda(' Debes iniciar sesión primero.');
+        return;
       }
 
       let url = '';
-
       if (usuario.rol === 'tutor') {
-        // 🧑‍🏫 Tutor busca alumno por matrícula
+        // tutor busca alumno por matrícula
         url = `https://apis-patu.onrender.com/api/alumnos/matricula/${busqueda}`;
       } else {
-        // 🎓 Alumno busca tutor por correo
+        // alumno busca tutor por correo (ruta antigua que funciona)
         url = `https://apis-patu.onrender.com/api/usuarios/correo/${busqueda}`;
       }
 
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${usuario.accessToken}`,
-        },
+        headers: { Authorization: `Bearer ${usuario.accessToken}` },
       });
-
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setErrorBusqueda(data.message || '❌ No se encontró ningún resultado');
+        setErrorBusqueda(data.message || ' No se encontró ningún resultado.');
         return;
       }
 
-      // Normalizar la respuesta
-      const persona = data.data || data;
-      setPersonaEncontrada(persona);
+      setPersonaEncontrada(data.data || data);
     } catch (err) {
       console.error(err);
-      setErrorBusqueda('⚠️ Error al conectar con la API');
+      setErrorBusqueda(' Error al conectar con la API.');
     }
   };
 
@@ -70,27 +62,45 @@ const EventoCalendario = ({ nombreUsuario }) => {
   const handleGuardar = async () => {
     try {
       if (!usuario || !usuario.accessToken) {
-        alert('⚠️ No hay usuario logueado');
+        setMensaje({ tipo: 'error', texto: ' No hay usuario logueado.' });
         return;
       }
 
       if (!personaEncontrada) {
-        alert(
-          usuario.rol === 'tutor'
-            ? '⚠️ Debes buscar y seleccionar un alumno primero'
-            : '⚠️ Debes buscar y seleccionar a tu tutor primero'
-        );
+        setMensaje({
+          tipo: 'error',
+          texto:
+            usuario.rol === 'tutor'
+              ? ' Debes buscar y seleccionar un alumno primero.'
+              : ' Debes buscar y seleccionar un tutor primero.',
+        });
         return;
       }
+
+      if (!fecha || !horaInicio || !duracion || !tipo) {
+        setMensaje({ tipo: 'error', texto: ' Completa todos los campos antes de guardar.' });
+        return;
+      }
+
+      setLoading(true);
+      setMensaje({ tipo: 'info', texto: ' Asignando sesión...' });
+
+      // Calcular hora fin
+      const horaFinCalculada = (() => {
+        const [h, m] = horaInicio.split(':').map(Number);
+        const totalMin = h * 60 + m + parseInt(duracion);
+        const finH = String(Math.floor(totalMin / 60)).padStart(2, '0');
+        const finM = String(totalMin % 60).padStart(2, '0');
+        return `${finH}:${finM}`;
+      })();
 
       const nuevoEvento = {
         id_alumno: usuario.rol === 'tutor' ? personaEncontrada.id : usuario.id,
         id_tutor: usuario.rol === 'tutor' ? usuario.id : personaEncontrada.id,
         fecha,
         hora_inicio: horaInicio,
-        hora_fin: horaFin,
+        hora_fin: horaFinCalculada,
         tipo,
-        //comentarios,
       };
 
       const res = await fetch('https://apis-patu.onrender.com/api/sesiones', {
@@ -105,17 +115,31 @@ const EventoCalendario = ({ nombreUsuario }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || '❌ Error al guardar el evento');
+        setMensaje({ tipo: 'error', texto: data.message || ' Error al guardar el evento.' });
+        setLoading(false);
         return;
       }
 
-      alert('✅ Evento guardado con éxito');
-      console.log('Evento creado:', data);
+      setMensaje({ tipo: 'success', texto: ' Sesión creada con éxito.' });
+
+      // Limpiar formulario
+      setBusqueda('');
+      setPersonaEncontrada(null);
+      setFecha('');
+      setHoraInicio('');
+      setDuracion('');
+      setTipo('');
     } catch (err) {
       console.error(err);
-      alert('⚠️ Error de conexión con el servidor');
+      setMensaje({ tipo: 'error', texto: ' Error de conexión con el servidor.' });
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Deshabilitar botón si faltan datos
+  const botonDeshabilitado =
+    loading || !personaEncontrada || !fecha || !horaInicio || !duracion || !tipo || horaError;
 
   return (
     <>
@@ -127,6 +151,21 @@ const EventoCalendario = ({ nombreUsuario }) => {
             Nuevo evento
           </h2>
 
+          {/* 🟡 Mensaje global */}
+          {mensaje.texto && (
+            <div
+              className={`mb-6 p-4 rounded-xl text-center font-semibold transition-all duration-300 ${
+                mensaje.tipo === 'error'
+                  ? 'bg-red-100 text-red-700'
+                  : mensaje.tipo === 'success'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-yellow-100 text-yellow-700'
+              }`}
+            >
+              {mensaje.texto}
+            </div>
+          )}
+
           {/* 🔍 Buscar alumno o tutor */}
           <div className="mb-6">
             <label className="block text-xl font-bold mb-2">
@@ -134,13 +173,13 @@ const EventoCalendario = ({ nombreUsuario }) => {
             </label>
             <div className="relative flex gap-2">
               <input
-                type={usuario.rol === 'tutor' ? 'text' : 'email'}
+                type="text"
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
                 placeholder={
                   usuario.rol === 'tutor'
                     ? 'Buscar alumno por matrícula'
-                    : 'Buscar tutor por correo electrónico'
+                    : 'Buscar tutor por correo'
                 }
                 className="flex-1 p-4 border border-gray-300 rounded-2xl shadow-md"
               />
@@ -152,15 +191,19 @@ const EventoCalendario = ({ nombreUsuario }) => {
               </button>
             </div>
 
-            {errorBusqueda && (
-              <p className="text-red-500 mt-2">{errorBusqueda}</p>
+            {errorBusqueda && <p className="text-red-500 mt-2 font-semibold">{errorBusqueda}</p>}
+
+            {!personaEncontrada && !errorBusqueda && (
+              <p className="text-yellow-600 mt-2 font-semibold">
+                 Debes buscar y seleccionar {usuario.rol === 'tutor' ? 'un alumno' : 'un tutor'} primero
+              </p>
             )}
+
             {personaEncontrada && (
               <div className="mt-3 p-3 bg-green-100 border border-green-400 rounded-xl">
                 <p>
                   <span className="font-bold">Nombre:</span>{' '}
-                  {personaEncontrada.nombre}{' '}
-                  {personaEncontrada.apellido_paterno}{' '}
+                  {personaEncontrada.nombre} {personaEncontrada.apellido_paterno}{' '}
                   {personaEncontrada.apellido_materno}
                 </p>
                 <p>
@@ -181,7 +224,7 @@ const EventoCalendario = ({ nombreUsuario }) => {
             <select
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-md text-gray-500"
+              className="w-full p-4 border border-gray-300 rounded-2xl shadow-md focus:ring-2 focus:ring-[#3CB9A5]"
             >
               <option value="">Selecciona ...</option>
               <option value="seguimiento">Seguimiento</option>
@@ -191,18 +234,7 @@ const EventoCalendario = ({ nombreUsuario }) => {
             </select>
           </div>
 
-          {/* Comentarios 
-          <div className="mb-6">
-            <label className="block text-xl font-bold mb-2">Comentarios</label>
-            <textarea
-              value={comentarios}
-              onChange={(e) => setComentarios(e.target.value)}
-              placeholder="Agrega notas del evento..."
-              className="w-full p-4 border border-gray-300 rounded-2xl"
-            />
-          </div>
-            */}
-          {/* Fecha y hora */}
+          {/* Fecha, hora y duración */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <label className="block text-xl font-bold mb-2">Fecha</label>
@@ -210,36 +242,80 @@ const EventoCalendario = ({ nombreUsuario }) => {
                 type="date"
                 value={fecha}
                 onChange={(e) => setFecha(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                  .toISOString()
+                  .split('T')[0]}
                 className="w-full p-4 border border-gray-300 rounded-2xl"
               />
             </div>
+
             <div>
-              <label className="block text-xl font-bold mb-2">Hora inicio</label>
+              <label className="block text-xl font-bold mb-2">Hora de inicio</label>
               <input
                 type="time"
                 value={horaInicio}
-                onChange={(e) => setHoraInicio(e.target.value)}
+                onChange={(e) => {
+                  const valor = e.target.value;
+                  setHoraInicio(valor);
+                  
+                  // Validar rango de 7:00 AM a 7:00 PM
+                  if (valor) {
+                    const [hora] = valor.split(':').map(Number);
+                    if (hora < 7 || hora >= 19) {
+                      setHoraError(' La hora debe estar entre 7:00 AM y 7:00 PM');
+                    } else {
+                      setHoraError('');
+                    }
+                  } else {
+                    setHoraError('');
+                  }
+                }}
                 className="w-full p-4 border border-gray-300 rounded-2xl"
               />
+              {horaError && <p className="text-red-500 mt-1 font-semibold">{horaError}</p>}
             </div>
+
             <div>
-              <label className="block text-xl font-bold mb-2">Hora fin</label>
-              <input
-                type="time"
-                value={horaFin}
-                onChange={(e) => setHoraFin(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-2xl"
-              />
+              <label className="block text-xl font-bold mb-2">Duración</label>
+              <select
+                value={duracion}
+                onChange={(e) => setDuracion(e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-2xl shadow-md focus:ring-2 focus:ring-[#3CB9A5]"
+              >
+                <option value="">Selecciona duración...</option>
+                <option value="15">15 minutos</option>
+                <option value="30">30 minutos</option>
+                <option value="45">45 minutos</option>
+                <option value="60">1 hora</option>
+              </select>
             </div>
           </div>
 
-          {/* Botón Guardar */}
-          <div className="flex justify-center">
+          {/* Botones */}
+          <div className="flex justify-center gap-4">
             <button
               onClick={handleGuardar}
-              className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-10 py-3 rounded-2xl font-bold text-lg shadow-md"
+              disabled={botonDeshabilitado}
+              className={`px-10 py-3 rounded-2xl font-bold text-lg shadow-md flex items-center gap-2 ${
+                botonDeshabilitado
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
+              }`}
             >
-              Guardar
+              {loading && <FaSpinner className="animate-spin" />} Guardar
+            </button>
+
+            <button
+              onClick={() => window.location.href = '/calendario'}
+              disabled={loading}
+              className={`px-10 py-3 rounded-2xl font-bold text-lg shadow-md ${
+                loading
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
+              }`}
+            >
+              Regresar al calendario
             </button>
           </div>
         </div>
