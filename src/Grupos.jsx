@@ -8,7 +8,8 @@ const IconoPersonas = ({ colorClase }) => (
     <HiMiniUserGroup className={`w-20 h-20 mb-2 ${colorClase}`} />
 );
 
-// Tarjeta que muestra los datos del grupo
+// Tarjeta que muestra los datos del grupoh
+
 const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => {
     return (
         <Link 
