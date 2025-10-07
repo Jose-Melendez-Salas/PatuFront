@@ -34,54 +34,70 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
     );
 };
 
+// ... importaciones siguen igual
 const Grupos = () => {
-    const [grupos, setGrupos] = useState([]); // Guardamos los grupos que trae la API
-    const [loading, setLoading] = useState(true); // Indicador de carga
-    const [error, setError] = useState(null); // Mensaje de error si falla
+    const [grupos, setGrupos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // ID de tutor temporal, luego se reemplaza con el del usuario que hace login
-    const userId = 1;
+    // Recuperar usuario y rol desde localStorage
+    const usuarioGuardado = localStorage.getItem('usuario');
+    const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+    const esMaestro = usuario?.rol === 'maestro';
 
     useEffect(() => {
-        // Llamada a la API para traer los grupos del tutor
-        fetch(`https://apis-patu.onrender.com/api/grupos/por-tutor/${userId}`)
+        if (!usuario) {
+            setError("No hay sesión iniciada");
+            setLoading(false);
+            return;
+        }
+
+        const userId = usuario.id;
+        const token = usuario.accessToken;
+
+        fetch(`https://apis-patu.onrender.com/api/grupos/tutor/${userId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
             .then(res => {
                 if (!res.ok) throw new Error("Error en la respuesta de la API");
                 return res.json();
             })
             .then(data => {
-                setGrupos(data); // Guardamos los grupos en el estado
-                setLoading(false); // Ya no está cargando
+                if (data.success) {
+                    setGrupos(data.data);
+                } else {
+                    setError(data.message || "No se pudieron cargar los grupos");
+                }
+                setLoading(false);
             })
             .catch(err => {
                 console.error("Error cargando grupos:", err);
                 setError("Error al cargar los grupos");
                 setLoading(false);
             });
-    }, [userId]);
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header que ocupa todo el ancho */}
             <Navbar />
 
-            {/* Contenido principal */}
             <main className="p-4 md:p-8 animate-fadeIn relative z-10">
                 <h2 className="text-3xl font-bold mb-1 text-gray-800">Tus Grupos</h2>
                 <div className="w-full h-1 bg-yellow-400 mb-8"></div>
 
-                {/* Indicadores de carga o error */}
                 {loading && <p className="text-gray-600">Cargando grupos...</p>}
                 {error && <p className="text-red-600">{error}</p>}
 
-                {/* Lista de grupos */}
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {grupos.map(grupo => (
                         <GrupoCard 
                             key={grupo.id}
                             titulo={grupo.nombre || "Sin nombre"} 
                             semestre={grupo.semestre || "Semestre no definido"}
-                            codigo={grupo.codigo_grupo || "Sin código"}
+                            codigo={grupo.codigo || "Sin código"}
                             alumnos={grupo.num_alumnos || 0}
                             colorClase="border-blue-400"
                             colorTextoClase="text-blue-500"
@@ -89,18 +105,18 @@ const Grupos = () => {
                     ))}
                 </div>
 
-                {/* Enlace para crear un grupo nuevo */}
-                <div className="mt-8 text-right">
-                    <Link 
-                        to="/NuevoGrupo" 
-                        className="text-blue-600 hover:text-blue-800 font-medium text-base md:text-lg underline"
-                    >
-                        Nuevo Grupo
-                    </Link>
-                </div>
+                {/* Botón solo visible para maestros */}
+                {usuario.rol === 'maestro' && (
+                <Link
+                to="/nuevo-grupo"
+                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
+                 >
+                 Crear nuevo grupo
+                </Link>
+                )}
+
             </main>
 
-            {/* Animación de entrada */}
             <style jsx>{`
                 @keyframes fadeIn { 
                     from { opacity: 0; transform: translateY(10px); } 
