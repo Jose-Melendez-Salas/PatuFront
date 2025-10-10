@@ -55,8 +55,8 @@ const Navbar = () => {
                     <a href="/AccesosMaestros" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconCasita} alt="Casita" className="w-9 h-9" /> Inicio
                     </a>
-                    <a href="/ListaAlumnos" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
-                        <img src={iconAlumnos} alt="Alumnos" className="w-9 h-9" /> Alumnos
+                    <a href="/Grupos" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                        <img src={iconAlumnos} alt="Grupos" className="w-9 h-9" /> Grupos
                     </a>
                     <a href="/Calendario" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconAgenda} alt="Agenda" className="w-9 h-9" /> Agenda

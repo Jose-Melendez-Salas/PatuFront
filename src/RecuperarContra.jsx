@@ -34,7 +34,7 @@ const RecuperarContra = () => {
   useEffect(() => {
     const longitudMinima = password.length >= 8;
     const tieneMayuscula = /[A-Z]/.test(password);
-    const tieneCaracterEspecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const tieneCaracterEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     
     setValidaciones(prev => ({
       ...prev,
@@ -56,22 +56,22 @@ const RecuperarContra = () => {
     setMensaje(null);
 
     if (!correo.trim() || !password.trim() || !confirmarPassword.trim()) {
-      setError('⚠️ Por favor completa todos los campos.');
+      setError(' Por favor completa todos los campos.');
       return;
     }
 
     if (!validaciones.correoValido) {
-      setError('⚠️ Debe usar un correo institucional @itsmante.edu.mx');
+      setError(' Debe usar un correo institucional @itsmante.edu.mx');
       return;
     }
 
     if (!validaciones.longitudMinima || !validaciones.tieneMayuscula || !validaciones.tieneCaracterEspecial) {
-      setError('⚠️ La contraseña no cumple con los requisitos de seguridad.');
+      setError(' La contraseña no cumple con los requisitos de seguridad.');
       return;
     }
 
     if (!validaciones.contrasenasCoinciden) {
-      setError('⚠️ Las contraseñas no coinciden.');
+      setError(' Las contraseñas no coinciden.');
       return;
     }
 
@@ -90,12 +90,12 @@ const RecuperarContra = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || '⚠️ Error al actualizar la contraseña');
+        setError(data.message || ' Error al actualizar la contraseña');
         setCargando(false); // TERMINA CARGA
         return;
       }
 
-      setMensaje('✅ Contraseña actualizada exitosamente. Ahora puedes iniciar sesión.');
+      setMensaje(' Contraseña actualizada exitosamente. Ahora puedes iniciar sesión.');
       setCorreo('');
       setPassword('');
       setConfirmarPassword('');
@@ -202,8 +202,9 @@ const RecuperarContra = () => {
                   />
                   <ValidacionItem 
                     cumplida={validaciones.tieneCaracterEspecial} 
-                    texto="Al menos un carácter especial (!@#$%^&*...)" 
+                    texto="Al menos un carácter especial valido como: ( !@#$%^&*(),.?:{}|<></> )" 
                   />
+  
                 </div>
               )}
             </div>
@@ -275,6 +276,7 @@ const RecuperarContra = () => {
             >
               {cargando ? 'Actualizando...' : 'Actualizar Contraseña'}
             </button>
+
           </form>
         </div>
       </div>
