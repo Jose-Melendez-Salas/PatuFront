@@ -91,14 +91,24 @@ const EventoCalendario = () => {
         return `${finH}:${finM}`;
       })();
 
-      const nuevoEvento = {
-        id_tutor: usuario.rol === 'tutor' ? usuario.id : personaEncontrada.id,
-        id_alumno: usuario.rol === 'tutor' ? personaEncontrada.id_usuario : usuario.id_usuario,
-        fecha,
-        hora_inicio: horaInicio,
-        hora_fin: horaFinCalculada,
-        tipo,
-      };
+          const nuevoEvento = {
+            id_tutor:
+              usuario.rol === 'tutor'
+                ? usuario.id
+                : personaEncontrada.id || personaEncontrada.id_usuario,
+            id_alumno:
+              usuario.rol === 'tutor'
+                ? personaEncontrada.id || personaEncontrada.id_usuario
+                : usuario.id,
+            fecha,
+            hora_inicio: horaInicio,
+            hora_fin: horaFinCalculada,
+            tipo,
+          };
+
+            console.log("📦 Datos enviados al backend:", nuevoEvento);
+            console.log("👤 usuario:", usuario);
+            console.log("🎯 personaEncontrada:", personaEncontrada);
 
       const res = await fetch('https://apis-patu.onrender.com/api/sesiones', {
         method: 'POST',
