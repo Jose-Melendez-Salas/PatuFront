@@ -10,6 +10,7 @@ import Calendario from './Calendario'
 import Grupos from './Grupos'
 import ListaAlumnos from './ListaAlumnos'
 import FichaAlumno from './FichaAlumno'
+import NuevoGrupo from './NuevoGrupo'
 
 function App() {
 
@@ -28,7 +29,8 @@ function App() {
         <Route path="/Grupos" element={<Grupos />} />
         <Route path="/FichaAlumno" element={<FichaAlumno />} />
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
-
+        <Route path="/ListaAlumnos/:codigoGrupo" element={<ListaAlumnos />} />
+        <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
 
       </Routes>
 

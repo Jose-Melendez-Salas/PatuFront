@@ -95,8 +95,8 @@ const EventoCalendario = () => {
       })();
 
       const nuevoEvento = {
-        id_alumno: usuario.rol === 'tutor' ? personaEncontrada.id : usuario.id,
         id_tutor: usuario.rol === 'tutor' ? usuario.id : personaEncontrada.id,
+        id_alumno: usuario.rol === 'tutor' ? personaEncontrada.id_usuario : usuario.id_usuario,
         fecha,
         hora_inicio: horaInicio,
         hora_fin: horaFinCalculada,
@@ -241,14 +241,33 @@ const EventoCalendario = () => {
               <input
                 type="date"
                 value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                  .toISOString()
-                  .split('T')[0]}
+                onChange={(e) => {
+                  const fechaUTC = new Date(e.target.value);
+                  const seleccionada = new Date(fechaUTC.getTime() + fechaUTC.getTimezoneOffset() * 60000);
+                  const dia = seleccionada.getDay(); // 0 = domingo, 6 = sábado
+
+                  // Validar fines de semana
+                  if (dia === 0 || dia === 6) {
+                    alert("⚠️ No se pueden seleccionar sábados ni domingos.");
+                    setFecha('');
+                    return;
+                  }
+
+                  setFecha(e.target.value);
+                }}
+                min={(() => {
+                  const mañana = new Date();
+                  mañana.setDate(mañana.getDate() + 1); // a partir de mañana
+                  return mañana.toISOString().split('T')[0];
+                })()}
+                max={(() => {
+                  const limite = new Date();
+                  limite.setDate(limite.getDate() + 30);
+                  return limite.toISOString().split('T')[0];
+                })()}
                 className="w-full p-4 border border-gray-300 rounded-2xl"
               />
-            </div>
+              </div>
 
             <div>
               <label className="block text-xl font-bold mb-2">Hora de inicio</label>
@@ -259,11 +278,11 @@ const EventoCalendario = () => {
                   const valor = e.target.value;
                   setHoraInicio(valor);
                   
-                  // Validar rango de 7:00 AM a 7:00 PM
+                  // Validar rango de 7:00 AM a 6:00 PM
                   if (valor) {
                     const [hora] = valor.split(':').map(Number);
-                    if (hora < 7 || hora >= 19) {
-                      setHoraError(' La hora debe estar entre 7:00 AM y 7:00 PM');
+                    if (hora < 7 || hora >= 18) {
+                      setHoraError(' La hora debe estar entre 7:00 AM y 6:00 PM');
                     } else {
                       setHoraError('');
                     }
