@@ -29,8 +29,8 @@ function App() {
         <Route path="/Grupos" element={<Grupos />} />
         <Route path="/FichaAlumno" element={<FichaAlumno />} />
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
+        <Route path="/ListaAlumnos/:codigoGrupo" element={<ListaAlumnos />} />
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
-
 
       </Routes>
 

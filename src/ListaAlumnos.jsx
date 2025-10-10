@@ -66,7 +66,7 @@ const ListaAlumnos = () => {
         setAlumnosData(data.data || []);
       } catch (err) {
         console.error('Error al traer los alumnos:', err);
-        setError('❌ No se pudieron cargar los alumnos.');
+        setError(' Sin alumnos aun.');
       } finally {
         setLoading(false);
       }

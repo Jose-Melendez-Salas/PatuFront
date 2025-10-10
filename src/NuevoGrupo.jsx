@@ -54,14 +54,14 @@ const NuevoGrupo = () => {
       const data = await respuesta.json();
 
       if (data.success) {
-        setMensaje("✅ Grupo creado exitosamente 🎉");
+        setMensaje(" Grupo creado exitosamente ");
         setTimeout(() => navigate("/grupos"), 2000);
       } else {
-        setError(data.message || "❌ No se pudo crear el grupo.");
+        setError(data.message || " No se pudo crear el grupo.");
       }
     } catch (err) {
       console.error("Error al crear grupo:", err);
-      setError("⚠️ Ocurrió un error al conectar con el servidor.");
+      setError(" Ocurrió un error al conectar con el servidor.");
     } finally {
       setCargando(false);
     }
@@ -138,4 +138,3 @@ const NuevoGrupo = () => {
 };
 
 export default NuevoGrupo;
-

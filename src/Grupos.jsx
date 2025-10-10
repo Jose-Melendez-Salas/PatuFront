@@ -8,7 +8,7 @@ const IconoPersonas = ({ colorClase }) => (
     <HiMiniUserGroup className={`w-20 h-20 mb-2 ${colorClase}`} />
 );
 
-// Tarjeta que muestra los datos del grupoh
+// Tarjeta que muestra los datos del grupo
 
 const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => {
     return (
@@ -44,7 +44,7 @@ const Grupos = () => {
     // Recuperar usuario y rol desde localStorage
     const usuarioGuardado = localStorage.getItem('usuario');
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
-    const esMaestro = usuario?.rol === 'maestro';
+    const esTutor = usuario?.rol === 'tutor';
 
     useEffect(() => {
         if (!usuario) {
@@ -106,15 +106,26 @@ const Grupos = () => {
                     ))}
                 </div>
 
-                {/* Botón solo visible para maestros */}
-                {usuario.rol === 'maestro' && (
-                <Link
-                to="/nuevo-grupo"
-                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
-                 >
-                 Crear nuevo grupo
-                </Link>
-                )}
+                {/* Botón solo visible para tutores */}
+                {
+                usuario.rol === 'tutor' ? (
+                    // Opción A: Si el rol ES 'tutor', muestra este link
+                    <Link
+                    to="/NuevoGrupo"
+                    className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
+                    >
+                    Crear nuevo grupo
+                    </Link>
+                ) : (
+                    // Opción B: Si el rol NO ES 'tutor' (es alumno), muestra este otro link
+                    <Link
+                    to="/BuscarGrupos" 
+                    className="bg-[#3C89B9] hover:bg-[#1f4b6b] text-white py-2 px-4 rounded-2xl font-semibold" 
+                    >
+                    Unirse a un grupo 
+                    </Link>
+                )
+                }
 
             </main>
 
