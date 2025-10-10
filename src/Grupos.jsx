@@ -107,14 +107,25 @@ const Grupos = () => {
                 </div>
 
                 {/* Botón solo visible para tutores */}
-                {usuario.rol === 'tutor' && (
-                <Link
-                to="/NuevoGrupo"
-                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
-                 >
-                 Crear nuevo grupo
-                </Link>
-                )}
+                {
+                usuario.rol === 'tutor' ? (
+                    // Opción A: Si el rol ES 'tutor', muestra este link
+                    <Link
+                    to="/NuevoGrupo"
+                    className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
+                    >
+                    Crear nuevo grupo
+                    </Link>
+                ) : (
+                    // Opción B: Si el rol NO ES 'tutor' (es alumno), muestra este otro link
+                    <Link
+                    to="/BuscarGrupos" 
+                    className="bg-[#3C89B9] hover:bg-[#1f4b6b] text-white py-2 px-4 rounded-2xl font-semibold" 
+                    >
+                    Unirse a un grupo 
+                    </Link>
+                )
+                }
 
             </main>
 
