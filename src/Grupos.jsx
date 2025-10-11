@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar.jsx'; 
 import { HiMiniUserGroup } from "react-icons/hi2";
+import NoEncontrado from './assets/NoEncontrado.jpg'; 
 
 // Ícono del grupo (personitas)
 const IconoPersonas = ({ colorClase }) => (
@@ -9,7 +10,6 @@ const IconoPersonas = ({ colorClase }) => (
 );
 
 // Tarjeta que muestra los datos del grupo
-
 const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => {
     return (
         <Link 
@@ -18,12 +18,9 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
                         hover:shadow-xl hover:scale-[1.01] transition-all duration-200`}
         >
             <div className="flex w-full">
-                {/* Ícono del grupo */}
                 <div className="w-1/3 flex justify-center items-center">
                     <IconoPersonas colorClase={colorTextoClase} />
                 </div>
-
-                {/* Datos del grupo */}
                 <div className="w-2/3 flex flex-col justify-center pl-4">
                     <h3 className="text-xl font-bold mb-1 text-gray-900">{titulo}</h3>
                     <p className="text-sm font-semibold text-gray-700">{semestre}</p>
@@ -35,13 +32,11 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
     );
 };
 
-// ... importaciones siguen igual
 const Grupos = () => {
     const [grupos, setGrupos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Recuperar usuario y rol desde localStorage
     const usuarioGuardado = localStorage.getItem('usuario');
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
     const esTutor = usuario?.rol === 'tutor';
@@ -92,41 +87,52 @@ const Grupos = () => {
                 {loading && <p className="text-gray-600">Cargando grupos...</p>}
                 {error && <p className="text-red-600">{error}</p>}
 
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {grupos.map(grupo => (
-                        <GrupoCard 
-                            key={grupo.id}
-                            titulo={grupo.nombre || "Sin nombre"} 
-                            semestre={grupo.semestre || "Semestre no definido"}
-                            codigo={grupo.codigo || "Sin código"}
-                            alumnos={grupo.num_alumnos || 0}
-                            colorClase="border-blue-400"
-                            colorTextoClase="text-blue-500"
-                        />
-                    ))}
-                </div>
-
-                {/* Botón solo visible para tutores */}
-                {
-                usuario.rol === 'tutor' ? (
-                    // Opción A: Si el rol ES 'tutor', muestra este link
-                    <Link
-                    to="/NuevoGrupo"
-                    className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
-                    >
-                    Crear nuevo grupo
-                    </Link>
+                {grupos.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {grupos.map(grupo => (
+                            <GrupoCard 
+                                key={grupo.id}
+                                titulo={grupo.nombre || "Sin nombre"} 
+                                semestre={grupo.semestre || "Semestre no definido"}
+                                codigo={grupo.codigo || "Sin código"}
+                                alumnos={grupo.num_alumnos || 0}
+                                colorClase="border-blue-400"
+                                colorTextoClase="text-blue-500"
+                            />
+                        ))}
+                    </div>
                 ) : (
-                    // Opción B: Si el rol NO ES 'tutor' (es alumno), muestra este otro link
-                    <Link
-                    to="/BuscarGrupos" 
-                    className="bg-[#3C89B9] hover:bg-[#1f4b6b] text-white py-2 px-4 rounded-2xl font-semibold" 
-                    >
-                    Unirse a un grupo 
-                    </Link>
-                )
-                }
+                    <div className="flex flex-col items-center justify-center mt-10 text-center">
+                        {!esTutor && (
+                            <>
+                                <img 
+                                    src={NoEncontrado} 
+                                    alt="Sin grupo" 
+                                    className="w-72 h-72 object-contain mb-4 opacity-90"
+                                />
+                                <p className="text-gray-600 text-lg font-medium mb-4">
+                                    Aún no te has inscrito a un grupo
+                                </p>
+                            </>
+                        )}
 
+                        {esTutor ? (
+                            <Link
+                                to="/NuevoGrupo"
+                                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-6 rounded-2xl font-semibold transition duration-200"
+                            >
+                                Crear nuevo grupo
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/BuscarGrupos"
+                                className="bg-[#3C89B9] hover:bg-[#1f4b6b] text-white py-2 px-6 rounded-2xl font-semibold transition duration-200"
+                            >
+                                Unirse a un grupo
+                            </Link>
+                        )}
+                    </div>
+                )}
             </main>
 
             <style jsx>{`
