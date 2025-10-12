@@ -50,14 +50,16 @@ const AccesosMaestros = () => {
             <Navbar />
 
             <main className="p-5">
-                <div className="flex justify-between items-center border-b-6 border-yellow-400 pb-2 mb-5">
+                <div className="flex flex-col lg:flex-row justify-between items-center border-b-6 border-yellow-400 pb-2 mb-5 text-center lg:text-left gap-2">
+
                     <h2 className="font-bold text-3xl">Problemas Frecuentes de los alumnos</h2>
                     <h2 className="font-bold text-3xl">Próximos eventos</h2>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-5">
                     {/* Izquierda: gráfico */}
-                    <div className="bg-white rounded-xl shadow p-5 flex-[2] min-h-[550px]">
+                    <div className="bg-white rounded-xl shadow p-5 flex-[2] min-h-[400px] sm:min-h-[500px]">
+
                         <ResponsiveContainer width="100%" height={500}>
                             <PieChart>
                                 <Pie
@@ -66,8 +68,8 @@ const AccesosMaestros = () => {
                                     nameKey="name"
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={80}
-                                    outerRadius={160}
+                                    innerRadius="40%"
+                                    outerRadius="70%"
                                     paddingAngle={3}
                                     labelLine={true} // líneas hacia afuera
                                     label={({ value }) => value} // muestra el valor al final de la línea
@@ -83,7 +85,10 @@ const AccesosMaestros = () => {
                                     y="50%"
                                     textAnchor="middle"
                                     dominantBaseline="middle"
-                                    className="font-bold text-xl"
+                                    style={{
+                                        fontWeight: 'bold',
+                                        fontSize: window.innerWidth < 640 ? '12px' : '16px',
+                                    }}
                                 >
                                     {totalAlumnos} Alumnos
                                 </text>
