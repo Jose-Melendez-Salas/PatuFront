@@ -36,7 +36,7 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
                 <div className="w-[70%] flex flex-col justify-center p-4">
                     <h3 className="text-xl font-extrabold mb-1 text-gray-900 leading-tight">{titulo}</h3>
                     <p className="text-sm font-semibold text-gray-700">{semestre}</p>
-                    <p className="text-xs text-gray-500 font-mono mt-1">{codigo}</p>
+                    
                     <p className="text-sm mt-2 font-medium text-gray-700">{alumnos} Alumnos</p>
                 </div>
             </div>

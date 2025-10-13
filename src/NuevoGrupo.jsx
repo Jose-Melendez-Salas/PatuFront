@@ -90,18 +90,7 @@ const NuevoGrupo = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-xl font-semibold text-gray-800 mb-2">
-                Código del grupo
-              </label>
-              <input
-                type="text"
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-                placeholder="Ej. G123"
-                className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm"
-              />
-            </div>
+            
 
             <div>
               <label className="block text-xl font-semibold text-gray-800 mb-2">

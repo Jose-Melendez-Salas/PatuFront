@@ -25,6 +25,7 @@ const AlumnoFicha = ({ nombre, matricula, esTutor }) => (
 );
 
 const ListaAlumnos = () => {
+  
   const { codigoGrupo } = useParams();
   const [alumnosData, setAlumnosData] = useState([]);
   const [busqueda, setBusqueda] = useState('');
@@ -33,8 +34,9 @@ const ListaAlumnos = () => {
   const [usuario, setUsuario] = useState(null);
   const [esTutor, setEsTutor] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
+ 
 
-  const tituloPagina = `Lista de alumnos – ${codigoGrupo || 'Grupo desconocido'}`;
+  const tituloPagina = `Lista de alumnos`;
 
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -45,6 +47,12 @@ const ListaAlumnos = () => {
     }
 
     const user = JSON.parse(usuarioGuardado);
+    if (!user || !user.accessToken) {
+      setError('⚠️ Sesión inválida. Por favor, inicia sesión nuevamente.');
+      setLoading(false);
+      return;
+    }
+
     setUsuario(user);
     setEsTutor(user.rol === 'tutor');
 
@@ -65,12 +73,23 @@ const ListaAlumnos = () => {
           }
         );
 
-        if (!res.ok) throw new Error('Error al cargar los alumnos');
+        if (res.status === 404) {
+          throw new Error('No se encontraron alumnos.');
+        }
+
+        if (!res.ok) {
+          throw new Error('Error al cargar los alumnos');
+        }
 
         const data = await res.json();
         setAlumnosData(data.data || []);
+
+        // Extraer el código de invitación del backend
+        if (data.data && data.data[0]?.codigo) {
+          setCodigoInvitacion(data.data[0].codigo);
+        }
       } catch (err) {
-        setError('Sin alumnos aún.');
+        setError(err.message || 'Error al cargar los datos.');
       } finally {
         setLoading(false);
       }
@@ -83,7 +102,7 @@ const ListaAlumnos = () => {
     <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
       <Navbar />
 
-      {/*Aplica blur al contenido cuando el modal esté abierto */}
+      {/*Aplicar blur al contenido cuando el modal esté abierto */}
       <main className={`p-4 relative z-10 transition-all duration-300 ${mostrarModal ? 'blur-sm' : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-end mb-1">
@@ -149,11 +168,6 @@ const ListaAlumnos = () => {
             </div>
           )}
 
-          {codigoGrupo && (
-            <p className="mt-4 text-sm text-gray-500">
-              Mostrando lista para el grupo con código: {codigoGrupo}
-            </p>
-          )}
         </div>
       </main>
 
@@ -161,7 +175,7 @@ const ListaAlumnos = () => {
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
           <div className="bg-white border-4 border-[#F1CC5A] rounded-2xl shadow-2xl p-8 w-96 text-center relative animate-fadeIn scale-100 transition-transform duration-300 ease-out">
             
-            {/* Botón de cerrar*/}
+            {/* Botón de cerrar */}
             <button
               onClick={() => setMostrarModal(false)}
               className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 text-xl font-bold"
@@ -176,11 +190,11 @@ const ListaAlumnos = () => {
 
             {/* Código */}
             <div className="flex items-center justify-center gap-2 mb-3">
-              <p className="text-4xl font-extrabold text-[#4F3E9B]">G22123</p>
+              <p className="text-4xl font-extrabold text-[#4F3E9B]">{codigoGrupo || 'Cargando...'}</p>
               <FaRegCopy
                 className="text-gray-500 hover:text-gray-700 cursor-pointer text-2xl"
                 onClick={() => {
-                  navigator.clipboard.writeText('G22123');
+                  navigator.clipboard.writeText(codigoGrupo || '');
                   alert('Código copiado al portapapeles');
                 }}
               />
