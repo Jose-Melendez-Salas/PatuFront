@@ -3,6 +3,8 @@ import logoImg from './assets/logo.png';
 import iconCasita from './assets/casita.png';
 import iconAlumnos from './assets/alumnos.png';
 import iconAgenda from './assets/agenda.png';
+// --- 1. AÑADE LA IMPORTACIÓN PARA TU NUEVO ÍCONO ---
+import iconReportes from './assets/reportes.png'; // Asegúrate de tener este ícono en tu carpeta 'assets'
 import iconConfig from './assets/config.png';
 import iconCerrarsesion from './assets/cerrarsesion.png';
 
@@ -55,12 +57,18 @@ const Navbar = () => {
                     <a href="/AccesosMaestros" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconCasita} alt="Casita" className="w-9 h-9" /> Inicio
                     </a>
-                    <a href="/Grupos" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
-                        <img src={iconAlumnos} alt="Grupos" className="w-9 h-9" /> Grupos
+                    <a href="/ListaAlumnos" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                        <img src={iconAlumnos} alt="Alumnos" className="w-9 h-9" /> Alumnos
                     </a>
                     <a href="/Calendario" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconAgenda} alt="Agenda" className="w-9 h-9" /> Agenda
                     </a>
+
+                    {/* --- 2. AQUÍ ESTÁ EL NUEVO ENLACE --- */}
+                    <a href="/Pruebas_temp" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                        <img src={iconReportes} alt="Reportes" className="w-9 h-9" /> Bitacora/Reportes
+                    </a>
+
                     <a href="/configuracion" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconConfig} alt="Configuración" className="w-9 h-9" /> Configuración
                     </a>
