@@ -1,31 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import AccesosMaestros from './accesosMaestros';
+import Navbar from './Navbar.jsx'; 
 import { HiMiniUserGroup } from "react-icons/hi2";
 
-// Ícono de Personas
+// Ícono del grupo (personitas)
 const IconoPersonas = ({ colorClase }) => (
     <HiMiniUserGroup className={`w-20 h-20 mb-2 ${colorClase}`} />
 );
 
-// Cada tarjeta representa un grupo con su ícono y datos (nombre, semestre, código, alumnos)
+// Tarjeta que muestra los datos del grupo
+
 const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => {
     return (
-        // Al hacer clic, redirige a la pantalla ListaAlumnos con el código del grupo
         <Link 
-    to={`/ListaAlumnos/${codigo}`}  // codigo es G25123456, G25234567, etc.
-    className={`p-2 rounded-xl border-4 ${colorClase} bg-white shadow-lg flex cursor-pointer 
-                hover:shadow-xl hover:scale-[1.01] transition-all duration-200`}
->
-
-            {/* Contenedor horizontal principal de la tarjeta, de colores */}
+            to={`/ListaAlumnos/${codigo}`}  
+            className={`p-2 rounded-xl border-4 ${colorClase} bg-white shadow-lg flex cursor-pointer 
+                        hover:shadow-xl hover:scale-[1.01] transition-all duration-200`}
+        >
             <div className="flex w-full">
-                {/* ícono del grupo  */}
+                {/* Ícono del grupo */}
                 <div className="w-1/3 flex justify-center items-center">
                     <IconoPersonas colorClase={colorTextoClase} />
                 </div>
 
-                {/* información del grupo*/}
+                {/* Datos del grupo */}
                 <div className="w-2/3 flex flex-col justify-center pl-4">
                     <h3 className="text-xl font-bold mb-1 text-gray-900">{titulo}</h3>
                     <p className="text-sm font-semibold text-gray-700">{semestre}</p>
@@ -37,97 +35,108 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
     );
 };
 
-
+// ... importaciones siguen igual
 const Grupos = () => {
-    // Datos de ejemplo de los grupos
-    const gruposData = [
-        {
-            id: 1,
-            titulo: 'Ingeniería Química',
-            semestre: '7° Semestre',
-            codigo: 'G25123456',
-            alumnos: 25,
-            colorClase: 'border-blue-400',
-            colorTextoClase: 'text-blue-500'
-        },
-        {
-            id: 2,
-            titulo: 'Ingeniería Industrial',
-            semestre: '5° Semestre',
-            codigo: 'G25234567',
-            alumnos: 32,
-            colorClase: 'border-orange-400',
-            colorTextoClase: 'text-orange-500'
-        },
-        {
-            id: 3,
-            titulo: 'ISC',
-            semestre: '7° Semestre',
-            codigo: 'G25345678',
-            alumnos: 20,
-            colorClase: 'border-green-400',
-            colorTextoClase: 'text-green-600'
-        },
-    ];
+    const [grupos, setGrupos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const nombreUsuario = "Juan"; // Nombre que se muestra en el header
+    // Recuperar usuario y rol desde localStorage
+    const usuarioGuardado = localStorage.getItem('usuario');
+    const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+    const esTutor = usuario?.rol === 'tutor';
+
+    useEffect(() => {
+        if (!usuario) {
+            setError("No hay sesión iniciada");
+            setLoading(false);
+            return;
+        }
+
+        const userId = usuario.id;
+        const token = usuario.accessToken;
+
+        fetch(`https://apis-patu.onrender.com/api/grupos/tutor/${userId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Error en la respuesta de la API");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    setGrupos(data.data);
+                } else {
+                    setError(data.message || "No se pudieron cargar los grupos");
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Error cargando grupos:", err);
+                setError("Error al cargar los grupos");
+                setLoading(false);
+            });
+    }, []);
 
     return (
-        <>
-            {/* Header y barra lateral */}
-            <AccesosMaestros nombreUsuario={nombreUsuario} />
+        <div className="min-h-screen bg-gray-50">
+            <Navbar />
 
-            {/* Ocultar el contenido extra del main dentro de AccesosMaestros */}
-            <style jsx>{`
-                main {
-                    display: none;
-                }
-            `}</style>
-
-            {/* Contenido principal*/}
-            <div className="min-h-full bg-gray-50 p-4 md:p-8 animate-fadeIn relative z-10">
-                
-                {/* Título*/}
+            <main className="p-4 md:p-8 animate-fadeIn relative z-10">
                 <h2 className="text-3xl font-bold mb-1 text-gray-800">Tus Grupos</h2>
-                
-                {/* Línea amarilla */}
-                <div className="w-[100%] h-1 bg-yellow-400 mb-8 mx-auto"></div>
+                <div className="w-full h-1 bg-yellow-400 mb-8"></div>
 
-                {/* Contenedor de las tarjetas*/}
+                {loading && <p className="text-gray-600">Cargando grupos...</p>}
+                {error && <p className="text-red-600">{error}</p>}
+
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {gruposData.map(grupo => (
+                    {grupos.map(grupo => (
                         <GrupoCard 
                             key={grupo.id}
-                            titulo={grupo.titulo}
-                            semestre={grupo.semestre}
-                            codigo={grupo.codigo}
-                            alumnos={grupo.alumnos}
-                            colorClase={grupo.colorClase}
-                            colorTextoClase={grupo.colorTextoClase}
+                            titulo={grupo.nombre || "Sin nombre"} 
+                            semestre={grupo.semestre || "Semestre no definido"}
+                            codigo={grupo.codigo || "Sin código"}
+                            alumnos={grupo.num_alumnos || 0}
+                            colorClase="border-blue-400"
+                            colorTextoClase="text-blue-500"
                         />
                     ))}
                 </div>
 
-                {/* Enlace para crear un nuevo grupo */}
-                <div className="mt-8 text-right">
-                    <Link 
-                        to="/NuevoGrupo" 
-                        className="text-blue-600 hover:text-blue-800 font-medium text-base md:text-lg underline"
+                {/* Botón solo visible para tutores */}
+                {
+                usuario.rol === 'tutor' ? (
+                    // Opción A: Si el rol ES 'tutor', muestra este link
+                    <Link
+                    to="/NuevoGrupo"
+                    className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-2 px-4 rounded-2xl font-semibold"
                     >
-                        Nuevo Grupo
+                    Crear nuevo grupo
                     </Link>
-                </div>
+                ) : (
+                    // Opción B: Si el rol NO ES 'tutor' (es alumno), muestra este otro link
+                    <Link
+                    to="/BuscarGrupos" 
+                    className="bg-[#3C89B9] hover:bg-[#1f4b6b] text-white py-2 px-4 rounded-2xl font-semibold" 
+                    >
+                    Unirse a un grupo 
+                    </Link>
+                )
+                }
 
-                {/* Estilos de animación */}
-                <style jsx>{`
-                    @keyframes fadeIn { 
-                        from { opacity: 0; transform: translateY(10px); } 
-                        to { opacity: 1; transform: translateY(0); } 
-                    }
-                    .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-                `}</style>
-            </div>
-        </>
+            </main>
+
+            <style jsx>{`
+                @keyframes fadeIn { 
+                    from { opacity: 0; transform: translateY(10px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+                .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+            `}</style>
+        </div>
     );
 };
 
