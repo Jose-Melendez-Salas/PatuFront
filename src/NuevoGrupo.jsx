@@ -25,7 +25,7 @@ const NuevoGrupo = () => {
     const idTutor = usuario.id;
     const token = usuario.accessToken;
 
-    if (!nombre || !codigo || !semestre) {
+    if (!nombre || !semestre) {
       setError("⚠️ Por favor completa todos los campos.");
       return;
     }
