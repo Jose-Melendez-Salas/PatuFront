@@ -193,6 +193,13 @@ const Registro = () => {
                 </button>
               </form>
 
+              {usuarioRegistrado && (
+                <div className="mt-6 bg-gray-100 p-4 rounded-xl text-sm">
+                  <h3 className="font-bold mb-2">Datos del usuario registrado:</h3>
+                  <pre className="overflow-x-auto">{JSON.stringify(usuarioRegistrado, null, 2)}</pre>
+                </div>
+              )}
+
               <p className="mt-6 text-medium text-center font-medium">
                 ¿Ya tienes cuenta?{' '}
                 <Link to="/Login" className="text-[#4F3E9B] underline font-medium">Inicia sesión</Link>
