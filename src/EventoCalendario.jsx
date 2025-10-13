@@ -34,10 +34,8 @@ const EventoCalendario = () => {
 
       let url = '';
       if (usuario.rol === 'tutor') {
-        // tutor busca alumno por matrícula
         url = `https://apis-patu.onrender.com/api/alumnos/matricula/${busqueda}`;
       } else {
-        // alumno busca tutor por correo (ruta antigua que funciona)
         url = `https://apis-patu.onrender.com/api/usuarios/correo/${busqueda}`;
       }
 
@@ -85,7 +83,6 @@ const EventoCalendario = () => {
       setLoading(true);
       setMensaje({ tipo: 'info', texto: ' Asignando sesión...' });
 
-      // Calcular hora fin
       const horaFinCalculada = (() => {
         const [h, m] = horaInicio.split(':').map(Number);
         const totalMin = h * 60 + m + parseInt(duracion);
@@ -94,14 +91,24 @@ const EventoCalendario = () => {
         return `${finH}:${finM}`;
       })();
 
-      const nuevoEvento = {
-        id_tutor: usuario.rol === 'tutor' ? usuario.id : personaEncontrada.id,
-        id_alumno: usuario.rol === 'tutor' ? personaEncontrada.id_usuario : usuario.id_usuario,
-        fecha,
-        hora_inicio: horaInicio,
-        hora_fin: horaFinCalculada,
-        tipo,
-      };
+          const nuevoEvento = {
+            id_tutor:
+              usuario.rol === 'tutor'
+                ? usuario.id
+                : personaEncontrada.id || personaEncontrada.id_usuario,
+            id_alumno:
+              usuario.rol === 'tutor'
+                ? personaEncontrada.id || personaEncontrada.id_usuario
+                : usuario.id,
+            fecha,
+            hora_inicio: horaInicio,
+            hora_fin: horaFinCalculada,
+            tipo,
+          };
+
+            console.log("📦 Datos enviados al backend:", nuevoEvento);
+            console.log("👤 usuario:", usuario);
+            console.log("🎯 personaEncontrada:", personaEncontrada);
 
       const res = await fetch('https://apis-patu.onrender.com/api/sesiones', {
         method: 'POST',
@@ -122,7 +129,6 @@ const EventoCalendario = () => {
 
       setMensaje({ tipo: 'success', texto: ' Sesión creada con éxito.' });
 
-      // Limpiar formulario
       setBusqueda('');
       setPersonaEncontrada(null);
       setFecha('');
@@ -137,7 +143,6 @@ const EventoCalendario = () => {
     }
   };
 
-  // Deshabilitar botón si faltan datos
   const botonDeshabilitado =
     loading || !personaEncontrada || !fecha || !horaInicio || !duracion || !tipo || horaError;
 
@@ -145,9 +150,9 @@ const EventoCalendario = () => {
     <>
       <Navbar />
 
-      <main className="p-8 flex flex-col items-center">
-        <div className="bg-white rounded-3xl shadow-lg p-8 w-full max-w-4xl border border-gray-200">
-          <h2 className="text-3xl font-bold mb-6 border-b-4 border-yellow-400 pb-3">
+      <main className="p-4 sm:p-6 md:p-8 flex flex-col items-center">
+        <div className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 w-full max-w-4xl border border-gray-200">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 border-b-4 border-yellow-400 pb-3 text-center sm:text-left">
             Nuevo evento
           </h2>
 
@@ -168,10 +173,10 @@ const EventoCalendario = () => {
 
           {/* 🔍 Buscar alumno o tutor */}
           <div className="mb-6">
-            <label className="block text-xl font-bold mb-2">
+            <label className="block text-lg sm:text-xl font-bold mb-2">
               {usuario.rol === 'tutor' ? 'Alumno:' : 'Tutor:'}
             </label>
-            <div className="relative flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={busqueda}
@@ -181,11 +186,11 @@ const EventoCalendario = () => {
                     ? 'Buscar alumno por matrícula'
                     : 'Buscar tutor por correo'
                 }
-                className="flex-1 p-4 border border-gray-300 rounded-2xl shadow-md"
+                className="flex-1 p-3 sm:p-4 border border-gray-300 rounded-2xl shadow-md w-full"
               />
               <button
                 onClick={handleBuscar}
-                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 rounded-2xl font-bold"
+                className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 py-3 rounded-2xl font-bold flex justify-center items-center"
               >
                 <FaSearch />
               </button>
@@ -194,13 +199,13 @@ const EventoCalendario = () => {
             {errorBusqueda && <p className="text-red-500 mt-2 font-semibold">{errorBusqueda}</p>}
 
             {!personaEncontrada && !errorBusqueda && (
-              <p className="text-yellow-600 mt-2 font-semibold">
-                 Debes buscar y seleccionar {usuario.rol === 'tutor' ? 'un alumno' : 'un tutor'} primero
+              <p className="text-yellow-600 mt-2 font-semibold text-sm sm:text-base">
+                Debes buscar y seleccionar {usuario.rol === 'tutor' ? 'un alumno' : 'un tutor'} primero
               </p>
             )}
 
             {personaEncontrada && (
-              <div className="mt-3 p-3 bg-green-100 border border-green-400 rounded-xl">
+              <div className="mt-3 p-3 bg-green-100 border border-green-400 rounded-xl text-sm sm:text-base">
                 <p>
                   <span className="font-bold">Nombre:</span>{' '}
                   {personaEncontrada.nombre} {personaEncontrada.apellido_paterno}{' '}
@@ -220,11 +225,11 @@ const EventoCalendario = () => {
 
           {/* Tipo */}
           <div className="mb-6">
-            <label className="block text-xl font-bold mb-2">Tipo</label>
+            <label className="block text-lg sm:text-xl font-bold mb-2">Tipo</label>
             <select
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-2xl shadow-md focus:ring-2 focus:ring-[#3CB9A5]"
+              className="w-full p-3 sm:p-4 border border-gray-300 rounded-2xl shadow-md focus:ring-2 focus:ring-[#3CB9A5]"
             >
               <option value="">Selecciona ...</option>
               <option value="seguimiento">Seguimiento</option>
@@ -235,29 +240,26 @@ const EventoCalendario = () => {
           </div>
 
           {/* Fecha, hora y duración */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div>
-              <label className="block text-xl font-bold mb-2">Fecha</label>
+              <label className="block text-lg sm:text-xl font-bold mb-2">Fecha</label>
               <input
                 type="date"
                 value={fecha}
                 onChange={(e) => {
                   const fechaUTC = new Date(e.target.value);
                   const seleccionada = new Date(fechaUTC.getTime() + fechaUTC.getTimezoneOffset() * 60000);
-                  const dia = seleccionada.getDay(); // 0 = domingo, 6 = sábado
-
-                  // Validar fines de semana
+                  const dia = seleccionada.getDay();
                   if (dia === 0 || dia === 6) {
                     alert("⚠️ No se pueden seleccionar sábados ni domingos.");
                     setFecha('');
                     return;
                   }
-
                   setFecha(e.target.value);
                 }}
                 min={(() => {
                   const mañana = new Date();
-                  mañana.setDate(mañana.getDate() + 1); // a partir de mañana
+                  mañana.setDate(mañana.getDate() + 1);
                   return mañana.toISOString().split('T')[0];
                 })()}
                 max={(() => {
@@ -265,20 +267,18 @@ const EventoCalendario = () => {
                   limite.setDate(limite.getDate() + 30);
                   return limite.toISOString().split('T')[0];
                 })()}
-                className="w-full p-4 border border-gray-300 rounded-2xl"
+                className="w-full p-3 sm:p-4 border border-gray-300 rounded-2xl"
               />
-              </div>
+            </div>
 
             <div>
-              <label className="block text-xl font-bold mb-2">Hora de inicio</label>
+              <label className="block text-lg sm:text-xl font-bold mb-2">Hora de inicio</label>
               <input
                 type="time"
                 value={horaInicio}
                 onChange={(e) => {
                   const valor = e.target.value;
                   setHoraInicio(valor);
-                  
-                  // Validar rango de 7:00 AM a 6:00 PM
                   if (valor) {
                     const [hora] = valor.split(':').map(Number);
                     if (hora < 7 || hora >= 18) {
@@ -290,17 +290,17 @@ const EventoCalendario = () => {
                     setHoraError('');
                   }
                 }}
-                className="w-full p-4 border border-gray-300 rounded-2xl"
+                className="w-full p-3 sm:p-4 border border-gray-300 rounded-2xl"
               />
               {horaError && <p className="text-red-500 mt-1 font-semibold">{horaError}</p>}
             </div>
 
             <div>
-              <label className="block text-xl font-bold mb-2">Duración</label>
+              <label className="block text-lg sm:text-xl font-bold mb-2">Duración</label>
               <select
                 value={duracion}
                 onChange={(e) => setDuracion(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-2xl shadow-md focus:ring-2 focus:ring-[#3CB9A5]"
+                className="w-full p-3 sm:p-4 border border-gray-300 rounded-2xl shadow-md focus:ring-2 focus:ring-[#3CB9A5]"
               >
                 <option value="">Selecciona duración...</option>
                 <option value="15">15 minutos</option>
@@ -312,11 +312,11 @@ const EventoCalendario = () => {
           </div>
 
           {/* Botones */}
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <button
               onClick={handleGuardar}
               disabled={botonDeshabilitado}
-              className={`px-10 py-3 rounded-2xl font-bold text-lg shadow-md flex items-center gap-2 ${
+              className={`px-8 py-3 rounded-2xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors duration-300 ${
                 botonDeshabilitado
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
@@ -326,9 +326,9 @@ const EventoCalendario = () => {
             </button>
 
             <button
-              onClick={() => window.location.href = '/calendario'}
+              onClick={() => (window.location.href = '/calendario')}
               disabled={loading}
-              className={`px-10 py-3 rounded-2xl font-bold text-lg shadow-md ${
+              className={`px-8 py-3 rounded-2xl font-bold text-lg shadow-md transition-colors duration-300 ${
                 loading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
