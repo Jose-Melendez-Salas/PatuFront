@@ -11,6 +11,8 @@ import Grupos from './Grupos'
 import ListaAlumnos from './ListaAlumnos'
 import FichaAlumno from './FichaAlumno'
 import NuevoGrupo from './NuevoGrupo'
+import HomeAlumno from './HomeAlumno'
+import Contacto from './Contacto'
 
 function App() {
 
@@ -27,10 +29,13 @@ function App() {
         <Route path="/EventoCalendario" element={<EventoCalendario />} />
         <Route path="/Calendario" element={<Calendario />} />
         <Route path="/Grupos" element={<Grupos />} />
-        <Route path="/FichaAlumno" element={<FichaAlumno />} />
+        <Route path="/FichaAlumno/:matricula" element={<FichaAlumno />} />
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
         <Route path="/ListaAlumnos/:codigoGrupo" element={<ListaAlumnos />} />
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
+        <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
+        <Route path="/Contacto" element={<Contacto />} />
+
 
       </Routes>
 
