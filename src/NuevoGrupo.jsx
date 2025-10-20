@@ -90,7 +90,7 @@ const NuevoGrupo = () => {
               />
             </div>
 
-            
+
 
             <div>
               <label className="block text-xl font-semibold text-gray-800 mb-2">
@@ -112,9 +112,8 @@ const NuevoGrupo = () => {
               <button
                 type="submit"
                 disabled={cargando}
-                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
-                  cargando && "opacity-70 cursor-not-allowed"
-                }`}
+                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${cargando && "opacity-70 cursor-not-allowed"
+                  }`}
               >
                 {cargando ? "Creando..." : "Crear Grupo"}
               </button>
