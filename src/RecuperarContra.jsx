@@ -271,8 +271,6 @@ const RecuperarContra = () => {
     </div>
   </>
 );
-
-
 };
 
 export default RecuperarContra;

@@ -25,7 +25,7 @@ const NuevoGrupo = () => {
     const idTutor = usuario.id;
     const token = usuario.accessToken;
 
-    if (!nombre || !codigo || !semestre) {
+    if (!nombre || !semestre) {
       setError("⚠️ Por favor completa todos los campos.");
       return;
     }
@@ -90,18 +90,7 @@ const NuevoGrupo = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-xl font-semibold text-gray-800 mb-2">
-                Código del grupo
-              </label>
-              <input
-                type="text"
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-                placeholder="Ej. G123"
-                className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm"
-              />
-            </div>
+
 
             <div>
               <label className="block text-xl font-semibold text-gray-800 mb-2">
@@ -123,9 +112,8 @@ const NuevoGrupo = () => {
               <button
                 type="submit"
                 disabled={cargando}
-                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
-                  cargando && "opacity-70 cursor-not-allowed"
-                }`}
+                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${cargando && "opacity-70 cursor-not-allowed"
+                  }`}
               >
                 {cargando ? "Creando..." : "Crear Grupo"}
               </button>

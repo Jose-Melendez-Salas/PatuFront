@@ -4,7 +4,6 @@ import patoImg from './assets/pato.png';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-
 const Registro = () => {
   const [nombre, setNombre] = useState('');
   const [apellidoP, setApellidoP] = useState('');
@@ -23,7 +22,6 @@ const Registro = () => {
   const [error, setError] = useState('');
   const [formValido, setFormValido] = useState(false);
   const [mostrarExito, setMostrarExito] = useState(false);
-
 
   const [errores, setErrores] = useState({
     correo: '',
@@ -45,7 +43,7 @@ const Registro = () => {
 
   // Validación en tiempo real
   useEffect(() => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>°¬¿¡´¨~`\[\]]).{8,}$/;
     const nuevosErrores = { ...errores };
     const correoNormalizado = correo.trim().toLowerCase();
 
@@ -54,7 +52,7 @@ const Registro = () => {
       : '';
 
     nuevosErrores.contraseña = contraseña && !passwordRegex.test(contraseña)
-      ? '8 caracteres, 1 mayúscula y 1 especial'
+      ? 'Debe tener al menos 8 caracteres, una mayúscula y un carácter especial (!@#$%^&*(),.?":{}|<>°¬¿¡´¨~`[]).'
       : '';
 
     nuevosErrores.confirmar = confirmar && contraseña !== confirmar
@@ -63,27 +61,32 @@ const Registro = () => {
 
     setErrores(nuevosErrores);
 
-    // Campos obligatorios según rol
-    let obligatorioCompleto = nombre && apellidoP && correo && contraseña && confirmar && rol !== '';
+    // Validar campos obligatorios (trim para evitar espacios vacíos)
+    const camposBase = [nombre, apellidoP, apellidoM, correo, contraseña, confirmar].every(c => c.trim() !== '');
+
+    let camposRol = false;
 
     if (rol === 'alumno') {
-      obligatorioCompleto = obligatorioCompleto && matricula && carrera && semestre;
+      camposRol = [matricula, carrera, semestre].every(c => c.trim() !== '');
     } else if (rol === 'tutor') {
-      obligatorioCompleto = obligatorioCompleto && telefono && academia;
+      camposRol = [telefono, academia].every(c => c.trim() !== '');
     }
 
     const correoValido = correoNormalizado.endsWith('@itsmante.edu.mx');
     const contraseñaValida = passwordRegex.test(contraseña);
+    const contraseñasCoinciden = contraseña === confirmar;
 
-    setFormValido(obligatorioCompleto && correoValido && contraseñaValida);
+
+    setFormValido(camposBase && camposRol && correoValido && contraseñaValida && contraseñasCoinciden);
   }, [nombre, apellidoP, correo, contraseña, confirmar, matricula, carrera, semestre, telefono, academia, rol]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formValido) return;
 
+    setError('');
+
     try {
-      // Registrar usuario
       const resUsuario = await fetch('https://apis-patu.onrender.com/api/usuarios/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,93 +103,37 @@ const Registro = () => {
 
       const dataUsuario = await resUsuario.json();
 
-
-
-      if (!resUsuario.ok) throw new Error(dataUsuario.message || 'Error registrando usuario');
-
-      // ... el resto del código
+      if (!resUsuario.ok) throw new Error(dataUsuario.message || 'Error al registrar usuario');
 
       const usuarioId = dataUsuario.data.id;
-      let detalle = {};
 
       if (rol === 'tutor') {
         const resTutor = await fetch('https://apis-patu.onrender.com/api/tutores/crear', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: usuarioId,
-            academia,
-            telefono
-          })
+          body: JSON.stringify({ id_usuario: usuarioId, academia, telefono })
         });
         const dataTutor = await resTutor.json();
-        if (!resTutor.ok) throw new Error(dataTutor.message || 'Error creando tutor');
-        detalle = { id: usuarioId, telefono, academia };
+        if (!resTutor.ok) throw new Error(dataTutor.message || 'Error creando perfil tutor');
+      }
 
-      } else if (rol === 'alumno') {
+      if (rol === 'alumno') {
         const resAlumno = await fetch('https://apis-patu.onrender.com/api/alumnos/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id_alumno: usuarioId,
-            matricula,
-            carrera,
-            semestre,
-            id_tutor: 1
-          })
+          body: JSON.stringify({ id_usuario: usuarioId, matricula, carrera, semestre })
         });
         const dataAlumno = await resAlumno.json();
-        if (!resAlumno.ok) throw new Error(dataAlumno.message || 'Error creando alumno');
-        detalle = { matricula, carrera, semestre, id_tutor: 1 };
+        if (!resAlumno.ok) throw new Error(dataAlumno.message || 'Error creando perfil alumno');
       }
 
-
-      // Guardar usuario general
-      localStorage.setItem(
-        "usuario",
-        JSON.stringify({
-          id: usuarioId,
-          nombre,
-          apellido_paterno: apellidoP,
-          apellido_materno: apellidoM,
-          correo,
-          rol,
-          estado: 'activo'
-        })
-      );
-
-      // Guardar tutor (solo si aplica)
-      if (rol === "tutor") {
-        localStorage.setItem(
-          "tutor",
-          JSON.stringify({
-            id: usuarioId,
-            telefono,
-            academia
-          })
-        );
-      }
-
-      // Guardar alumno (solo si aplica)
-      if (rol === "alumno") {
-        localStorage.setItem(
-          "alumno",
-          JSON.stringify({
-            id: usuarioId,
-            matricula,
-            carrera,
-            semestre,
-            id_tutor: 1
-          })
-        );
-      }
-
+      // Guardar datos en localStorage
+      localStorage.setItem('usuario', JSON.stringify({ id_usuario: usuarioId, nombre, apellido_paterno: apellidoP, apellido_materno: apellidoM, correo, rol, estado: 'activo' }));
+      if (rol === 'tutor') localStorage.setItem('tutor', JSON.stringify({ id_usuario: usuarioId, telefono, academia }));
+      if (rol === 'alumno') localStorage.setItem('alumno', JSON.stringify({ id: usuarioId, matricula, carrera, semestre }));
 
       setMostrarExito(true);
-      setTimeout(() => {
-        window.location.href = "/Login";
-      }, 2500);
-
+      setTimeout(() => { window.location.href = "/Login"; }, 2500);
 
     } catch (err) {
       console.error(err);
@@ -216,69 +163,39 @@ const Registro = () => {
               <form className="flex flex-col gap-6 items-center relative w-full" onSubmit={handleSubmit}>
                 <InputField label="Nombre (s)" value={nombre} onChange={setNombre} obligatorio />
                 <InputField label="Apellido paterno" value={apellidoP} onChange={setApellidoP} obligatorio />
-                <InputField label="Apellido materno" value={apellidoM} onChange={setApellidoM} />
+                <InputField label="Apellido materno" value={apellidoM} onChange={setApellidoM} obligatorio />
 
-                <InputField
-                  label="Correo Electrónico"
-                  value={correo}
-                  onChange={setCorreo}
-                  tipo="email"
-                  tooltip
-                  error={errores.correo}
-                  obligatorio
-                />
+
+                <InputField label="Correo Electrónico" value={correo} onChange={setCorreo} tipo="email" tooltip error={errores.correo} obligatorio />
 
                 {rol === 'alumno' && (
                   <>
                     <InputField label="Matrícula" value={matricula} onChange={setMatricula} obligatorio />
-                    <InputField label="Carrera" value={carrera} onChange={setCarrera} obligatorio />
-                    <InputField label="Semestre" value={semestre} onChange={setSemestre} obligatorio />
+                    <SelectField label="Carrera" value={carrera} onChange={setCarrera} options={['Sistemas Computacionales', 'Gestión Empresarial', 'Química', 'Industrial', 'Innovación Agrícola Sustentable']} obligatorio />
+                    <SelectField label="Semestre" value={semestre} onChange={setSemestre} options={['1ro', '2do', '3ro', '4to', '5to', '6to', '7mo', '8vo', '9no', '10mo', '11vo', '12mo']} obligatorio />
                   </>
                 )}
 
                 {rol === 'tutor' && (
                   <>
                     <InputField label="Teléfono" value={telefono} onChange={setTelefono} obligatorio />
-                    <InputField label="Academia" value={academia} onChange={setAcademia} obligatorio />
+                    <SelectField label="Academia" value={academia} onChange={setAcademia} options={['Sistemas Computacionales', 'Gestión Empresarial', 'Química', 'Ciencias Básicas', 'Industrial', 'Innovación Agrícola Sustentable']} obligatorio />
                   </>
                 )}
 
-                <PasswordField
-                  label="Contraseña"
-                  value={contraseña}
-                  onChange={setContraseña}
-                  error={errores.contraseña}
-                  show={showPassword}
-                  setShow={setShowPassword}
-                  obligatorio
-                />
+                <PasswordField label="Contraseña" value={contraseña} onChange={setContraseña} error={errores.contraseña} show={showPassword} setShow={setShowPassword} obligatorio />
+                <PasswordField label="Confirma tu contraseña" value={confirmar} onChange={setConfirmar} error={errores.confirmar} show={showConfirmPassword} setShow={setShowConfirmPassword} obligatorio />
 
-                <PasswordField
-                  label="Confirma tu contraseña"
-                  value={confirmar}
-                  onChange={setConfirmar}
-                  error={errores.confirmar}
-                  show={showConfirmPassword}
-                  setShow={setShowConfirmPassword}
-                  obligatorio
-                />
+                {error && <p className="text-red-600 text-sm text-center font-bold">{error}</p>}
 
-                {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-
-                <button
-                  type="submit"
-                  disabled={!formValido}
-                  className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-1/2 ${!formValido ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
+                <button type="submit" disabled={!formValido} className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${!formValido ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   Comenzar
                 </button>
               </form>
 
               <p className="mt-6 text-medium text-center font-medium">
                 ¿Ya tienes cuenta?{' '}
-                <Link to="/Login" className="text-[#4F3E9B] underline font-medium">
-                  Inicia sesión
-                </Link>
+                <Link to="/Login" className="text-[#4F3E9B] underline font-medium">Inicia sesión</Link>
               </p>
             </div>
           </div>
@@ -289,9 +206,7 @@ const Registro = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl shadow-2xl p-10 w-[90%] max-w-md text-center border-4 border-[#3CB9A5] animate-fadeIn">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#3CB9A5] text-white text-4xl font-bold">
-                ✓
-              </div>
+              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#3CB9A5] text-white text-4xl font-bold">✓</div>
               <h3 className="text-2xl font-bold text-[#4F3E9B]">¡Registro exitoso!</h3>
               <p className="text-gray-700 text-lg">
                 Tu cuenta ha sido creada correctamente.<br />Redirigiendo al inicio de sesión...
@@ -300,7 +215,6 @@ const Registro = () => {
           </div>
         </div>
       )}
-
 
       <style>{`
         @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
@@ -326,34 +240,30 @@ export default Registro;
 const InputField = ({ label, value, onChange, error, tipo = "text", tooltip = false, obligatorio = false }) => (
   <label className="text-gray-700 font-medium w-4/5 relative">
     {label} {obligatorio && <span className="text-red-500">*</span>}
-    <input
-      type={tipo}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      placeholder={label}
-      className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-1"
-    />
-    {error && value && tooltip && (
-      <div className="tooltip">{error}</div>
-    )}
+    <input type={tipo} value={value} onChange={e => onChange(e.target.value)} placeholder={label} className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-1" />
+    {error && value && tooltip && <div className="tooltip">{error}</div>}
   </label>
 );
 
 const PasswordField = ({ label, value, onChange, error, show, setShow, obligatorio = false }) => (
   <label className="text-gray-700 font-medium w-4/5 relative">
     {label} {obligatorio && <span className="text-red-500">*</span>}
-    <div className="flex items-center border border-gray-300 rounded-2xl mt-2 w-full">
-      <input
-        type={show ? 'text' : 'password'}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={label}
-        className="flex-1 p-4 rounded-l-2xl outline-none"
-      />
-      <button type="button" onClick={() => setShow(!show)} className="px-4">
-        {show ? <EyeOff size={24} color="#4F3E9B" /> : <Eye size={24} color="#4F3E9B" />}
+    <div className="relative w-full mt-2">
+      <input type={show ? 'text' : 'password'} value={value} onChange={e => onChange(e.target.value)} placeholder={label} className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 text-base sm:text-sm" />
+      <button type="button" onClick={() => setShow(!show)} className="absolute inset-y-0 right-4 flex items-center" tabIndex={-1}>
+        {show ? <EyeOff size={22} color="#4F3E9B" className="transition-transform duration-200 hover:scale-110" /> : <Eye size={22} color="#4F3E9B" className="transition-transform duration-200 hover:scale-110" />}
       </button>
     </div>
     {error && value && <div className="tooltip">{error}</div>}
+  </label>
+);
+
+const SelectField = ({ label, value, onChange, options, obligatorio = false }) => (
+  <label className="text-gray-700 font-medium w-4/5">
+    {label} {obligatorio && <span className="text-red-500">*</span>}
+    <select value={value} onChange={e => onChange(e.target.value)} className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-1 bg-white">
+      <option value="" disabled>Selecciona una opción</option>
+      {options.map((opt, i) => <option key={i} value={opt}>{opt}</option>)}
+    </select>
   </label>
 );

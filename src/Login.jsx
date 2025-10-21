@@ -37,28 +37,38 @@ const Login = ({ onLogin }) => {
         return;
       }
 
-      // Guardar datos por separado en localStorage
+      // Guardar datos en localStorage
       localStorage.setItem(
         "usuario",
         JSON.stringify({
           id: data.data.id,
-          nombre: data.data.nombre,
+          nombre: data.data.nombre,           // nombre corto
+          nombre_completo: data.data.nombre_completo, // nombre completo
           rol: data.data.rol,
+          matricula: data.data.matricula,    // matrícula
+          carrera: data.data.carrera,     // <--- AÑADES ESTO
+          semestre: data.data.semestre,
           correo: data.data.correo,
           accessToken: data.data.accessToken
         })
       );
 
-      setError('');
-      onLogin?.(data.data.nombre);
+      // Redirección
+      if (data.data.rol === 'tutor') {
+        navigate('/accesosMaestros');
+      } else if (data.data.rol === 'alumno') {
+        navigate(`/HomeAlumno/${data.data.matricula}`); // usar matrícula
+      } else {
+        navigate('/');
+      }
 
 
-      navigate('/accesosMaestros');
     } catch (err) {
       console.error(err);
       setError('No se pudo conectar con el servidor');
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

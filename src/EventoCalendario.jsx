@@ -106,9 +106,9 @@ const EventoCalendario = () => {
             tipo,
           };
 
-            console.log(" Datos enviados al backend:", nuevoEvento);
-            console.log(" usuario:", usuario);
-            console.log(" personaEncontrada:", personaEncontrada);
+            console.log("📦 Datos enviados al backend:", nuevoEvento);
+            console.log("👤 usuario:", usuario);
+            console.log("🎯 personaEncontrada:", personaEncontrada);
 
       const res = await fetch('https://apis-patu.onrender.com/api/sesiones', {
         method: 'POST',

@@ -11,6 +11,8 @@ import Grupos from './Grupos'
 import ListaAlumnos from './ListaAlumnos'
 import FichaAlumno from './FichaAlumno'
 import NuevoGrupo from './NuevoGrupo'
+import HomeAlumno from './HomeAlumno'
+import Contacto from './Contacto'
 import RegistroBitacora from './RegistroBitacora'
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
         <Route path="/ListaAlumnos/:codigoGrupo" element={<ListaAlumnos />} />
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
+        <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
+        <Route path="/Contacto" element={<Contacto />} />
         <Route path="/RegistroBitacora" element={<RegistroBitacora />} />
 
       </Routes>
@@ -41,4 +45,3 @@ function App() {
 }
 
 export default App
-
