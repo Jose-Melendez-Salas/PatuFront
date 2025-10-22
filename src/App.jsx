@@ -13,6 +13,8 @@ import FichaAlumno from './FichaAlumno'
 import NuevoGrupo from './NuevoGrupo'
 import HomeAlumno from './HomeAlumno'
 import Contacto from './Contacto'
+import Reportes from './Reportes'
+import Mensajes from './Mensajes'
 
 function App() {
 
@@ -35,6 +37,9 @@ function App() {
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
         <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
         <Route path="/Contacto" element={<Contacto />} />
+        <Route path="/Reportes" element={<Reportes />} />
+        <Route path="/Mensajes" element={<Mensajes />} />
+
 
 
       </Routes>
