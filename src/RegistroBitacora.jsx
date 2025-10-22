@@ -119,7 +119,7 @@ const RegistroBitacora = () => {
             <textarea
               value={acuerdos}
               onChange={(e) => setAcuerdos(e.target.value)}
-              className="w-full p-3 border rounded-xl border border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300"
               rows="2"
             ></textarea>
           </div>
@@ -129,7 +129,7 @@ const RegistroBitacora = () => {
             <textarea
               value={compromisos}
               onChange={(e) => setCompromisos(e.target.value)}
-              className="w-full p-3 border rounded-xl border border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300"
               rows="2"
             ></textarea>
           </div>
