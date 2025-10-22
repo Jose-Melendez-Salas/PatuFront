@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 
 const RegistroBitacora = () => {
   const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const { idSesion } = useParams(); // 👈 aquí obtienes el ID desde la URL
 
-  const [idSesion, setIdSesion] = useState('');
   const [asistencia, setAsistencia] = useState('');
   const [notas, setNotas] = useState('');
   const [acuerdos, setAcuerdos] = useState('');
@@ -41,12 +42,11 @@ const RegistroBitacora = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setMensaje({ tipo: 'error', texto: data.message || 'Error al guardar bitácora.' });
+        setMensaje({ tipo: 'error', texto: data.message || 'Error al guardar la bitácora.' });
         return;
       }
 
       setMensaje({ tipo: 'success', texto: 'Bitácora registrada con éxito.' });
-      setIdSesion('');
       setAsistencia('');
       setNotas('');
       setAcuerdos('');
@@ -80,23 +80,17 @@ const RegistroBitacora = () => {
             </div>
           )}
 
-         {/* <div className="mb-4">
-            <label className="font-bold block mb-2">ID de sesión</label>
-            <input
-              type="number"
-              value={idSesion}
-              onChange={(e) => setIdSesion(e.target.value)}
-              className="w-full p-3 border rounded-xl border border-gray-300"
-              placeholder="Ejemplo: 1"
-            />
-          </div>
-            */}
+          {/* 👇 Aquí ya no se muestra el campo ID */}
+          <p className="text-gray-600 text-center mb-6">
+            <strong>Sesión:</strong> {idSesion}
+          </p>
+
           <div className="mb-4">
             <label className="font-bold block mb-2">Asistencia</label>
             <select
               value={asistencia}
               onChange={(e) => setAsistencia(e.target.value)}
-              className="w-full p-3 border rounded-xl border border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300"
             >
               <option value="">Seleccionar...</option>
               <option value="asistio">Asistió</option>
@@ -109,7 +103,7 @@ const RegistroBitacora = () => {
             <textarea
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
-              className="w-full p-3 border rounded-xl border border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300"
               rows="3"
             ></textarea>
           </div>
@@ -144,6 +138,13 @@ const RegistroBitacora = () => {
             }`}
           >
             {loading ? 'Guardando...' : 'Guardar bitácora'}
+          </button>
+
+          <button
+            onClick={() => (window.location.href = '/calendario')}
+            className="w-full mt-4 py-3 rounded-2xl font-bold text-lg bg-gray-100 hover:bg-gray-200 text-gray-700"
+          >
+            Volver al calendario
           </button>
         </div>
       </main>

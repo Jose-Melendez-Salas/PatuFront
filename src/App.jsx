@@ -36,7 +36,7 @@ function App() {
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
         <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
         <Route path="/Contacto" element={<Contacto />} />
-        <Route path="/RegistroBitacora" element={<RegistroBitacora />} />
+        <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
 
       </Routes>
 
