@@ -5,7 +5,6 @@ import { FaSearch } from 'react-icons/fa';
 import { FaRegCopy } from 'react-icons/fa6';
 import NoEncontrado from './assets/NoEncontrado.jpg';
 
-// Componente para mostrar cada alumno
 const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
   <div className="flex justify-between items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
     <div>
@@ -13,7 +12,6 @@ const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
       <p className="text-sm text-gray-500">Matrícula: {matricula}</p>
       <p className="text-sm text-gray-500">Carrera: {carrera}</p>
       <p className="text-sm text-gray-500">Semestre: {semestre}</p>
-
     </div>
 
     {esTutor && (
@@ -28,7 +26,7 @@ const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
 );
 
 const ListaAlumnos = () => {
-  const { idGrupo } = useParams(); 
+  const { idGrupo } = useParams();
   const [codigoGrupo, setCodigoGrupo] = useState('');
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [alumnosData, setAlumnosData] = useState([]);
@@ -38,6 +36,7 @@ const ListaAlumnos = () => {
   const [usuario, setUsuario] = useState(null);
   const [esTutor, setEsTutor] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [copiado, setCopiado] = useState(false); // 🟣 nuevo estado para el toast
 
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -61,7 +60,6 @@ const ListaAlumnos = () => {
       try {
         setLoading(true);
         setError(null);
-
         const token = user.accessToken;
         const res = await fetch(
           `https://apis-patu.onrender.com/api/alumnos/grupo/${idGrupo}`,
@@ -83,33 +81,39 @@ const ListaAlumnos = () => {
       }
     };
 
-      const fetchGrupo = async () => {
-        try {
-          const resGrupo = await fetch(`https://apis-patu.onrender.com/api/grupos/id/${idGrupo}`, {
-            headers: {
-              Authorization: `Bearer ${user.accessToken}`,
-              'Content-Type': 'application/json',
-            },
-          });
+    const fetchGrupo = async () => {
+      try {
+        const resGrupo = await fetch(`https://apis-patu.onrender.com/api/grupos/id/${idGrupo}`, {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
-          if (!resGrupo.ok) throw new Error('Error al obtener datos del grupo');
-          const dataGrupo = await resGrupo.json();
+        if (!resGrupo.ok) throw new Error('Error al obtener datos del grupo');
+        const dataGrupo = await resGrupo.json();
 
-          if (dataGrupo.success && dataGrupo.data) {
-            setCodigoGrupo(dataGrupo.data.codigo || '');
-            setNombreGrupo(dataGrupo.data.nombre || 'Sin nombre'); 
-          }
-        } catch (err) {
-          console.error('Error obteniendo datos del grupo:', err);
+        if (dataGrupo.success && dataGrupo.data) {
+          setCodigoGrupo(dataGrupo.data.codigo || '');
+          setNombreGrupo(dataGrupo.data.nombre || 'Sin nombre');
         }
-      };
+      } catch (err) {
+        console.error('Error obteniendo datos del grupo:', err);
+      }
+    };
 
+    if (idGrupo) {
+      fetchAlumnos();
+      fetchGrupo();
+    }
+  }, [idGrupo]);
 
-  if (idGrupo) {
-    fetchAlumnos();
-    fetchGrupo();
-  }
-}, [idGrupo]);
+  // 🟣 función para copiar y mostrar el toast
+  const copiarCodigo = () => {
+    navigator.clipboard.writeText(codigoGrupo || '');
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
@@ -119,7 +123,6 @@ const ListaAlumnos = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-end mb-1">
             <h2 className="text-3xl font-bold text-gray-800">Lista de alumnos del grupo {nombreGrupo}</h2>
-
 
             {esTutor && (
               <button
@@ -167,14 +170,14 @@ const ListaAlumnos = () => {
           {!loading && alumnosData.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg border border-gray-100">
               {alumnosData
-              .filter((alumno) =>
-                alumno.matricula.toLowerCase().includes(busqueda.toLowerCase()) ||
-                (alumno.nombre_completo?.toLowerCase().includes(busqueda.toLowerCase()))
-              )
+                .filter((alumno) =>
+                  alumno.matricula.toLowerCase().includes(busqueda.toLowerCase()) ||
+                  (alumno.nombre_completo?.toLowerCase().includes(busqueda.toLowerCase()))
+                )
                 .map((alumno) => (
                   <AlumnoFicha
                     key={alumno.id_alumno}
-                     nombre={alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido_paterno || ''} ${alumno.apellido_materno || ''}`}
+                    nombre={alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido_paterno || ''} ${alumno.apellido_materno || ''}`}
                     matricula={alumno.matricula}
                     carrera={alumno.carrera}
                     semestre={alumno.semestre}
@@ -196,19 +199,21 @@ const ListaAlumnos = () => {
               ×
             </button>
 
-            <h3 className="text-sm text-gray-500 font-semibold mb-2">
-              Código del grupo
-            </h3>
+            <h3 className="text-sm text-gray-500 font-semibold mb-2">Código del grupo</h3>
 
-            <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="flex items-center justify-center gap-2 mb-3 relative">
               <p className="text-4xl font-extrabold text-[#4F3E9B]">{codigoGrupo || 'Cargando...'}</p>
               <FaRegCopy
                 className="text-gray-500 hover:text-gray-700 cursor-pointer text-2xl"
-                onClick={() => {
-                  navigator.clipboard.writeText(codigoGrupo || '');
-                  alert('Código copiado al portapapeles');
-                }}
+                onClick={copiarCodigo}
               />
+
+              {/* 🟣 Mini ventanita de "copiado" */}
+              {copiado && (
+                <div className="absolute right-[-90px] bg-gray-800 text-white text-xs py-1 px-3 rounded-lg shadow-lg animate-fadeIn">
+                  Copiado ✓
+                </div>
+              )}
             </div>
 
             <p className="text-gray-600 text-sm">

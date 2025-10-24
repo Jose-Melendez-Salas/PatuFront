@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
-import { ClipboardList, Info, BookX, HeartHandshake, HelpCircle } from 'lucide-react';
+import { Info, BookX, HeartHandshake, HelpCircle, ClipboardList, UserCheck } from 'lucide-react';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -11,6 +11,7 @@ const ESTILOS_POR_TIPO = {
     'problemas académicos': { color: 'orange', Icono: BookX, hex: '#f97316' },
     'seguimiento': { color: 'blue', Icono: ClipboardList, hex: '#3b82f6' },
     'problemas personales': { color: 'purple', Icono: HeartHandshake, hex: '#8b5cf6' },
+    'cambio de tutor': { color: 'pink', Icono: UserCheck, hex: '#ec4899' },
     'sin tipo': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' },
     'default': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' }
 };
@@ -30,7 +31,8 @@ const EventoCard = ({ evento, onVerDetalles }) => {
         green: 'border-green-500 bg-green-50 text-green-600',
         orange: 'border-orange-500 bg-orange-50 text-orange-600',
         purple: 'border-purple-500 bg-purple-50 text-purple-600',
-        gray: 'border-gray-500 bg-gray-50 text-gray-600'
+        gray: 'border-gray-500 bg-gray-50 text-gray-600',
+        pink: 'border-pink-500 bg-pink-50 text-pink-600'
     };
     const colorClasses = classes[color] || classes.gray;
 

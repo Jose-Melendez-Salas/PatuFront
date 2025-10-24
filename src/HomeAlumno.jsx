@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Cell } from "recharts";
 import { FaEye, FaTrash } from 'react-icons/fa';
 import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import { Info, BookX, ClipboardList, HeartHandshake, HelpCircle } from 'lucide-react';
+import { Info, BookX, HeartHandshake, HelpCircle, ClipboardList, UserCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ESTILOS_POR_TIPO = {
@@ -12,6 +12,7 @@ const ESTILOS_POR_TIPO = {
     'problemas académicos': { color: 'orange', Icono: BookX, hex: '#f97316' },
     'seguimiento': { color: 'blue', Icono: ClipboardList, hex: '#3b82f6' },
     'problemas personales': { color: 'purple', Icono: HeartHandshake, hex: '#8b5cf6' },
+    'cambio de tutor': { color: 'pink', Icono: UserCheck, hex: '#ec4899' },
     'sin tipo': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' },
     'default': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' }
 };
@@ -30,7 +31,8 @@ const EventoCard = ({ evento, onVerDetalles }) => {
         green: 'border-green-500 bg-green-50 text-green-600',
         orange: 'border-orange-500 bg-orange-50 text-orange-600',
         purple: 'border-purple-500 bg-purple-50 text-purple-600',
-        gray: 'border-gray-500 bg-gray-50 text-gray-600'
+        gray: 'border-gray-500 bg-gray-50 text-gray-600',
+        pink: 'border-pink-500 bg-pink-50 text-pink-600'
     };
     const colorClasses = classes[color] || classes.gray;
 
@@ -71,7 +73,7 @@ const HomeAlumno = () => {
         semestre: usuario?.semestre || "X"
     });
 
-    const [chartDataVisual] = useState([]);
+    const [chartDataVisual, setChartDataVisual] = useState([]);
     const [eventosProximos, setEventosProximos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -109,6 +111,20 @@ const HomeAlumno = () => {
                 }).sort((a, b) => new Date(`${a.fecha}T${a.hora_inicio}`) - new Date(`${b.fecha}T${b.hora_inicio}`));
 
                 setEventosProximos(eventosFiltrados);
+                // 🔹 Calcular cantidad de sesiones por tipo
+                const conteoPorTipo = eventosConNombres.reduce((acc, evento) => {
+                    const tipo = capitalizeFirstLetter(evento.tipo) || 'Sin tipo';
+                    acc[tipo] = (acc[tipo] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const datosParaGrafica = Object.keys(conteoPorTipo).map(key => ({
+                    tipo: key,
+                    sesiones: conteoPorTipo[key]
+                }));
+
+                setChartDataVisual(datosParaGrafica);
+
                 setError('');
             } catch (err) {
                 console.error(err); setError("Error de conexión con la API");
@@ -188,20 +204,47 @@ const HomeAlumno = () => {
 
                         {/* Gráfico de calificaciones */}
                         <div className="lg:w-2/5 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                            <h3 className="text-xl font-bold text-gray-800 text-center mb-4">Semestre Feb – Ago 2025</h3>
-                            <p className="text-center text-gray-600 mb-6">Primer periodo</p>
-                            {chartDataVisual.length === 0 && <p className="text-gray-500 text-center mb-4">No hay calificaciones registradas.</p>}
+                            <h3 className="text-xl font-bold text-gray-800 text-center mb-4">Tipos de sesiones</h3>
+                            <p className="text-center text-gray-600 mb-6">Distribución de tus sesiones recientes</p>
+                            {chartDataVisual.length === 0 && <p className="text-gray-500 text-center mb-4">No hay sesiones registradas.</p>}
                             <div className="h-[350px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={chartDataVisual.length ? chartDataVisual : [{ subject: '', Promedios: 0, Inasistencias: 0 }]} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
-                                        <XAxis dataKey="subject" interval={0} angle={-30} textAnchor="end" height={50} style={{ fontSize: '10px' }} />
-                                        <YAxis type="number" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} />
-                                        <Tooltip wrapperStyle={{ fontSize: '12px' }} />
-                                        <Legend payload={[{ value: 'Promedios', type: 'square', color: '#FF8BCF' }, { value: 'Inasistencias', type: 'square', color: '#FF8A00' }]} wrapperStyle={{ marginTop: '15px' }} />
-                                        <Bar dataKey="Promedios" fill="#FF8BCF" label={<CustomBarLabel />} barSize={10} isAnimationActive={false} />
-                                        <Bar dataKey="Inasistencias" fill="#FF8A00" barSize={10} isAnimationActive={false} />
+                                <ResponsiveContainer width="100%" height="80%">
+                                    <BarChart data={chartDataVisual}>
+                                        <YAxis
+                                            domain={[0, 20]}          // límite de 0 a 50
+                                            tickCount={11}            // número aproximado de divisiones
+                                            allowDecimals={false}     // 🔹 evita decimales
+                                            tickFormatter={(value) => Math.floor(value)} // seguridad extra
+                                        />
+
+                                        <Tooltip />
+                                        <Bar dataKey="sesiones" barSize={50} isAnimationActive={false}>
+                                            {chartDataVisual.map((entry, index) => {
+                                                const estilo = ESTILOS_POR_TIPO[entry.tipo?.toLowerCase()] || ESTILOS_POR_TIPO.default;
+                                                return <Cell key={`cell-${index}`} fill={estilo.hex} />;
+                                            })}
+                                        </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
+
+                                {/* 🔹 Leyenda personalizada debajo de la gráfica */}
+                                <div className="flex flex-wrap justify-center gap-3 mt-4">
+                                    {chartDataVisual.map((entry, index) => {
+                                        const estilo = ESTILOS_POR_TIPO[entry.tipo?.toLowerCase()] || ESTILOS_POR_TIPO.default;
+                                        return (
+                                            <div key={index} className="flex items-center gap-2">
+                                                <div
+                                                    className="w-4 h-4 rounded"
+                                                    style={{ backgroundColor: estilo.hex }}
+                                                ></div>
+                                                <span className="text-sm font-medium text-gray-700">{entry.tipo}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+
+
                             </div>
                         </div>
                     </div>
