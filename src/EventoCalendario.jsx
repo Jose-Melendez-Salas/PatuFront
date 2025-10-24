@@ -236,6 +236,7 @@ const EventoCalendario = () => {
               <option value="general">General</option>
               <option value="problemas academicos">Problemas académicos</option>
               <option value="problemas personales">Problemas personales</option>
+              <option value="cambio de tutor">Cambio de tutor</option>
             </select>
           </div>
 
