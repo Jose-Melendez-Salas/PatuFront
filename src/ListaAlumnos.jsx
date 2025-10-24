@@ -11,7 +11,9 @@ const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
     <div>
       <h4 className="text-xl font-medium text-gray-800">{nombre}</h4>
       <p className="text-sm text-gray-500">Matrícula: {matricula}</p>
-      <p className="text-sm text-gray-500">{carrera} • {semestre}</p>
+      <p className="text-sm text-gray-500">Carrera: {carrera}</p>
+      <p className="text-sm text-gray-500">Semestre: {semestre}</p>
+
     </div>
 
     {esTutor && (
