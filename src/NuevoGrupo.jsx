@@ -96,13 +96,27 @@ const NuevoGrupo = () => {
               <label className="block text-xl font-semibold text-gray-800 mb-2">
                 Semestre
               </label>
-              <input
+              <select
                 type="text"
                 value={semestre}
                 onChange={(e) => setSemestre(e.target.value)}
                 placeholder="Ej. 5° Semestre"
                 className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm"
-              />
+              >
+                <option value="" disabled>Seleccione un semestre</option>
+                <option value="1° Semestre">1° Semestre</option>
+                <option value="2° Semestre">2° Semestre</option>
+                <option value="3° Semestre">3° Semestre</option>
+                <option value="4° Semestre">4° Semestre</option>
+                <option value="5° Semestre">5° Semestre</option>
+                <option value="6° Semestre">6° Semestre</option>
+                <option value="7° Semestre">7° Semestre</option>
+                <option value="8° Semestre">8° Semestre</option>
+                <option value="9° Semestre">9° Semestre</option>
+                <option value="10° Semestre">10° Semestre</option>
+                <option value="11° Semestre">11° Semestre</option>
+                <option value="12° Semestre">12° Semestre</option>
+                </select>
             </div>
 
             {mensaje && <p className="text-green-600 text-center">{mensaje}</p>}

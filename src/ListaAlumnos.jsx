@@ -5,12 +5,13 @@ import { FaSearch } from 'react-icons/fa';
 import { FaRegCopy } from 'react-icons/fa6';
 import NoEncontrado from './assets/NoEncontrado.jpg';
 
-//Componente para mostrar cada alumno
-const AlumnoFicha = ({ nombre, matricula, esTutor }) => (
+// Componente para mostrar cada alumno
+const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
   <div className="flex justify-between items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
     <div>
       <h4 className="text-xl font-medium text-gray-800">{nombre}</h4>
       <p className="text-sm text-gray-500">Matrícula: {matricula}</p>
+      <p className="text-sm text-gray-500">{carrera} • {semestre}</p>
     </div>
 
     {esTutor && (
@@ -25,8 +26,9 @@ const AlumnoFicha = ({ nombre, matricula, esTutor }) => (
 );
 
 const ListaAlumnos = () => {
-  
-  const { codigoGrupo } = useParams();
+  const { idGrupo } = useParams(); 
+  const [codigoGrupo, setCodigoGrupo] = useState('');
+  const [nombreGrupo, setNombreGrupo] = useState('');
   const [alumnosData, setAlumnosData] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const [loading, setLoading] = useState(true);
@@ -34,9 +36,6 @@ const ListaAlumnos = () => {
   const [usuario, setUsuario] = useState(null);
   const [esTutor, setEsTutor] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
- 
-
-  const tituloPagina = `Lista de alumnos`;
 
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -62,9 +61,8 @@ const ListaAlumnos = () => {
         setError(null);
 
         const token = user.accessToken;
-
         const res = await fetch(
-          `https://apis-patu.onrender.com/api/grupo-alumnos/grupo/${codigoGrupo}`,
+          `https://apis-patu.onrender.com/api/alumnos/grupo/${idGrupo}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -73,21 +71,9 @@ const ListaAlumnos = () => {
           }
         );
 
-        if (res.status === 404) {
-          throw new Error('No se encontraron alumnos.');
-        }
-
-        if (!res.ok) {
-          throw new Error('Error al cargar los alumnos');
-        }
-
+        if (!res.ok) throw new Error('Error al cargar los alumnos');
         const data = await res.json();
         setAlumnosData(data.data || []);
-
-        // Extraer el código de invitación del backend
-        if (data.data && data.data[0]?.codigo) {
-          setCodigoInvitacion(data.data[0].codigo);
-        }
       } catch (err) {
         setError(err.message || 'Error al cargar los datos.');
       } finally {
@@ -95,18 +81,43 @@ const ListaAlumnos = () => {
       }
     };
 
-    if (codigoGrupo) fetchAlumnos();
-  }, [codigoGrupo]);
+      const fetchGrupo = async () => {
+        try {
+          const resGrupo = await fetch(`https://apis-patu.onrender.com/api/grupos/id/${idGrupo}`, {
+            headers: {
+              Authorization: `Bearer ${user.accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!resGrupo.ok) throw new Error('Error al obtener datos del grupo');
+          const dataGrupo = await resGrupo.json();
+
+          if (dataGrupo.success && dataGrupo.data) {
+            setCodigoGrupo(dataGrupo.data.codigo || '');
+            setNombreGrupo(dataGrupo.data.nombre || 'Sin nombre'); 
+          }
+        } catch (err) {
+          console.error('Error obteniendo datos del grupo:', err);
+        }
+      };
+
+
+  if (idGrupo) {
+    fetchAlumnos();
+    fetchGrupo();
+  }
+}, [idGrupo]);
 
   return (
     <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
       <Navbar />
 
-      {/*Aplicar blur al contenido cuando el modal esté abierto */}
       <main className={`p-4 relative z-10 transition-all duration-300 ${mostrarModal ? 'blur-sm' : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-end mb-1">
-            <h2 className="text-3xl font-bold text-gray-800">{tituloPagina}</h2>
+            <h2 className="text-3xl font-bold text-gray-800">Lista de alumnos del grupo {nombreGrupo}</h2>
+
 
             {esTutor && (
               <button
@@ -124,7 +135,7 @@ const ListaAlumnos = () => {
           <div className="relative mb-6">
             <input
               type="text"
-              placeholder="Buscar alumno"
+              placeholder="Buscar alumno por matrícula"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               className="w-full p-4 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-sm"
@@ -154,28 +165,28 @@ const ListaAlumnos = () => {
           {!loading && alumnosData.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg border border-gray-100">
               {alumnosData
-                .filter((alumno) =>
-                  alumno.id_alumno?.toString().toLowerCase().includes(busqueda.toLowerCase())
-                )
-                .map((alumno, index) => (
+              .filter((alumno) =>
+                alumno.matricula.toLowerCase().includes(busqueda.toLowerCase()) ||
+                (alumno.nombre_completo?.toLowerCase().includes(busqueda.toLowerCase()))
+              )
+                .map((alumno) => (
                   <AlumnoFicha
-                    key={index}
-                    nombre={`Alumno ${alumno.id_alumno}`}
-                    matricula={alumno.id_alumno}
+                    key={alumno.id_alumno}
+                     nombre={alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido_paterno || ''} ${alumno.apellido_materno || ''}`}
+                    matricula={alumno.matricula}
+                    carrera={alumno.carrera}
+                    semestre={alumno.semestre}
                     esTutor={esTutor}
                   />
                 ))}
             </div>
           )}
-
         </div>
       </main>
 
       {mostrarModal && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
-          <div className="bg-white border-4 border-[#F1CC5A] rounded-2xl shadow-2xl p-8 w-96 text-center relative animate-fadeIn scale-100 transition-transform duration-300 ease-out">
-            
-            {/* Botón de cerrar */}
+          <div className="bg-white border-4 border-[#F1CC5A] rounded-2xl shadow-2xl p-8 w-96 text-center relative animate-fadeIn">
             <button
               onClick={() => setMostrarModal(false)}
               className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 text-xl font-bold"
@@ -183,12 +194,10 @@ const ListaAlumnos = () => {
               ×
             </button>
 
-            {/* Título */}
             <h3 className="text-sm text-gray-500 font-semibold mb-2">
               Código del grupo
             </h3>
 
-            {/* Código */}
             <div className="flex items-center justify-center gap-2 mb-3">
               <p className="text-4xl font-extrabold text-[#4F3E9B]">{codigoGrupo || 'Cargando...'}</p>
               <FaRegCopy
@@ -200,7 +209,6 @@ const ListaAlumnos = () => {
               />
             </div>
 
-            {/* Texto explicativo */}
             <p className="text-gray-600 text-sm">
               Comparte este código con tus alumnos para que puedan unirse a tu grupo fácilmente.
             </p>
@@ -212,6 +220,3 @@ const ListaAlumnos = () => {
 };
 
 export default ListaAlumnos;
-
-
-
