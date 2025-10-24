@@ -20,12 +20,13 @@ const IconoPersonas = ({ colorClase }) => (
 );
 
 // Tarjeta de grupo
-const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => (
+const GrupoCard = ({ id, titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => (
     <Link
-        to={`/ListaAlumnos/${codigo}`}
+        to={`/ListaAlumnos/${id}`} 
         className={`p-0 rounded-xl border-2 ${colorClase} bg-white shadow-lg flex cursor-pointer 
                     hover:shadow-xl hover:scale-[1.01] transition-all duration-200 min-h-[140px]`}
     >
+
         <div className="flex w-full">
             <div className="w-[30%] flex justify-center items-center p-4">
                 <IconoPersonas colorClase={colorTextoClase} />
@@ -33,7 +34,8 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
             <div className="w-[70%] flex flex-col justify-center p-4">
                 <h3 className="text-xl font-extrabold mb-1 text-gray-900 leading-tight">{titulo}</h3>
                 <p className="text-sm font-semibold text-gray-700">{semestre}</p>
-                <p className="text-sm mt-2 font-medium text-gray-700">{alumnos} Alumnos</p>
+               {/* <p className="text-sm mt-2 font-medium text-gray-700">{alumnos} Alumnos</p>  */}
+
             </div>
         </div>
     </Link>
@@ -94,7 +96,7 @@ const Grupos = () => {
                     }
 
                 } else if (esAlumno) {
-                    // ✅ Aquí usamos únicamente GET /alumnos/:id
+                    //  Aquí usamos únicamente GET /alumnos/:id
                     const resAlumno = await fetch(`https://apis-patu.onrender.com/api/alumnos/${userId}`, {
                         headers: {
                             "Authorization": `Bearer ${token}`,
@@ -141,7 +143,7 @@ const Grupos = () => {
     // Función para que el alumno se una a un grupo
     const handleUnirme = async () => {
         if (!codigoGrupo.trim()) {
-            setMensaje("⚠️ Ingresa un código de grupo válido.");
+            setMensaje(" Ingresa un código de grupo válido.");
             return;
         }
 
@@ -165,13 +167,13 @@ const Grupos = () => {
             const dataGrupo = await resGrupo.json();
 
             if (!resGrupo.ok || !dataGrupo.success || !dataGrupo.data) {
-                setMensaje("❌ No se encontró un grupo con ese código.");
+                setMensaje(" No se encontró un grupo con ese código.");
                 console.error("Error GET grupo:", dataGrupo);
                 return;
             }
 
             const { id: id_grupo, id_tutor } = dataGrupo.data;
-            console.log("✅ Grupo encontrado:", { id_grupo, id_tutor });
+            console.log(" Grupo encontrado:", { id_grupo, id_tutor });
 
             setMensaje("🔄 Asignando grupo y tutor...");
 
@@ -193,13 +195,13 @@ const Grupos = () => {
             const dataAsignar = await resAsignar.json();
 
             if (!resAsignar.ok || !dataAsignar.success) {
-                setMensaje(`❌ ${dataAsignar.message || "No se pudo unir al grupo."}`);
+                setMensaje(` ${dataAsignar.message || "No se pudo unir al grupo."}`);
                 console.error("Error PATCH alumno:", dataAsignar);
                 return;
             }
 
-            console.log("✅ Asignación exitosa:", dataAsignar);
-            setMensaje("🎉 ¡Te has unido al grupo correctamente!");
+            console.log(" Asignación exitosa:", dataAsignar);
+            setMensaje(" ¡Te has unido al grupo correctamente!");
 
             setTimeout(() => {
                 setMostrarModal(false);
@@ -208,7 +210,7 @@ const Grupos = () => {
 
         } catch (error) {
             console.error("Error inesperado al unirse al grupo:", error);
-            setMensaje("❌ Error al conectarse con el servidor.");
+            setMensaje(" Error al conectarse con el servidor.");
         }
     };
 
@@ -228,19 +230,21 @@ const Grupos = () => {
                         {grupos.length > 0 ? (
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {grupos.map((grupo, index) => {
-                                    const colors = colorPalette[index % colorPalette.length];
-                                    return (
-                                        <GrupoCard
-                                            key={grupo.id}
-                                            titulo={grupo.nombre || "Sin nombre"}
-                                            semestre={grupo.semestre || "Semestre no definido"}
-                                            codigo={grupo.codigo || "Sin código"}
-                                            alumnos={grupo.num_alumnos || 0}
-                                            colorClase={colors.border}
-                                            colorTextoClase={colors.text}
-                                        />
-                                    );
+                                const colors = colorPalette[index % colorPalette.length];
+                                return (
+                                    <GrupoCard
+                                    key={grupo.id}
+                                    id={grupo.id} 
+                                    titulo={grupo.nombre || "Sin nombre"}
+                                    semestre={grupo.semestre || "Semestre no definido"}
+                                    codigo={grupo.codigo || "Sin código"}
+                                    //alumnos={grupo.num_alumnos || 0}
+                                    colorClase={colors.border}
+                                    colorTextoClase={colors.text}
+                                    />
+                                );
                                 })}
+
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center mt-10 text-center">
