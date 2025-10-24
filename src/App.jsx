@@ -32,14 +32,13 @@ function App() {
         <Route path="/Calendario" element={<Calendario />} />
         <Route path="/Grupos" element={<Grupos />} />
         <Route path="/alumnos/:matricula/ficha" element={<FichaAlumno />} />
+        <Route path="/Reportes" element={<Reportes />} />
+        <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
         <Route path="/ListaAlumnos/:idGrupo" element={<ListaAlumnos />} />
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
         <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
-        <Route path="/Contacto" element={<Contacto />} />
-        <Route path="/Reportes" element={<Reportes />} />
-        <Route path="/Mensajes" element={<Mensajes />} />
-
+        <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
 
       </Routes>
 
