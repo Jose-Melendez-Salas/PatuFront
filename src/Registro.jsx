@@ -22,8 +22,6 @@ const Registro = () => {
   const [error, setError] = useState('');
   const [formValido, setFormValido] = useState(false);
   const [mostrarExito, setMostrarExito] = useState(false);
-  const [loading, setLoading] = useState(false);
-
 
   const [errores, setErrores] = useState({
     correo: '',
@@ -87,7 +85,7 @@ const Registro = () => {
     if (!formValido) return;
 
     setError('');
-    setLoading(true);
+
     try {
       const resUsuario = await fetch('https://apis-patu.onrender.com/api/usuarios/registro', {
         method: 'POST',
@@ -141,9 +139,6 @@ const Registro = () => {
       console.error(err);
       setError(err.message);
     }
-    finally {
-      setLoading(false); // ✅ desactiva loading al terminar
-    }
   };
 
   return (
@@ -193,24 +188,9 @@ const Registro = () => {
 
                 {error && <p className="text-red-600 text-sm text-center font-bold">{error}</p>}
 
-                <button
-                  type="submit"
-                  disabled={!formValido || loading}
-                  className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="w-6 h-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                      </svg>
-                      Registrando...
-                    </span>
-                  ) : (
-                    'Comenzar'
-                  )}
+                <button type="submit" disabled={!formValido} className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${!formValido ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                  Comenzar
                 </button>
-
               </form>
 
               <p className="mt-6 text-medium text-center font-medium">

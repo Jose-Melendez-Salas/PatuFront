@@ -4,7 +4,7 @@ import { FaEye, FaTrash } from 'react-icons/fa';
 import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import { Info, BookX, HeartHandshake, HelpCircle, ClipboardList, UserCheck } from 'lucide-react';
+import { Info, BookX, ClipboardList, HeartHandshake, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ESTILOS_POR_TIPO = {
@@ -12,7 +12,6 @@ const ESTILOS_POR_TIPO = {
     'problemas académicos': { color: 'orange', Icono: BookX, hex: '#f97316' },
     'seguimiento': { color: 'blue', Icono: ClipboardList, hex: '#3b82f6' },
     'problemas personales': { color: 'purple', Icono: HeartHandshake, hex: '#8b5cf6' },
-    'cambio de tutor': { color: 'pink', Icono: UserCheck, hex: '#ec4899' },
     'sin tipo': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' },
     'default': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' }
 };
@@ -31,8 +30,7 @@ const EventoCard = ({ evento, onVerDetalles }) => {
         green: 'border-green-500 bg-green-50 text-green-600',
         orange: 'border-orange-500 bg-orange-50 text-orange-600',
         purple: 'border-purple-500 bg-purple-50 text-purple-600',
-        gray: 'border-gray-500 bg-gray-50 text-gray-600',
-        pink: 'border-pink-500 bg-pink-50 text-pink-600'
+        gray: 'border-gray-500 bg-gray-50 text-gray-600'
     };
     const colorClasses = classes[color] || classes.gray;
 
@@ -206,7 +204,7 @@ const HomeAlumno = () => {
                         <div className="lg:w-2/5 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                             <h3 className="text-xl font-bold text-gray-800 text-center mb-4">Tipos de sesiones</h3>
                             <p className="text-center text-gray-600 mb-6">Distribución de tus sesiones recientes</p>
-                            {chartDataVisual.length === 0 && <p className="text-gray-500 text-center mb-4">No hay sesiones registradas.</p>}
+                            {chartDataVisual.length === 0 && <p className="text-gray-500 text-center mb-4">No hay calificaciones registradas.</p>}
                             <div className="h-[350px]">
                                 <ResponsiveContainer width="100%" height="80%">
                                     <BarChart data={chartDataVisual}>

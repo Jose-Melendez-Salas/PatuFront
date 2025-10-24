@@ -9,8 +9,6 @@ const Login = ({ onLogin }) => {
   const [contraseña, setContraseña] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -21,8 +19,7 @@ const Login = ({ onLogin }) => {
       setError('Por favor completa todos los campos.');
       return;
     }
-    setError('');
-    setLoading(true); // ✅ inicia loading
+
     try {
       const res = await fetch('https://apis-patu.onrender.com/api/usuarios/login', {
         method: 'POST',
@@ -69,8 +66,6 @@ const Login = ({ onLogin }) => {
     } catch (err) {
       console.error(err);
       setError('No se pudo conectar con el servidor');
-    } finally {
-      setLoading(false); // ✅ termina loading
     }
   };
 
@@ -161,22 +156,10 @@ const Login = ({ onLogin }) => {
 
                 <button
                   type="submit"
-                  disabled={loading}
-                  className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 flex justify-center items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4"
                 >
-                  {loading ? (
-                    <>
-                      <svg className="w-6 h-6 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                      </svg>
-                      Iniciando sesión...
-                    </>
-                  ) : (
-                    'Iniciar Sesión'
-                  )}
+                  Iniciar Sesión
                 </button>
-
               </form>
             </div>
 
