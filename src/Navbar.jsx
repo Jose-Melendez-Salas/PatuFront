@@ -73,10 +73,10 @@ const Navbar = () => {
                         <img src={iconAgenda} alt="Agenda" className="w-9 h-9" /> Agenda
                     </a>
 
-                    <a href="/Contacto" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                    {/*<a href="/Contacto" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconMail} alt="Contacto" className="w-9 h-9" /> Contacto
                     </a>
-
+*/}
 
                     {/* Mensajes solo para alumnos */}
                     {usuario.rol === 'alumno' && (

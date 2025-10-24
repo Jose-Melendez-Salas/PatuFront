@@ -31,7 +31,7 @@ function App() {
         <Route path="/EventoCalendario" element={<EventoCalendario />} />
         <Route path="/Calendario" element={<Calendario />} />
         <Route path="/Grupos" element={<Grupos />} />
-        <Route path="/FichaAlumno/:matricula" element={<FichaAlumno />} />
+        <Route path="/alumnos/:matricula/ficha" element={<FichaAlumno />} />
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
         <Route path="/ListaAlumnos/:idGrupo" element={<ListaAlumnos />} />
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
