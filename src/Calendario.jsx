@@ -292,6 +292,17 @@ const Calendario = ({ nombreUsuario }) => {
             >
               <FaTrash /> Eliminar sesión
             </button>
+
+            {JSON.parse(localStorage.getItem('usuario'))?.rol === 'tutor' && (
+              <button
+                onClick={() => navigate(`/bitacora/${detalleEvento.id_sesion}`)}
+                className="mt-6 w-full flex items-center justify-center gap-2 bg-[#3CB9A5] text-white font-bold py-3 rounded-lg hover:bg-[#1f6b5e] transition-all"
+              >
+                Registrar Bitácora
+              </button>
+            )}
+
+
           </div>
         </div>
       )}
