@@ -13,10 +13,7 @@ import FichaAlumno from './FichaAlumno'
 import NuevoGrupo from './NuevoGrupo'
 import HomeAlumno from './HomeAlumno'
 import Contacto from './Contacto'
-import Reportes from './Reportes'
-import Mensajes from './Mensajes'
-
-
+import RegistroBitacora from './RegistroBitacora'
 
 function App() {
 
@@ -33,14 +30,12 @@ function App() {
         <Route path="/EventoCalendario" element={<EventoCalendario />} />
         <Route path="/Calendario" element={<Calendario />} />
         <Route path="/Grupos" element={<Grupos />} />
-        <Route path="/alumnos/:matricula/ficha" element={<FichaAlumno />} />
+        <Route path="/FichaAlumno" element={<FichaAlumno />} />
         <Route path="/ListaAlumnos" element={<ListaAlumnos />} />
         <Route path="/ListaAlumnos/:idGrupo" element={<ListaAlumnos />} />
         <Route path="/NuevoGrupo" element={<NuevoGrupo />} />
         <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
         <Route path="/Contacto" element={<Contacto />} />
-        <Route path="/Reportes" element={<Reportes />} />
-        <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
 
       </Routes>
