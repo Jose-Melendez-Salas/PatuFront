@@ -11,10 +11,15 @@ const Contacto = () => {
     useEffect(() => {
         const usuario = JSON.parse(localStorage.getItem('usuario'));
         if (usuario) {
-            setNombre(usuario.nombre_completo || ''); // <-- aquí usamos nombre_completo
+            // Si tiene nombre_completo lo usamos (alumnos), sino combinamos nombre + apellido (otros roles)
+            const nombreCompleto = usuario.nombre_completo
+                || `${usuario.nombre || ''} ${usuario.apellido_paterno || ''} ${usuario.apellido_materno || ''}`.trim();
+
+            setNombre(nombreCompleto);
             setCorreo(usuario.correo || '');
         }
     }, []);
+
 
 
     const handleSubmit = (e) => {

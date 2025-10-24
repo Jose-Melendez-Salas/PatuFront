@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch, FaSpinner } from 'react-icons/fa';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import logoImg from './assets/logo.png';
-import Navbar from './Navbar';
 
 const Reportes = () => {
     const [nombre, setNombre] = useState('');
@@ -13,6 +14,8 @@ const Reportes = () => {
     const [loadingBuscar, setLoadingBuscar] = useState(false);
     const [loadingEnviar, setLoadingEnviar] = useState(false);
     const [alerta, setAlerta] = useState('');
+    const [mensajes, setMensajes] = useState([]);
+    const navigate = useNavigate();
 
     const usuario = JSON.parse(localStorage.getItem('usuario'));
 
@@ -23,19 +26,29 @@ const Reportes = () => {
         }
     }, [usuario]);
 
-    // 🔍 Buscar alumno por matrícula
+    const formatearFecha = (fecha) => {
+        if (!fecha) return '';
+        const date = new Date(fecha);
+        return date.toLocaleDateString('es-MX', {
+            timeZone: 'America/Mexico_City',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+        });
+    };
+
     const handleBuscar = async () => {
         try {
             setErrorBusqueda('');
             setAlumnoEncontrado(null);
 
             if (!busqueda.trim()) {
-                setErrorBusqueda(' Ingresa una matrícula para buscar.');
+                setErrorBusqueda('Ingresa una matrícula para buscar.');
                 return;
             }
 
             if (!usuario || !usuario.accessToken) {
-                setErrorBusqueda(' Debes iniciar sesión primero.');
+                setErrorBusqueda('Debes iniciar sesión primero.');
                 return;
             }
 
@@ -48,20 +61,19 @@ const Reportes = () => {
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-                setErrorBusqueda(data.message || ' No se encontró ningún alumno con esa matrícula.');
+                setErrorBusqueda(data.message || 'No se encontró ningún alumno con esa matrícula.');
                 return;
             }
 
             setAlumnoEncontrado(data.data || data);
         } catch (err) {
             console.error(err);
-            setErrorBusqueda(' Error al conectar con la API.');
+            setErrorBusqueda('Error al conectar con la API.');
         } finally {
             setLoadingBuscar(false);
         }
     };
 
-    // 📨 Enviar reporte
     const handleSubmit = async (e) => {
         e.preventDefault();
         setAlerta('');
@@ -76,29 +88,37 @@ const Reportes = () => {
             return;
         }
 
+        setLoadingEnviar(true);
+
         try {
-            setLoadingEnviar(true);
+            const res = await fetch('https://apis-patu.onrender.com/api/reportes/crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${usuario?.accessToken || ''}`,
+                },
+                body: JSON.stringify({
+                    matricula: alumnoEncontrado.matricula,
+                    contenido: mensaje,
+                    correo_tutor: correo,
+                }),
+            });
 
-            const reporte = {
-                nombre_tutor: nombre,
-                correo_tutor: correo,
-                id_alumno: alumnoEncontrado?.id || null,
-                matricula_alumno: alumnoEncontrado?.matricula || null,
-                mensaje,
-            };
+            const data = await res.json();
 
-            console.log('📦 Enviando reporte:', reporte);
+            if (res.ok && data.success) {
+                setAlerta('✅ Reporte enviado exitosamente.');
+                setMensaje('');
+                setBusqueda('');
+                setAlumnoEncontrado(null);
 
-            // Simulación de envío (puedes cambiarlo por el POST real)
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-
-            setMensaje('');
-            setBusqueda('');
-            setAlumnoEncontrado(null);
-            setAlerta('✅ Tu reporte ha sido enviado con éxito.');
+                setMensajes((prev) => [data.data, ...prev]);
+            } else {
+                setAlerta(`❌ Error: ${data.message || 'No se pudo enviar el reporte.'}`);
+            }
         } catch (err) {
             console.error(err);
-            setAlerta('❌ Error al enviar el reporte.');
+            setAlerta('❌ Error al conectar con el servidor.');
         } finally {
             setLoadingEnviar(false);
         }
@@ -106,17 +126,32 @@ const Reportes = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <Navbar />
 
-            {/* Contenido principal */}
+            {/* ======= Navbar sin menú hamburguesa ======= */}
+            <header className="relative bg-[#4F3E9B] text-white flex items-center justify-between px-5 h-20">
+                {usuario && (
+                    <div className="text-3xl font-bold">
+                        ¡Hola, {usuario.nombre}!
+                    </div>
+                )}
+                <div className="flex items-center gap-4 text-4xl font-bold ml-auto">
+                    PATU
+                    <img src={logoImg} alt="Logo" className="w-12 h-12" />
+                </div>
+            </header>
+
             <main className="flex flex-col items-center p-4 md:p-8 animate-fadeIn relative z-10 max-w-8xl mx-auto">
                 <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl border-7 border-gray-300">
-                    <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2">
-                        Enviar Reporte
-                    </h2>
+                    <div className="relative">
+                        <ArrowLeft
+                            className="w-6 h-6 absolute top-4 left-4 text-gray-600 hover:text-gray-800 cursor-pointer"
+                            onClick={() => navigate('/FichaAlumno')}
+                        />
+                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2">
+                            Enviar Reporte
+                        </h2>
+                    </div>
 
-                    {/* 🔍 Buscar alumno por matrícula */}
                     <div className="mb-6">
                         <label className="font-medium text-lg block mb-2">
                             Buscar Alumno por Matrícula:
@@ -133,30 +168,25 @@ const Reportes = () => {
                                 type="button"
                                 onClick={handleBuscar}
                                 disabled={loadingBuscar}
-                                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-5 rounded-2xl font-bold flex items-center gap-2 ${loadingBuscar ? 'opacity-70 cursor-not-allowed' : ''
-                                    }`}
+                                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-5 rounded-2xl font-bold flex items-center gap-2 ${loadingBuscar ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 {loadingBuscar ? <FaSpinner className="animate-spin" /> : <FaSearch />}
                                 Buscar
                             </button>
                         </div>
 
-                        {errorBusqueda && (
-                            <p className="text-red-500 mt-2 font-semibold">{errorBusqueda}</p>
-                        )}
+                        {errorBusqueda && <p className="text-red-500 mt-2 font-semibold">{errorBusqueda}</p>}
 
                         {alumnoEncontrado && (
                             <div className="mt-3 p-3 bg-green-100 border border-green-400 rounded-xl">
                                 <p className="font-bold">
-                                    {alumnoEncontrado.nombre} {alumnoEncontrado.apellido_paterno}{' '}
-                                    {alumnoEncontrado.apellido_materno}
+                                    {alumnoEncontrado.nombre} {alumnoEncontrado.apellido_paterno} {alumnoEncontrado.apellido_materno}
                                 </p>
                                 <p>Matrícula: {alumnoEncontrado.matricula}</p>
                             </div>
                         )}
                     </div>
 
-                    {/* 📝 Campo del mensaje */}
                     <form className="w-full flex flex-col gap-4" onSubmit={handleSubmit}>
                         <label className="font-medium">
                             Comentarios del reporte:
@@ -169,10 +199,7 @@ const Reportes = () => {
                         </label>
 
                         {alerta && (
-                            <p
-                                className={`text-center font-bold mt-2 ${alerta.includes('✅') ? 'text-green-600' : 'text-red-600'
-                                    }`}
-                            >
+                            <p className={`text-center font-bold mt-2 ${alerta.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
                                 {alerta}
                             </p>
                         )}
@@ -180,8 +207,7 @@ const Reportes = () => {
                         <button
                             type="submit"
                             disabled={loadingEnviar}
-                            className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-xl mt-4 flex justify-center items-center gap-2 ${loadingEnviar ? 'opacity-70 cursor-not-allowed' : ''
-                                }`}
+                            className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-xl mt-4 flex justify-center items-center gap-2 ${loadingEnviar ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {loadingEnviar && <FaSpinner className="animate-spin" />}
                             {loadingEnviar ? 'Enviando...' : 'Enviar'}
@@ -191,12 +217,12 @@ const Reportes = () => {
             </main>
 
             <style>{`
-        @keyframes fadeIn { 
-          from { opacity: 0; transform: translateY(10px); } 
-          to { opacity: 1; transform: translateY(0); } 
-        }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-      `}</style>
+                @keyframes fadeIn { 
+                    from { opacity: 0; transform: translateY(10px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+                .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+            `}</style>
         </div>
     );
 };

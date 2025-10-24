@@ -78,9 +78,12 @@ const Navbar = () => {
                     </a>
 
 
-                    <a href="/Mensajes" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
-                        <img src={iconMensajes} alt="Mensajes" className="w-9 h-9" /> Mensajes
-                    </a>
+                    {/* Mensajes solo para alumnos */}
+                    {usuario.rol === 'alumno' && (
+                        <a href="/Mensajes" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                            <img src={iconMensajes} alt="Mensajes" className="w-9 h-9" /> Mensajes
+                        </a>
+                    )}
 
                     <button
                         onClick={handleLogout}
