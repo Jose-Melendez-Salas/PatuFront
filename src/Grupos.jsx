@@ -41,7 +41,7 @@ const GrupoCard = ({ id, titulo, semestre, codigo, alumnos, colorClase, colorTex
     </Link>
 );
 
-// Botón de crear grupo (solo tutor)
+// Botón de crear grupo (solo Coordinador)
 const NuevoGrupoBoton = () => (
     <Link
         to="/NuevoGrupo"
@@ -65,6 +65,7 @@ const Grupos = () => {
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
     const esTutor = usuario?.rol === 'tutor';
     const esAlumno = usuario?.rol === 'alumno';
+    const esCoordinador = usuario?.rol === 'coordinador';
 
     //  Cargar grupos según rol
     useEffect(() => {
@@ -93,6 +94,20 @@ const Grupos = () => {
                     if (res.ok) {
                         const data = await res.json();
                         gruposData = Array.isArray(data.data) ? data.data : [data.data];
+                    }
+
+                }else if (esCoordinador) {
+                    //  Aquí usamos GET /grupos para coordinador
+                    const resGrupos = await fetch(`https://apis-patu.onrender.com/api/grupos/todos`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    });
+
+                    if (resGrupos.ok) {
+                        const dataGrupos = await resGrupos.json();
+                        gruposData = Array.isArray(dataGrupos.data) ? dataGrupos.data : [dataGrupos.data];
                     }
 
                 } else if (esAlumno) {
@@ -152,7 +167,7 @@ const Grupos = () => {
             const token = usuario.accessToken;
             const idAlumno = usuario.id;
 
-            // 1️⃣ GET grupo por código
+            // 1 GET grupo por código
             const resGrupo = await fetch(
                 `https://apis-patu.onrender.com/api/grupos/codigo/${codigoGrupo}`,
                 {
@@ -175,9 +190,9 @@ const Grupos = () => {
             const { id: id_grupo, id_tutor } = dataGrupo.data;
             console.log(" Grupo encontrado:", { id_grupo, id_tutor });
 
-            setMensaje("🔄 Asignando grupo y tutor...");
+            setMensaje(" Asignando grupo y tutor...");
 
-            // 2️⃣ PATCH actualizar alumno con grupo y tutor
+            // 2️ PATCH actualizar alumno con grupo y tutor
             const bodyActualizar = { id_tutor, id_grupo };
 
             const resAsignar = await fetch(
@@ -265,8 +280,8 @@ const Grupos = () => {
                                 )}
                             </div>
                         )}
-
-                        {esTutor && <NuevoGrupoBoton />}
+             {/* Visibilidad del botón */}
+                        {esCoordinador && <NuevoGrupoBoton />}
                     </>
                 )}
             </main>

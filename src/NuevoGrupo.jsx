@@ -7,17 +7,47 @@ const NuevoGrupo = () => {
 
   const [nombre, setNombre] = useState("");
   const [codigo, setCodigo] = useState("");
+  const [tutor, setTutor] = useState("");
   const [semestre, setSemestre] = useState("");
+  const [tutores, setTutores] = useState([]);
   const [mensaje, setMensaje] = useState(null);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const [cargandoTutores, setCargandoTutores] = useState(false); // 🆕 Nuevo estado
+
+  //  Función para obtener los tutores desde la API
+  const obtenerTutores = async () => {
+    // Evitar llamadas múltiples mientras está cargando
+    if (cargandoTutores) return;
+
+    setCargandoTutores(true);
+    setError(null);
+
+    try {
+      const respuesta = await fetch("https://apis-patu.onrender.com/api/tutores/todos");
+      const data = await respuesta.json();
+
+      if (respuesta.ok && Array.isArray(data.tutores)) {
+        setTutores(data.tutores);
+      } else if (Array.isArray(data)) {
+        setTutores(data);
+      } else {
+        throw new Error("Formato de datos no válido");
+      }
+    } catch (error) {
+      console.error("Error al obtener tutores:", error);
+      setError(" No se pudieron cargar los tutores.");
+    } finally {
+      setCargandoTutores(false);
+    }
+  };
 
   const handleCrearGrupo = async (e) => {
     e.preventDefault();
 
     const usuarioGuardado = localStorage.getItem("usuario");
     if (!usuarioGuardado) {
-      setError("⚠️ No hay sesión iniciada.");
+      setError(" No hay sesión iniciada.");
       return;
     }
 
@@ -25,16 +55,16 @@ const NuevoGrupo = () => {
     const idTutor = usuario.id;
     const token = usuario.accessToken;
 
-    if (!nombre || !semestre) {
-      setError("⚠️ Por favor completa todos los campos.");
+    if (!nombre || !semestre || !tutor) {
+      setError(" Por favor completa todos los campos.");
       return;
     }
 
     const nuevoGrupo = {
       id_tutor: idTutor,
-      nombre: nombre,
-      codigo: codigo,
-      semestre: semestre,
+      nombre,
+      codigo,
+      semestre,
     };
 
     try {
@@ -54,7 +84,7 @@ const NuevoGrupo = () => {
       const data = await respuesta.json();
 
       if (data.success) {
-        setMensaje(" Grupo creado exitosamente ");
+        setMensaje(" Grupo creado exitosamente");
         setTimeout(() => navigate("/grupos"), 2000);
       } else {
         setError(data.message || " No se pudo crear el grupo.");
@@ -78,45 +108,66 @@ const NuevoGrupo = () => {
 
           <form onSubmit={handleCrearGrupo} className="space-y-6">
             <div>
-              <label className="block text-xl font-semibold text-gray-800 mb-2">
-                Nombre del grupo
+              <label className="block text-xl font-semibold text-gray-800 mb-3">
+                Nombre del grupo.
               </label>
               <input
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Ej. Tutoría A"
-                className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm"
+                className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm mb-4"
               />
+
+              {/* 🔹 Label que dispara la carga de tutores */}
+              <label
+                onClick={obtenerTutores}
+                className={`block text-xl font-semibold text-gray-800 mb-2 cursor-pointer transition ${
+                  cargandoTutores ? "opacity-60 cursor-not-allowed" : "hover:text-[#3CB9A5]"
+                }`}
+                title="Haz clic para cargar tutores disponibles"
+              >
+                Tutor del grupo. 
+              </label>
+
+              {/*  Select dinámico de tutores */}
+              <select
+                value={tutor}
+                onChange={(e) => setTutor(e.target.value)}
+                disabled={cargandoTutores}
+                className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm"
+              >
+                {cargandoTutores ? (
+                  <option>Cargando tutores...</option>
+                ) : (
+                  <>
+                    <option value="">Seleccione un tutor</option>
+                    {tutores.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.nombre}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
             </div>
-
-
 
             <div>
               <label className="block text-xl font-semibold text-gray-800 mb-2">
-                Semestre
+                Semestre.
               </label>
               <select
-                type="text"
                 value={semestre}
                 onChange={(e) => setSemestre(e.target.value)}
-                placeholder="Ej. 5° Semestre"
                 className="w-full border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-4 focus:ring-purple-200 text-gray-700 shadow-sm"
               >
                 <option value="" disabled>Seleccione un semestre</option>
-                <option value="1° Semestre">1° Semestre</option>
-                <option value="2° Semestre">2° Semestre</option>
-                <option value="3° Semestre">3° Semestre</option>
-                <option value="4° Semestre">4° Semestre</option>
-                <option value="5° Semestre">5° Semestre</option>
-                <option value="6° Semestre">6° Semestre</option>
-                <option value="7° Semestre">7° Semestre</option>
-                <option value="8° Semestre">8° Semestre</option>
-                <option value="9° Semestre">9° Semestre</option>
-                <option value="10° Semestre">10° Semestre</option>
-                <option value="11° Semestre">11° Semestre</option>
-                <option value="12° Semestre">12° Semestre</option>
-                </select>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={`${i + 1}° Semestre`}>
+                    {i + 1}° Semestre
+                  </option>
+                ))}
+              </select>
             </div>
 
             {mensaje && <p className="text-green-600 text-center">{mensaje}</p>}
@@ -126,8 +177,9 @@ const NuevoGrupo = () => {
               <button
                 type="submit"
                 disabled={cargando}
-                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${cargando && "opacity-70 cursor-not-allowed"
-                  }`}
+                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
+                  cargando && "opacity-70 cursor-not-allowed"
+                }`}
               >
                 {cargando ? "Creando..." : "Crear Grupo"}
               </button>
