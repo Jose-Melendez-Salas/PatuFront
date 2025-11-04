@@ -14,7 +14,7 @@ import NuevoGrupo from './NuevoGrupo'
 import HomeAlumno from './HomeAlumno'
 import Contacto from './Contacto'
 import RegistroBitacora from './RegistroBitacora'
-import VerReportes from './VerReportes'
+//import VerReportes from './VerReportes'
 
 function App() {
 
@@ -38,7 +38,7 @@ function App() {
         <Route path="/HomeAlumno/:matricula" element={<HomeAlumno />} />
         <Route path="/Contacto" element={<Contacto />} />
         <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
-        <Route path="/VerReportes/:idTutor" element={<VerReportes />} />
+        {/* <Route path="/VerReportes/:idTutor" element={<VerReportes />} /> */}
 
       </Routes>
 
