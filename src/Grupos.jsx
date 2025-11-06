@@ -60,12 +60,11 @@ const Grupos = () => {
     const [mostrarModal, setMostrarModal] = useState(false);
     const [codigoGrupo, setCodigoGrupo] = useState('');
     const [mensaje, setMensaje] = useState('');
-
     const usuarioGuardado = localStorage.getItem('usuario');
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
     const esTutor = usuario?.rol === 'tutor';
     const esAlumno = usuario?.rol === 'alumno';
-    const esCoordinador = usuario?.rol === 'coordinador';
+    const esCoordinador = usuario?.rol === 'admin';
 
     //  Cargar grupos según rol
     useEffect(() => {
@@ -163,7 +162,7 @@ const Grupos = () => {
         }
 
         try {
-            setMensaje("🔎 Buscando grupo...");
+            setMensaje(" Buscando grupo...");
             const token = usuario.accessToken;
             const idAlumno = usuario.id;
 

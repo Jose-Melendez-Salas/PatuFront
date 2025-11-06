@@ -59,7 +59,7 @@ const ListaAlumnos = () => {
 
     setUsuario(user);
     setEsTutor(user.rol === 'tutor');
-    setEsCoordinador(user.rol === 'coordinador');
+    setEsCoordinador(user.rol === 'admin');
 
     const fetchAlumnos = async () => {
       try {
@@ -190,7 +190,7 @@ const ListaAlumnos = () => {
             )}
         */}
 
-          {(esCoordinador || esTutor) && idTutorGrupo && (
+          {esCoordinador  && idTutorGrupo && (
             <Link
               to={`/VerReportes/${idTutorGrupo}`}
               className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
