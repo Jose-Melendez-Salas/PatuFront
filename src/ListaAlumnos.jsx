@@ -27,7 +27,7 @@ const AlumnoFicha = ({ nombre, matricula, carrera, semestre, puedeVerFicha }) =>
 );
 
 const ListaAlumnos = () => {
-  const { idGrupo } = useParams(); 
+  const { idGrupo } = useParams();
   const [codigoGrupo, setCodigoGrupo] = useState('');
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [alumnosData, setAlumnosData] = useState([]);
@@ -286,19 +286,21 @@ const ListaAlumnos = () => {
               ×
             </button>
 
-            <h3 className="text-sm text-gray-500 font-semibold mb-2">
-              Código del grupo
-            </h3>
+            <h3 className="text-sm text-gray-500 font-semibold mb-2">Código del grupo</h3>
 
-            <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="flex items-center justify-center gap-2 mb-3 relative">
               <p className="text-4xl font-extrabold text-[#4F3E9B]">{codigoGrupo || 'Cargando...'}</p>
               <FaRegCopy
                 className="text-gray-500 hover:text-gray-700 cursor-pointer text-2xl"
-                onClick={() => {
-                  navigator.clipboard.writeText(codigoGrupo || '');
-                  alert('Código copiado al portapapeles');
-                }}
+                onClick={copiarCodigo}
               />
+
+              {/* 🟣 Mini ventanita de "copiado" */}
+              {copiado && (
+                <div className="absolute right-[-90px] bg-gray-800 text-white text-xs py-1 px-3 rounded-lg shadow-lg animate-fadeIn">
+                  Copiado ✓
+                </div>
+              )}
             </div>
 
             <p className="text-gray-600 text-sm">

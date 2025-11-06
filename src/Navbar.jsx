@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logoImg from './assets/logo.png';
 import iconCasita from './assets/casita.png';
 import iconAlumnos from './assets/alumnos.png';
@@ -6,6 +6,8 @@ import iconAgenda from './assets/agenda.png';
 import iconMail from './assets/mail.png';
 import iconCerrarsesion from './assets/cerrarsesion.png';
 import iconMensajes from './assets/mensajes.png';
+import iconChatIA from './assets/ia.png';
+import { Link } from 'react-router-dom';
 
 
 const Navbar = () => {
@@ -14,7 +16,6 @@ const Navbar = () => {
         const user = localStorage.getItem('usuario');
         return user ? JSON.parse(user) : null;
     });
-
 
     const toggleMenu = () => setMenuAbierto(!menuAbierto);
 
@@ -26,8 +27,6 @@ const Navbar = () => {
 
     return (
         <header className="relative bg-[#4F3E9B] text-white flex items-center justify-between px-5 h-20">
-
-            {/* Si hay usuario: menú hamburguesa + saludo */}
             {usuario && (
                 <div className="flex items-center gap-8">
                     <div
@@ -45,39 +44,62 @@ const Navbar = () => {
                 </div>
             )}
 
-            {/* PATU + Logo siempre visible, alineado a la derecha */}
             <div className="flex items-center gap-4 text-4xl font-bold ml-auto">
                 PATU
                 <img src={logoImg} alt="Logo" className="w-12 h-12" />
             </div>
 
-            {/* Menú desplegable solo si hay usuario */}
             {usuario && (
                 <nav className={`absolute top-20 left-0 w-72 h-[calc(100vh-80px)] bg-[#F7F4FF] p-5 flex-col gap-3 overflow-y-auto shadow-lg z-50 ${menuAbierto ? 'flex' : 'hidden'}`}>
-                    {/* Inicio dinámico según tipo de usuario */}
-                    {usuario.rol === 'tutor' ? (
+
+                    {/* Inicio según rol */}
+                    {usuario.rol === 'tutor' && (
                         <a href="/AccesosMaestros" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                             <img src={iconCasita} alt="Casita" className="w-9 h-9" /> Inicio
                         </a>
-                    ) : (
-                        <a href={`/HomeAlumno/${usuario.matricula}`} // <-- URL dinámica
-                            className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                    )}
+                    {usuario.rol === 'alumno' && (
+                        <a href={`/HomeAlumno/${usuario.matricula}`} className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                            <img src={iconCasita} alt="Casita" className="w-9 h-9" /> Inicio
+                        </a>
+                    )}
+                    {usuario.rol === 'admin' && (
+                        <a href="/Registro" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                             <img src={iconCasita} alt="Casita" className="w-9 h-9" /> Inicio
                         </a>
                     )}
 
+                    {/* Grupos */}
                     <a href="/Grupos" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconAlumnos} alt="Alumnos" className="w-9 h-9" /> Grupos
                     </a>
+
+                    {/* Agenda */}
                     <a href="/Calendario" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
                         <img src={iconAgenda} alt="Agenda" className="w-9 h-9" /> Agenda
                     </a>
-                    <a href="/Contacto" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
-                        <img src={iconMail} alt="Contacto" className="w-9 h-9" /> Contacto
-                    </a>
-                    <a href="/Mensajes" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
-                        <img src={iconMensajes} alt="Mensajes" className="w-9 h-9" /> Mensajes
-                    </a>
+
+
+
+                    {/* Contacto solo alumno y tutor */}
+                    {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
+                        <a href="/Contacto" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                            <img src={iconMail} alt="Contacto" className="w-9 h-9" /> Contacto
+                        </a>
+                    )}
+
+                    {/* Mensajes solo para alumno y admin */}
+                    {(usuario.rol === 'alumno' || usuario.rol === 'admin') && (
+                        <a href={usuario.rol === 'admin' ? "/MensajesCordi" : "/Mensajes"} className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                            <img src={iconMensajes} alt="Mensajes" className="w-9 h-9" /> Mensajes
+                        </a>
+                    )}
+
+                    {/*<Link to="/ChatIA" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                        <img src={iconChatIA} alt="ChatIA" className="w-9 h-9" /> ChatIA
+                    </Link>
+                    */}
+                    {/* Logout */}
                     <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 mt-auto text-black text-xl font-bold p-3 hover:bg-purple-100 w-full text-left"
@@ -85,7 +107,6 @@ const Navbar = () => {
                         <img src={iconCerrarsesion} alt="Cerrar sesión" className="w-9 h-9 rotate-180" /> Cerrar sesión
                     </button>
                 </nav>
-
             )}
         </header>
     );
