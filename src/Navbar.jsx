@@ -75,11 +75,12 @@ const Navbar = () => {
                     </a>
 
                     {/* Agenda */}
-                    <a href="/Calendario" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
-                        <img src={iconAgenda} alt="Agenda" className="w-9 h-9" /> Agenda
-                    </a>
 
-
+                    {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
+                        <a href="/Calendario" className="flex items-center gap-2 text-black text-xl font-bold p-3 hover:bg-purple-100">
+                            <img src={iconAgenda} alt="Agenda" className="w-9 h-9" /> Agenda
+                        </a>
+                    )}
 
                     {/* Contacto solo alumno y tutor */}
                     {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
