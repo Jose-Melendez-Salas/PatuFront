@@ -16,6 +16,8 @@ import Contacto from './Contacto'
 import RegistroBitacora from './RegistroBitacora'
 import Reportes from './Reportes'
 import Mensajes from './Mensajes'
+import MensajesCordi from './Mensajescordi'
+import ChatIA from './ChatIA'
 
 function App() {
 
@@ -41,6 +43,8 @@ function App() {
         <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
         <Route path="/Reportes" element={<Reportes />} />
         <Route path="/Mensajes" element={<Mensajes />} />
+        <Route path="/MensajesCordi" element={<MensajesCordi />} />
+        <Route path="/ChatIA" element={<ChatIA />} />
 
 
 

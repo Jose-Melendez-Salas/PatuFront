@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import logoImg from './assets/logo.png';
-import patoImg from './assets/pato.png';
+import Navbar from './Navbar.jsx';
+import ilustracionImg from './assets/ilustracion.png';
 import { Eye, EyeOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 const Registro = () => {
   const [nombre, setNombre] = useState('');
@@ -62,24 +61,33 @@ const Registro = () => {
 
     setErrores(nuevosErrores);
 
-    // Validar campos obligatorios (trim para evitar espacios vacíos)
     const camposBase = [nombre, apellidoP, apellidoM, correo, contraseña, confirmar].every(c => c.trim() !== '');
-
     let camposRol = false;
 
-    if (rol === 'alumno') {
-      camposRol = [matricula, carrera, semestre].every(c => c.trim() !== '');
-    } else if (rol === 'tutor') {
-      camposRol = [telefono, academia].every(c => c.trim() !== '');
-    }
+    if (rol === 'alumno') camposRol = [matricula, carrera, semestre].every(c => c.trim() !== '');
+    else if (rol === 'tutor') camposRol = [telefono, academia].every(c => c.trim() !== '');
 
     const correoValido = correoNormalizado.endsWith('@itsmante.edu.mx');
     const contraseñaValida = passwordRegex.test(contraseña);
     const contraseñasCoinciden = contraseña === confirmar;
 
-
     setFormValido(camposBase && camposRol && correoValido && contraseñaValida && contraseñasCoinciden);
   }, [nombre, apellidoP, correo, contraseña, confirmar, matricula, carrera, semestre, telefono, academia, rol]);
+
+  const limpiarFormulario = () => {
+    setNombre('');
+    setApellidoP('');
+    setApellidoM('');
+    setCorreo('');
+    setRol('');
+    setMatricula('');
+    setCarrera('');
+    setSemestre('');
+    setTelefono('');
+    setAcademia('');
+    setContraseña('');
+    setConfirmar('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,7 +95,9 @@ const Registro = () => {
 
     setError('');
     setLoading(true);
+
     try {
+      // Crear usuario
       const resUsuario = await fetch('https://apis-patu.onrender.com/api/usuarios/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -103,11 +113,10 @@ const Registro = () => {
       });
 
       const dataUsuario = await resUsuario.json();
-
       if (!resUsuario.ok) throw new Error(dataUsuario.message || 'Error al registrar usuario');
-
       const usuarioId = dataUsuario.data.id;
 
+      // Crear perfil según rol
       if (rol === 'tutor') {
         const resTutor = await fetch('https://apis-patu.onrender.com/api/tutores/crear', {
           method: 'POST',
@@ -128,36 +137,28 @@ const Registro = () => {
         if (!resAlumno.ok) throw new Error(dataAlumno.message || 'Error creando perfil alumno');
       }
 
-      // Guardar datos en localStorage
-      localStorage.setItem('usuario', JSON.stringify({ id_usuario: usuarioId, nombre, apellido_paterno: apellidoP, apellido_materno: apellidoM, correo, rol, estado: 'activo' }));
-      if (rol === 'tutor') localStorage.setItem('tutor', JSON.stringify({ id_usuario: usuarioId, telefono, academia }));
-      if (rol === 'alumno') localStorage.setItem('alumno', JSON.stringify({ id: usuarioId, matricula, carrera, semestre }));
+      // ❌ NO guardar usuario registrado en localStorage, así el coordinador sigue con su sesión
 
       setMostrarExito(true);
-      setTimeout(() => { window.location.href = "/Login"; }, 2500);
+      limpiarFormulario();
+      setTimeout(() => { setMostrarExito(false); }, 2500);
 
     } catch (err) {
       console.error(err);
       setError(err.message);
-    }
-    finally {
-      setLoading(false); // ✅ desactiva loading al terminar
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      <header className="bg-[#4F3E9B] text-white flex items-center justify-end px-10 h-20">
-        <div className="flex items-center gap-4 text-5xl font-bold">
-          PATU
-          <img src={logoImg} alt="Logo" className="w-12 h-12" />
-        </div>
-      </header>
+      <Navbar />
 
       <main className="flex-1 bg-white">
         <div className="flex flex-col md:flex-row h-full">
           <div className="hidden md:flex md:w-[55%] items-center justify-center">
-            <img src={patoImg} alt="pato" className="rounded-xl w-[90%] max-h-[90vh] object-contain" />
+            <img src={ilustracionImg} alt="ilustracion" className="rounded-xl w-full max-w-md md:max-w-lg lg:max-w-xl h-auto object-contain" />
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center p-7 md:-ml-65">
@@ -168,8 +169,6 @@ const Registro = () => {
                 <InputField label="Nombre (s)" value={nombre} onChange={setNombre} obligatorio />
                 <InputField label="Apellido paterno" value={apellidoP} onChange={setApellidoP} obligatorio />
                 <InputField label="Apellido materno" value={apellidoM} onChange={setApellidoM} obligatorio />
-
-
                 <InputField label="Correo Electrónico" value={correo} onChange={setCorreo} tipo="email" tooltip error={errores.correo} obligatorio />
 
                 {rol === 'alumno' && (
@@ -210,11 +209,6 @@ const Registro = () => {
                   )}
                 </button>
               </form>
-
-              <p className="mt-6 text-medium text-center font-medium">
-                ¿Ya tienes cuenta?{' '}
-                <Link to="/Login" className="text-[#4F3E9B] underline font-medium">Inicia sesión</Link>
-              </p>
             </div>
           </div>
         </div>
@@ -226,9 +220,7 @@ const Registro = () => {
             <div className="flex flex-col items-center gap-4">
               <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#3CB9A5] text-white text-4xl font-bold">✓</div>
               <h3 className="text-2xl font-bold text-[#4F3E9B]">¡Registro exitoso!</h3>
-              <p className="text-gray-700 text-lg">
-                Tu cuenta ha sido creada correctamente.<br />Redirigiendo al inicio de sesión...
-              </p>
+              <p className="text-gray-700 text-lg">Tu cuenta ha sido creada correctamente.</p>
             </div>
           </div>
         </div>
