@@ -17,6 +17,8 @@ import RegistroBitacora from './RegistroBitacora'
 import Reportes from './Reportes'
 import ReportesGrupo from './ReportesGrupo'
 import Mensajes from './Mensajes'
+import MensajesCordi from './Mensajescordi'
+import ChatIA from './ChatIA'
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
         <Route path="/Reportes" element={<Reportes />} />
         <Route path="/ReportesGrupo" element={<ReportesGrupo />} />
         <Route path="/Mensajes" element={<Mensajes />} />
+        <Route path="/MensajesCordi" element={<MensajesCordi />} />
+        <Route path="/ChatIA" element={<ChatIA />} />
 
 
 
