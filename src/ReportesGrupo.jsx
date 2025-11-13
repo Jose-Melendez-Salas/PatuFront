@@ -64,7 +64,7 @@ const ReportesGrupo = () => {
                 setLoading(true);
                 setErrorMsg("");
 
-                const token = localStorage.getItem("token"); // si usas JWT
+                const token = localStorage.getItem("token");
 
                 const res = await fetch(
                     `${import.meta.env.VITE_API_URL}/reportes/grupo/${idGrupo}`,
@@ -149,8 +149,8 @@ const ReportesGrupo = () => {
                                         setWeekEnd(Math.min(s + 3, 16));
                                     }}
                                     className={`px-3 py-1 rounded-xl border text-sm ${weekStart === s && weekEnd === Math.min(s + 3, 16)
-                                            ? "bg-gray-100 border-gray-400"
-                                            : "border-gray-300 hover:bg-gray-50"
+                                        ? "bg-gray-100 border-gray-400"
+                                        : "border-gray-300 hover:bg-gray-50"
                                         }`}
                                 >
                                     Sem {s}-{Math.min(s + 3, 16)}
@@ -235,8 +235,8 @@ const ReportesGrupo = () => {
                                     key={key}
                                     onClick={() => toggleTipo(key)}
                                     className={`flex items-center gap-2 px-3 py-1 rounded-xl border text-sm ${visibleTipos.has(key)
-                                            ? "border-gray-300"
-                                            : "border-dashed border-gray-300 opacity-60"
+                                        ? "border-gray-300"
+                                        : "border-dashed border-gray-300 opacity-60"
                                         }`}
                                     title={visibleTipos.has(key) ? "Ocultar" : "Mostrar"}
                                 >
