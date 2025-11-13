@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import logoImg from './assets/logo.png';
 import { useNavigate } from 'react-router-dom';
-import ilustracionImg from './assets/ilustracion.png';
+
+import patoImg from './assets/pato.png';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Login = ({ onLogin }) => {
@@ -61,6 +62,8 @@ const Login = ({ onLogin }) => {
         navigate('/accesosMaestros');
       } else if (data.data.rol === 'alumno') {
         navigate(`/HomeAlumno/${data.data.matricula}`); // usar matrícula
+      } else if (data.data.rol === 'admin') {
+        navigate('/Registro'); // <-- admin va a registro
       } else {
         navigate('/');
       }
@@ -91,9 +94,9 @@ const Login = ({ onLogin }) => {
           {/* Lado izquierdo */}
           <div className="hidden md:flex md:w-1/2 items-center justify-center p-10">
             <img
-              src={ilustracionImg}
-              alt="Ilustración"
-              className="rounded-xl w-full max-h-[80vh] object-contain"
+              src={patoImg}
+              alt="pato"
+              className="rounded-xl w-[90%] max-h-[90vh] object-contain"
             />
           </div>
 
@@ -179,12 +182,7 @@ const Login = ({ onLogin }) => {
               </form>
             </div>
 
-            <p className="mt-6 text-medium text-center w-4/5 font-medium">
-              ¿No tienes cuenta?{' '}
-              <a href="/Registro" className="text-[#4F3E9B] underline font-medium">
-                Regístrate aquí
-              </a>
-            </p>
+
           </div>
         </div>
       </main>

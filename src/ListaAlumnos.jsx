@@ -5,7 +5,8 @@ import { FaSearch } from 'react-icons/fa';
 import { FaRegCopy } from 'react-icons/fa6';
 import NoEncontrado from './assets/NoEncontrado.jpg';
 
-const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
+// Componente para mostrar cada alumno
+const AlumnoFicha = ({ nombre, matricula, carrera, semestre, puedeVerFicha }) => (
   <div className="flex justify-between items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
     <div>
       <h4 className="text-xl font-medium text-gray-800">{nombre}</h4>
@@ -14,7 +15,7 @@ const AlumnoFicha = ({ nombre, matricula, carrera, semestre, esTutor }) => (
       <p className="text-sm text-gray-500">Semestre: {semestre}</p>
     </div>
 
-    {esTutor && (
+    {puedeVerFicha && (
       <Link
         to={`/alumnos/${matricula}/ficha`}
         className="text-blue-600 hover:text-blue-800 text-sm underline font-medium"
@@ -31,45 +32,44 @@ const ListaAlumnos = () => {
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [alumnosData, setAlumnosData] = useState([]);
   const [busqueda, setBusqueda] = useState('');
+  const [resultadoBusqueda, setResultadoBusqueda] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [idTutorGrupo, setIdTutorGrupo] = useState(null);
   const [usuario, setUsuario] = useState(null);
   const [esTutor, setEsTutor] = useState(false);
+  const [esCoordinador, setEsCoordinador] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [copiado, setCopiado] = useState(false); // 🟣 nuevo estado para el toast
+  const [mensajeAccion, setMensajeAccion] = useState('');
 
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem('usuario');
     if (!usuarioGuardado) {
-      setError('⚠️ No hay sesión activa. Inicia sesión de nuevo.');
+      setError('No hay sesión activa. Inicia sesión de nuevo.');
       setLoading(false);
       return;
     }
 
     const user = JSON.parse(usuarioGuardado);
     if (!user || !user.accessToken) {
-      setError('⚠️ Sesión inválida. Por favor, inicia sesión nuevamente.');
+      setError('Sesión inválida. Por favor, inicia sesión nuevamente.');
       setLoading(false);
       return;
     }
 
     setUsuario(user);
     setEsTutor(user.rol === 'tutor');
+    setEsCoordinador(user.rol === 'admin');
 
     const fetchAlumnos = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const token = user.accessToken;
-        const res = await fetch(
-          `https://apis-patu.onrender.com/api/alumnos/grupo/${idGrupo}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const res = await fetch(`https://apis-patu.onrender.com/api/alumnos/grupo/${idGrupo}`, {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
         if (!res.ok) throw new Error('Error al cargar los alumnos');
         const data = await res.json();
@@ -96,6 +96,7 @@ const ListaAlumnos = () => {
         if (dataGrupo.success && dataGrupo.data) {
           setCodigoGrupo(dataGrupo.data.codigo || '');
           setNombreGrupo(dataGrupo.data.nombre || 'Sin nombre');
+           setIdTutorGrupo(dataGrupo.data.id_tutor || null);
         }
       } catch (err) {
         console.error('Error obteniendo datos del grupo:', err);
@@ -108,11 +109,62 @@ const ListaAlumnos = () => {
     }
   }, [idGrupo]);
 
-  // 🟣 función para copiar y mostrar el toast
-  const copiarCodigo = () => {
-    navigator.clipboard.writeText(codigoGrupo || '');
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2000);
+  // 🔎 Buscar alumno por matrícula (solo coordinador)
+  const handleBuscarAlumno = async () => {
+    if (!busqueda.trim()) {
+      setResultadoBusqueda(null);
+      return;
+    }
+
+    try {
+      setMensajeAccion('Buscando alumno...');
+      const res = await fetch(`https://apis-patu.onrender.com/api/alumnos/matricula/${busqueda}`, {
+        headers: {
+          Authorization: `Bearer ${usuario.accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.data) {
+        setResultadoBusqueda(data.data);
+        setMensajeAccion('');
+      } else {
+        setResultadoBusqueda(null);
+        setMensajeAccion('No se encontró ningún alumno con esa matrícula.');
+      }
+    } catch (err) {
+      console.error('Error al buscar alumno:', err);
+      setMensajeAccion('Error al conectar con el servidor.');
+    }
+  };
+
+  // ➕ Agregar alumno al grupo (solo coordinador)
+  const handleAgregarAlumno = async (alumno) => {
+    try {
+      setMensajeAccion('Agregando alumno al grupo...');
+      const body = { id_tutor: alumno.id_tutor || null, id_grupo: parseInt(idGrupo) };
+
+      const res = await fetch(`https://apis-patu.onrender.com/api/alumnos/${alumno.id}/asignacion`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${usuario.accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setMensajeAccion('Alumno agregado correctamente ✅');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        setMensajeAccion(data.message || 'No se pudo agregar al grupo.');
+      }
+    } catch (err) {
+      console.error('Error al agregar alumno:', err);
+      setMensajeAccion('Error al conectar con el servidor.');
+    }
   };
 
   return (
@@ -124,6 +176,9 @@ const ListaAlumnos = () => {
           <div className="flex justify-between items-end mb-1">
             <h2 className="text-3xl font-bold text-gray-800">Lista de alumnos del grupo {nombreGrupo}</h2>
 
+        {/*    
+            Boton de invitar alumnos solo para tutores opcional
+
             {esTutor && (
               <button
                 type="button"
@@ -133,62 +188,94 @@ const ListaAlumnos = () => {
                 Invitar alumnos
               </button>
             )}
+        */}
+
+          {esCoordinador  && idTutorGrupo && (
+            <Link
+              to={`/VerReportes/${idTutorGrupo}`}
+              className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
+            >
+              Ver reportes del grupo
+            </Link>
+          )}
+
           </div>
 
           <div className="w-full h-1 bg-yellow-400 mb-8"></div>
 
-          <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Buscar alumno por matrícula"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full p-4 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-sm"
-            />
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
-
-          {loading && <p className="text-gray-600">Cargando alumnos...</p>}
-          {error && <p className="text-red-600">{error}</p>}
-
-          {!loading && !error && alumnosData.length === 0 && (
-            <div className="flex flex-col items-center text-center py-10">
-              <img src={NoEncontrado} alt="Sin alumnos" className="w-64 mb-6 opacity-80" />
-              <p className="text-lg font-semibold text-gray-700 mb-6">Este grupo está vacío</p>
-              {esTutor && (
+          {/* 🔍 Buscador solo visible para coordinador */}
+          {esCoordinador && (
+            <div className="mb-8 bg-white p-6 rounded-xl shadow-md border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Buscar alumno por matrícula</h3>
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-grow">
+                  <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Ej. 202100123"
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                    className="w-full p-3 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
                 <button
-                  type="button"
-                  onClick={() => setMostrarModal(true)}
-                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={handleBuscarAlumno}
+                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-6 py-3 rounded-xl font-semibold"
                 >
-                  Invitar alumnos
+                  Buscar
                 </button>
+              </div>
+
+              {mensajeAccion && <p className="mt-3 text-gray-600">{mensajeAccion}</p>}
+
+              {/* Resultado de búsqueda */}
+              {resultadoBusqueda && (
+                <div className="mt-4 p-4 border rounded-lg bg-gray-50 shadow-sm">
+                  <p className="text-lg font-bold text-gray-800">{resultadoBusqueda.nombre_completo}</p>
+                  <p className="text-sm text-gray-600">Matrícula: {resultadoBusqueda.matricula}</p>
+                  <p className="text-sm text-gray-600">Carrera: {resultadoBusqueda.carrera}</p>
+                  <p className="text-sm text-gray-600 mb-2">Semestre: {resultadoBusqueda.semestre}</p>
+
+                  <div className="flex gap-3">
+                    <Link
+                      to={`/alumnos/${resultadoBusqueda.matricula}/ficha`}
+                      className="text-blue-600 hover:text-blue-800 underline text-sm font-medium"
+                    >
+                      Ver ficha
+                    </Link>
+                    <button
+                      onClick={() => handleAgregarAlumno(resultadoBusqueda)}
+                      className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-4 py-2 rounded-xl text-sm"
+                    >
+                      ➕ Agregar al grupo
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           )}
 
+          {loading && <p className="text-gray-600">Cargando alumnos...</p>}
+          {error && <p className="text-red-600">{error}</p>}
+
           {!loading && alumnosData.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg border border-gray-100">
-              {alumnosData
-                .filter((alumno) =>
-                  alumno.matricula.toLowerCase().includes(busqueda.toLowerCase()) ||
-                  (alumno.nombre_completo?.toLowerCase().includes(busqueda.toLowerCase()))
-                )
-                .map((alumno) => (
-                  <AlumnoFicha
-                    key={alumno.id_alumno}
-                    nombre={alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido_paterno || ''} ${alumno.apellido_materno || ''}`}
-                    matricula={alumno.matricula}
-                    carrera={alumno.carrera}
-                    semestre={alumno.semestre}
-                    esTutor={esTutor}
-                  />
-                ))}
+              {alumnosData.map((alumno) => (
+                <AlumnoFicha
+                  key={alumno.id_alumno}
+                  nombre={alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido_paterno || ''} ${alumno.apellido_materno || ''}`}
+                  matricula={alumno.matricula}
+                  carrera={alumno.carrera}
+                  semestre={alumno.semestre}
+                  puedeVerFicha={esTutor || esCoordinador}
+                />
+              ))}
             </div>
           )}
         </div>
       </main>
 
+      {/* Modal para tutor */}
       {mostrarModal && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
           <div className="bg-white border-4 border-[#F1CC5A] rounded-2xl shadow-2xl p-8 w-96 text-center relative animate-fadeIn">

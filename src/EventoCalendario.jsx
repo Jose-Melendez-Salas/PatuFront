@@ -57,22 +57,28 @@ const EventoCalendario = () => {
       const persona = data.data || data;
       setPersonaEncontrada(persona);
 
-      // 🔄 Cargar disponibilidades si es tutor
+      // Cargar disponibilidades si es tutor
       if (usuario.rol === 'tutor') {
         const alumnoId = persona.id || persona.id_usuario;
         if (alumnoId) {
           try {
             setCargandoDisponibilidades(true);
             const respDisp = await fetch(
-              `https://apis-patu.onrender.com/api/disponibilidades/${alumnoId}`,
+              `https://apis-patu.onrender.com/api/disponibilidades/alumno/${persona.matricula}`,
               { headers: { Authorization: `Bearer ${usuario.accessToken}` } }
             );
-            const dataDisp = await respDisp.json();
-            if (respDisp.ok && dataDisp.success) {
-              setDisponibilidades(dataDisp.data);
-            } else {
-              setDisponibilidades([]);
-            }
+              const dataDisp = await respDisp.json();
+              console.log(" Respuesta de disponibilidades:", dataDisp);
+
+              if (respDisp.ok && dataDisp.success) {
+                const data = dataDisp.data;
+                const arrayDisp = Array.isArray(data) ? data : [data];
+                setDisponibilidades(arrayDisp);
+              } else {
+                console.warn(" La API devolvió un formato inesperado para disponibilidades:", dataDisp);
+                setDisponibilidades([]);
+              }
+
           } catch (err) {
             console.error('Error cargando disponibilidades:', err);
             setDisponibilidades([]);
@@ -389,14 +395,16 @@ const EventoCalendario = () => {
                 <p className="text-red-500">No hay horarios registrados.</p>
               ) : (
                 <ul className="divide-y divide-gray-200">
-                  {disponibilidades.map((disp) => (
-                    <li key={disp.id} className="py-2">
-                      <p className="font-semibold capitalize">{disp.dia_semana}</p>
-                      <p className="text-sm text-gray-700">
-                        {disp.hora_inicio} - {disp.hora_fin}
-                      </p>
-                    </li>
-                  ))}
+                    {disponibilidades.map((disp) => (
+                      <li key={disp.id} className="py-2">
+                        <p className="font-semibold capitalize">
+                          {disp.dia_semana || disp.dia || 'Sin día registrado'}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          {disp.hora_inicio} - {disp.hora_fin}
+                        </p>
+                      </li>
+                    ))}
                 </ul>
               )}
             </div>
