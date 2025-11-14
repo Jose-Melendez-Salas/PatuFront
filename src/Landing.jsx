@@ -1,7 +1,7 @@
 import React from "react";
 import Tec from "./assets/Tec.jpg";
 import ITSM from "./assets/ITSM.png";
-import TecNM from "./assets/TecNM.png";
+import TecNM from "./assets/tecNM.png";
 import Logo from "./assets/PATU-Logo.png";
 
 // Se mantiene el placeholder para la imagen de ejemplo
@@ -50,9 +50,9 @@ export default function PatuLanding() {
             Programa Académico de Tutorías
           </p>
           <p className="max-w-3xl text-xl drop-shadow-lg">
-            Una plataforma diseñada para **fortalecer la relación
-            tutor-alumno**, facilitar la agenda de tutorías, documentar acuerdos
-            y generar reportes para mejorar el seguimiento académico.
+            Una plataforma diseñada para fortalecer la relación tutor-alumno,
+            facilitar la agenda de tutorías, documentar acuerdos y generar
+            reportes para mejorar el seguimiento académico.
           </p>
 
           <div className="mt-10">
