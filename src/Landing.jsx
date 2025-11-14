@@ -3,10 +3,7 @@ import Tec from "./assets/Tec.jpg";
 import ITSM from "./assets/ITSM.png";
 import TecNM from "./assets/tecNM.png";
 import Logo from "./assets/PATU-Logo.png";
-
-// Se mantiene el placeholder para la imagen de ejemplo
-const placeholderImage =
-  "https://community.softr.io/uploads/db9110/original/2X/7/74e6e7e382d0ff5d7773ca9a87e6f6f8817a68a6.jpeg";
+import Video from "./assets/VideoGif.gif";
 
 export default function PatuLanding() {
   return (
@@ -100,7 +97,7 @@ export default function PatuLanding() {
 
             {/* Imagen del Campus/Plataforma */}
             <img
-              src={placeholderImage} // Uso de la variable declarada fuera del componente
+              src={Video}
               alt="Interfaz de la plataforma PATU"
               className="flex-1 rounded-2xl shadow-2xl object-cover h-72 w-full md:w-auto" // Mejor manejo de dimensiones y sombra
             />
