@@ -145,7 +145,7 @@ const ListaAlumnos = () => {
       setMensajeAccion('Agregando alumno al grupo...');
       const body = { id_tutor: alumno.id_tutor || null, id_grupo: parseInt(idGrupo) };
 
-      const res = await fetch(`https://apis-patu.onrender.com/api/alumnos/${alumno.id}/asignacion`, {
+      const res = await fetch(`https://apis-patu.onrender.com/api/alumnos/${alumno.id_usuario}/asignacion`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${usuario.accessToken}`,
@@ -156,7 +156,7 @@ const ListaAlumnos = () => {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setMensajeAccion('Alumno agregado correctamente ✅');
+        setMensajeAccion('Alumno agregado correctamente ');
         setTimeout(() => window.location.reload(), 1500);
       } else {
         setMensajeAccion(data.message || 'No se pudo agregar al grupo.');
@@ -165,7 +165,43 @@ const ListaAlumnos = () => {
       console.error('Error al agregar alumno:', err);
       setMensajeAccion('Error al conectar con el servidor.');
     }
+    console.log("Alumno recibido:", alumno);
+
   };
+
+const handleEliminarGrupo = async () => {
+  if (!window.confirm("¿Seguro que deseas eliminar este grupo? Esta acción no se puede deshacer.")) {
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `https://apis-patu.onrender.com/api/grupos/eliminar/${idGrupo}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${usuario.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      alert("Grupo eliminado correctamente.");
+      window.location.href = "/Grupos"; // o la ruta a donde quieres regresar
+    } else {
+      alert(data.message || "No se pudo eliminar el grupo.");
+    }
+  } catch (err) {
+    console.error("Error eliminando grupo:", err);
+    alert("Error al conectar con el servidor.");
+  }
+};
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
@@ -175,6 +211,14 @@ const ListaAlumnos = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-end mb-1">
             <h2 className="text-3xl font-bold text-gray-800">Lista de alumnos del grupo {nombreGrupo}</h2>
+            {esCoordinador && (
+              <button
+                onClick={handleEliminarGrupo}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-xl ml-4"
+              >
+                 Eliminar grupo
+              </button>
+)}
 
         {/*    
             Boton de invitar alumnos solo para tutores opcional
@@ -262,7 +306,7 @@ const ListaAlumnos = () => {
             <div className="bg-white rounded-xl shadow-lg border border-gray-100">
               {alumnosData.map((alumno) => (
                 <AlumnoFicha
-                  key={alumno.id_alumno}
+                  key={alumno.id_usuario || alumno.id || alumno.matricula}
                   nombre={alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido_paterno || ''} ${alumno.apellido_materno || ''}`}
                   matricula={alumno.matricula}
                   carrera={alumno.carrera}

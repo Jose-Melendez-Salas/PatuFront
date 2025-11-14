@@ -57,6 +57,8 @@ const Login = ({ onLogin }) => {
         })
       );
 
+      console.log('rol', data.data.rol);
+
       // Redirección
       if (data.data.rol === 'tutor') {
         navigate('/accesosMaestros');
@@ -77,6 +79,7 @@ const Login = ({ onLogin }) => {
     }
   };
 
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

@@ -176,7 +176,8 @@ const Grupos = () => {
                         "Content-Type": "application/json",
                     },
                 }
-            );
+            );console.log("USUARIO GUARDADO:", usuario);
+
 
             const dataGrupo = await resGrupo.json();
 

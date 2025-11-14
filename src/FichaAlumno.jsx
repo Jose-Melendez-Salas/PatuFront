@@ -360,6 +360,10 @@ const FichaAlumno = () => {
                             <Link to={`/Reportes`} state={{ alumno: alumnoData }} className="flex items-center bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 py-2 rounded-full font-semibold shadow-md transition-transform hover:scale-[1.03]">
                                 <FileText className="mr-2" /> Crear reporte
                             </Link>
+                            <Link to={`/Reportes`} state={{ alumno: alumnoData }} className="flex items-center bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 py-2 rounded-full font-semibold shadow-md transition-transform hover:scale-[1.03]">
+                                 Enviar a  psicología
+                            </Link>
+                            
                         </div>
                     </div>
 
