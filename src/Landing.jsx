@@ -3,7 +3,7 @@ import Tec from "./assets/Tec.jpg";
 import ITSM from "./assets/ITSM.png";
 import TecNM from "./assets/tecNM.png";
 import Logo from "./assets/PATU-Logo.png";
-import Video from "./assets/VideoGif.gif";
+import Video from "./assets/Tec2.jpg";
 
 export default function PatuLanding() {
   return (
