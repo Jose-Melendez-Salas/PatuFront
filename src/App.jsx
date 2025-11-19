@@ -1,31 +1,31 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Login from './Login'
-import Registro from './Registro'
-import AccesosMaestros from './accesosMaestros'
-import Pruebas_temp from './Pruebas_temp'
-import RecuperarContra from './RecuperarContra'
-import EventoCalendario from './EventoCalendario'
-import Calendario from './Calendario'
-import Grupos from './Grupos'
-import ListaAlumnos from './ListaAlumnos'
-import FichaAlumno from './FichaAlumno'
-import NuevoGrupo from './NuevoGrupo'
-import HomeAlumno from './HomeAlumno'
-import Contacto from './Contacto'
-import RegistroBitacora from './RegistroBitacora'
-import Reportes from './Reportes'
-import Mensajes from './Mensajes'
-import MensajesCordi from './Mensajescordi'
-import ChatIA from './ChatIA'
+import Login from "./Login";
+import Registro from "./Registro";
+import AccesosMaestros from "./accesosMaestros";
+import Pruebas_temp from "./Pruebas_temp";
+import RecuperarContra from "./RecuperarContra";
+import EventoCalendario from "./EventoCalendario";
+import Calendario from "./Calendario";
+import Grupos from "./Grupos";
+import ListaAlumnos from "./ListaAlumnos";
+import FichaAlumno from "./FichaAlumno";
+import NuevoGrupo from "./NuevoGrupo";
+import HomeAlumno from "./HomeAlumno";
+import Contacto from "./Contacto";
+import RegistroBitacora from "./RegistroBitacora";
+import Reportes from "./Reportes";
+import ReportesGrupo from "./ReportesGrupo";
+import Mensajes from "./Mensajes";
+import MensajesCordi from "./Mensajescordi";
+import ChatIA from "./ChatIA";
+import Landing from "./Landing";
 
 function App() {
-
   return (
-
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Registro" element={<Registro />} />
         <Route path="/AccesosMaestros" element={<AccesosMaestros />} />
@@ -42,16 +42,13 @@ function App() {
         <Route path="/Contacto" element={<Contacto />} />
         <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
         <Route path="/Reportes" element={<Reportes />} />
+        <Route path="/ReportesGrupo" element={<ReportesGrupo />} />
         <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ChatIA" element={<ChatIA />} />
-
-
-
       </Routes>
-
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
