@@ -236,7 +236,7 @@ const handleEliminarGrupo = async () => {
 
           {esCoordinador  && idTutorGrupo && (
             <Link
-              to={`/VerReportes/${idTutorGrupo}`}
+              to={`/ReportesGrupo/${idTutorGrupo}`}
               className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
             >
               Ver reportes del grupo

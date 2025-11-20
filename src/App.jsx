@@ -15,10 +15,10 @@ import HomeAlumno from "./HomeAlumno";
 import Contacto from "./Contacto";
 import RegistroBitacora from "./RegistroBitacora";
 import Reportes from "./Reportes";
-import ReportesGrupo from "./ReportesGrupo";
 import Mensajes from "./Mensajes";
 import MensajesCordi from "./Mensajescordi";
 import Landing from "./Landing";
+import ReportesGrupo from "./ReportesGrupo";
 
 function App() {
   return (
@@ -41,9 +41,10 @@ function App() {
         <Route path="/Contacto" element={<Contacto />} />
         <Route path="/bitacora/:idSesion" element={<RegistroBitacora />} />
         <Route path="/Reportes" element={<Reportes />} />
-        <Route path="/ReportesGrupo" element={<ReportesGrupo />} />
         <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
+        <Route path="/ReportesGrupo/:idTutorGrupo" element={<ReportesGrupo />} />
+
       </Routes>
     </Router>
   );

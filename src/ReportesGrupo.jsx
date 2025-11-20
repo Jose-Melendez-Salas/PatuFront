@@ -67,7 +67,7 @@ const ReportesGrupo = () => {
                 const token = localStorage.getItem("token");
 
                 const res = await fetch(
-                    `${import.meta.env.VITE_API_URL}/reportes/grupo/${idGrupo}`,
+                    `${import.meta.env.VITE_API_URL}/reportes/id/${idTutorGrupo}`,
                     {
                         headers: {
                             "Content-Type": "application/json",

@@ -55,16 +55,16 @@ const Reportes = () => {
             const data = await res.json();
 
             if (res.ok && data.success) {
-                setAlerta('✅ Reporte enviado exitosamente.');
+                setAlerta(' Reporte enviado exitosamente.');
                 setMensaje('');
                 // Opcional: podrías querer actualizar una lista de reportes enviados si la hubiera
                 // setMensajes((prev) => [data.data, ...prev]);
             } else {
-                setAlerta(`❌ Error: ${data.message || 'No se pudo enviar el reporte.'}`);
+                setAlerta(` Error: ${data.message || 'No se pudo enviar el reporte.'}`);
             }
         } catch (err) {
             console.error(err);
-            setAlerta('❌ Error al conectar con el servidor.');
+            setAlerta(' Error al conectar con el servidor.');
         } finally {
             setLoadingEnviar(false);
         }
