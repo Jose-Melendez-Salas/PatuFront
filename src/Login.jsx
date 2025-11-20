@@ -84,7 +84,7 @@ const Login = ({ onLogin }) => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Header */}
-      <header className="bg-[#4F3E9B] text-white flex items-center justify-end px-10 h-20">
+      <header className="bg-[#8C1F2F] text-white flex items-center justify-end px-10 h-20">
         <div className="flex items-center gap-4 text-5xl font-bold">
           PATU
           <img src={logoImg} alt="Logo" className="w-12 h-12" />
