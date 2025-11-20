@@ -137,6 +137,8 @@ const EventoCalendario = () => {
           usuario.rol === 'tutor'
             ? personaEncontrada.id || personaEncontrada.id_usuario
             : usuario.id,
+            
+            id_grupo: personaEncontrada.id_grupo || personaEncontrada.grupo_id, 
         fecha,
         hora_inicio: horaInicio,
         hora_fin: horaFinCalculada,
