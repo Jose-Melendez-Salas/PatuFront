@@ -214,7 +214,7 @@ const handleEliminarGrupo = async () => {
             {esCoordinador && (
               <button
                 onClick={handleEliminarGrupo}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-xl ml-4"
+                className="bg-[#8C1F2F] hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-xl ml-4"
               >
                  Eliminar grupo
               </button>
@@ -237,7 +237,7 @@ const handleEliminarGrupo = async () => {
           {esCoordinador  && idGrupo && (
             <Link
               to={`/ReportesGrupo/${idGrupo}`}
-              className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
+              className="text-[#3C7DD9] hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
             >
               Ver reportes del grupo
             </Link>
@@ -264,7 +264,7 @@ const handleEliminarGrupo = async () => {
                 </div>
                 <button
                   onClick={handleBuscarAlumno}
-                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-6 py-3 rounded-xl font-semibold"
+                  className="bg-[#C7952C] hover:bg-[#E4CD87] text-white px-6 py-3 rounded-xl font-semibold"
                 >
                   Buscar
                 </button>
