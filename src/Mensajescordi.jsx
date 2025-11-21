@@ -116,7 +116,7 @@ const MensajesCordi = () => {
             <main className="p-4 relative z-10">
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">Mensajes recibidos</h2>
-                    <div className="w-full h-1 bg-yellow-400 mb-4"></div>
+                    <div className="w-full h-1 bg-[#C7952C] mb-4"></div>
 
                     {/* 🔍 Filtro por correo */}
                     <input

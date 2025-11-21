@@ -260,7 +260,7 @@ const Grupos = () => {
 
             <main className="p-4 md:p-8 relative z-10 max-w-7xl mx-auto">
                 <h2 className="text-4xl font-extrabold mb-1 text-gray-800">Tus Grupos</h2>
-                <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+                <div className="w-full h-1 bg-[#C7952C] mb-8"></div>
 
                 {loading && <p className="text-gray-600 mt-10 text-center">Cargando grupos...</p>}
                 {error && <p className="text-red-600 mt-10 text-center">{error}</p>}

@@ -214,7 +214,7 @@ const handleEliminarGrupo = async () => {
             {esCoordinador && (
               <button
                 onClick={handleEliminarGrupo}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-xl ml-4"
+                className="bg-[#8C1F2F] hover:bg-[#8C1F2F] text-white font-semibold px-4 py-2 rounded-xl ml-4"
               >
                  Eliminar grupo
               </button>
@@ -245,7 +245,7 @@ const handleEliminarGrupo = async () => {
 
           </div>
 
-          <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+          <div className="w-full h-1 bg-[#C7952C]  mb-8"></div>
 
           {/* 🔍 Buscador solo visible para coordinador */}
           {esCoordinador && (
@@ -259,12 +259,12 @@ const handleEliminarGrupo = async () => {
                     placeholder="Ej. 202100123"
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full p-3 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className="w-full p-3 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E9DBCD]"
                   />
                 </div>
                 <button
                   onClick={handleBuscarAlumno}
-                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-6 py-3 rounded-xl font-semibold"
+                  className="bg-[#E4CD87] hover:bg-[#E9DBCD] text-black px-6 py-3 rounded-xl font-semibold"
                 >
                   Buscar
                 </button>
