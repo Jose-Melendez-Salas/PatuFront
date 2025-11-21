@@ -225,8 +225,8 @@ const Calendario = ({ nombreUsuario }) => {
         </div>
 
         {/* Eventos del mes - Derecha */}
-        <div className="bg-white rounded-3xl shadow-xl/40 p-6 w-full lg:w-80 flex flex-col">
-          <h3 className="text-xl font-bold mb-4 border-b-4 border-yellow-400 pb-2">Eventos del mes:</h3>
+        <div className="bg-white rounded-3xl shadow-xl/40 p-6 w-full lg:w-90 flex flex-col">
+          <h3 className="text-xl font-bold mb-4 border-b-4 border-[#C7952C] pb-2">Eventos del mes:</h3>
           {loading ? (
             <p className="text-gray-500">Cargando...</p>
           ) : eventosOriginales.length === 0 ? (

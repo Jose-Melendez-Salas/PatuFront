@@ -117,7 +117,7 @@ const RecuperarContra = () => {
   return (
     <>
       {/* Header */}
-      <header className="relative bg-[#4F3E9B] text-white flex flex-wrap items-center justify-between px-4 sm:px-6 md:px-10 py-4">
+      <header className="relative bg-[#8C1F2F] text-white flex flex-wrap items-center justify-between px-4 sm:px-6 md:px-10 py-4">
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-center sm:text-left w-full sm:w-auto">
           <div className="text-lg sm:text-2xl md:text-3xl font-bold">
             Recupera tu contraseña rápido y seguro
@@ -131,8 +131,8 @@ const RecuperarContra = () => {
 
       {/* Contenido */}
       <div className="flex flex-col items-center p-4 sm:p-6 md:p-10 bg-gray-50 min-h-screen">
-        <div className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 md:p-10 w-full max-w-md sm:max-w-xl md:max-w-3xl border border-gray-300 mt-6 sm:mt-8 md:mt-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 text-center border-b-4 border-yellow-400 pb-2">
+        <div className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 md:p-10 w-full max-w-md sm:max-w-xl md:max-w-3xl border border-[#E9DBCD] mt-6 sm:mt-8 md:mt-10">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center border-b-6 border-[#C7952C] pb-2">
             Recuperar Contraseña
           </h2>
 
@@ -148,7 +148,7 @@ const RecuperarContra = () => {
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
                 placeholder="correo@itsmante.edu.mx"
-                className="p-2 sm:p-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
+                className="p-2 sm:p-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] w-full"
                 disabled={cargando}
               />
               {correo && (
@@ -172,7 +172,7 @@ const RecuperarContra = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Nueva contraseña"
-                  className="p-2 sm:p-3 border border-gray-300 rounded-2xl pr-10 focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
+                  className="p-2 sm:p-3 border border-gray-300 rounded-2xl pr-10 focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] w-full"
                   disabled={cargando}
                 />
                 <button
@@ -206,7 +206,7 @@ const RecuperarContra = () => {
                   value={confirmarPassword}
                   onChange={(e) => setConfirmarPassword(e.target.value)}
                   placeholder="Repite la nueva contraseña"
-                  className="p-2 sm:p-3 border border-gray-300 rounded-2xl pr-10 focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
+                  className="p-2 sm:p-3 border border-gray-300 rounded-2xl pr-10 focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] w-full"
                   disabled={cargando}
                 />
                 <button
@@ -250,15 +250,15 @@ const RecuperarContra = () => {
             {/* Cargando */}
             {cargando && (
               <div className="flex items-center justify-center gap-3 py-3">
-                <div className="w-5 h-5 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-                <span className="text-gray-600 font-medium text-sm">Actualizando contraseña...</span>
+                <div className="w-5 h-5 border-4 border-[#E4CD87] border-t-[#E9DBCD] rounded-full animate-spin"></div>
+                <span className="text-black font-medium text-sm">Actualizando contraseña...</span>
               </div>
             )}
 
             {/* Botón */}
             <button
               type="submit"
-              className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-lg mt-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#E4CD87] hover:bg-[#E9DBCD] text-black py-3 px-6 rounded-2xl font-bold text-lg mt-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!Object.values(validaciones).every(v => v) || cargando}
             >
               {cargando ? 'Actualizando...' : 'Actualizar Contraseña'}
