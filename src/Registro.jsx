@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar.jsx';
-import ilustracionImg from './assets/ilustracion.png';
+import ilustracionImg from './assets/Registro02.png';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Registro = () => {
@@ -163,7 +163,7 @@ const Registro = () => {
 
           <div className="flex-1 flex flex-col items-center justify-center p-7 md:-ml-65">
             <div className="bg-white rounded-3xl shadow-3xl p-10 w-full max-w-3xl animate-fadeIn border-7 border-gray-300">
-              <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2">Registro</h2>
+              <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2">Registro</h2>
 
               <form className="flex flex-col gap-6 items-center relative w-full" onSubmit={handleSubmit}>
                 <InputField label="Nombre (s)" value={nombre} onChange={setNombre} obligatorio />
@@ -194,7 +194,7 @@ const Registro = () => {
                 <button
                   type="submit"
                   disabled={!formValido || loading}
-                  className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`bg-[#E4CD87] hover:bg-[#C7952C] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -216,9 +216,9 @@ const Registro = () => {
 
       {mostrarExito && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl shadow-2xl p-10 w-[90%] max-w-md text-center border-4 border-[#3CB9A5] animate-fadeIn">
+          <div className="bg-white rounded-3xl shadow-2xl p-10 w-[90%] max-w-md text-center border-4 border-[#E4CD87] animate-fadeIn">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#3CB9A5] text-white text-4xl font-bold">✓</div>
+              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#E4CD87] text-white text-4xl font-bold">✓</div>
               <h3 className="text-2xl font-bold text-[#4F3E9B]">¡Registro exitoso!</h3>
               <p className="text-gray-700 text-lg">Tu cuenta ha sido creada correctamente.</p>
             </div>
