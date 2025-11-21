@@ -20,9 +20,9 @@ const IconoPersonas = ({ colorClase }) => (
 );
 
 // Tarjeta de grupo
-const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoClase }) => (
+const GrupoCard = ({ id, titulo, semestre, tutor, colorClase, colorTextoClase }) => (
     <Link
-        to={`/ListaAlumnos/${codigo}`}
+        to={`/ListaAlumnos/${id}`}
         className={`p-0 rounded-xl border-2 ${colorClase} bg-white shadow-lg flex cursor-pointer 
                     hover:shadow-xl hover:scale-[1.01] transition-all duration-200 min-h-[140px]`}
     >
@@ -33,13 +33,17 @@ const GrupoCard = ({ titulo, semestre, codigo, alumnos, colorClase, colorTextoCl
             <div className="w-[70%] flex flex-col justify-center p-4">
                 <h3 className="text-xl font-extrabold mb-1 text-gray-900 leading-tight">{titulo}</h3>
                 <p className="text-sm font-semibold text-gray-700">{semestre}</p>
-                <p className="text-sm mt-2 font-medium text-gray-700">{alumnos} Alumnos</p>
+
+                {/* ← NOMBRE DEL TUTOR */}
+                <p className="text-sm mt-1 text-gray-600">
+                    Tutor: <span className="font-semibold">{tutor}</span>
+                </p>
             </div>
         </div>
     </Link>
 );
 
-// Botón de crear grupo (solo tutor)
+// Botón de crear grupo (solo Coordinador)
 const NuevoGrupoBoton = () => (
     <Link
         to="/NuevoGrupo"
@@ -58,11 +62,11 @@ const Grupos = () => {
     const [mostrarModal, setMostrarModal] = useState(false);
     const [codigoGrupo, setCodigoGrupo] = useState('');
     const [mensaje, setMensaje] = useState('');
-
     const usuarioGuardado = localStorage.getItem('usuario');
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
     const esTutor = usuario?.rol === 'tutor';
     const esAlumno = usuario?.rol === 'alumno';
+    const esCoordinador = usuario?.rol === 'admin';
 
     //  Cargar grupos según rol
     useEffect(() => {
@@ -79,8 +83,8 @@ const Grupos = () => {
             try {
                 let gruposData = [];
 
+                // ---- TUTOR ----
                 if (esTutor) {
-                    // Mantiene la lógica de tutor
                     const res = await fetch(`https://apis-patu.onrender.com/api/grupos/tutor/${userId}`, {
                         headers: {
                             "Authorization": `Bearer ${token}`,
@@ -92,9 +96,25 @@ const Grupos = () => {
                         const data = await res.json();
                         gruposData = Array.isArray(data.data) ? data.data : [data.data];
                     }
+                }
 
-                } else if (esAlumno) {
-                    // ✅ Aquí usamos únicamente GET /alumnos/:id
+                // ---- COORDINADOR (admin) ----
+                else if (esCoordinador) {
+                    const resGrupos = await fetch(`https://apis-patu.onrender.com/api/grupos/todos`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    });
+
+                    if (resGrupos.ok) {
+                        const dataGrupos = await resGrupos.json();
+                        gruposData = Array.isArray(dataGrupos.data) ? dataGrupos.data : [dataGrupos.data];
+                    }
+                }
+
+                // ---- ALUMNO ----
+                else if (esAlumno) {
                     const resAlumno = await fetch(`https://apis-patu.onrender.com/api/alumnos/${userId}`, {
                         headers: {
                             "Authorization": `Bearer ${token}`,
@@ -103,12 +123,11 @@ const Grupos = () => {
                     });
 
                     if (!resAlumno.ok) throw new Error("Error obteniendo datos del alumno");
-                    const dataAlumno = await resAlumno.json();
 
+                    const dataAlumno = await resAlumno.json();
                     if (dataAlumno.success && dataAlumno.data.id_grupo) {
                         const idGrupo = dataAlumno.data.id_grupo;
 
-                        // GET /grupos/id/:id_grupo
                         const resGrupo = await fetch(`https://apis-patu.onrender.com/api/grupos/id/${idGrupo}`, {
                             headers: {
                                 "Authorization": `Bearer ${token}`,
@@ -116,16 +135,45 @@ const Grupos = () => {
                             }
                         });
 
-                        if (!resGrupo.ok) throw new Error("Error obteniendo datos del grupo");
                         const dataGrupo = await resGrupo.json();
-
-                        if (dataGrupo.success && dataGrupo.data) {
-                            gruposData = [dataGrupo.data];
-                        }
+                        if (dataGrupo.success && dataGrupo.data) gruposData = [dataGrupo.data];
                     }
                 }
 
-                setGrupos(gruposData);
+
+                //  NOMBRE DEL TUTOR
+
+                const gruposConTutor = await Promise.all(
+                    gruposData.map(async (grupo) => {
+                        if (!grupo.id_tutor)
+                            return { ...grupo, tutor_nombre: "No asignado" };
+
+                        try {
+                            const resTutor = await fetch(
+                                `https://apis-patu.onrender.com/api/tutores/id/${grupo.id_tutor}`,
+                                {
+                                    headers: {
+                                        "Authorization": `Bearer ${token}`,
+                                        "Content-Type": "application/json"
+                                    }
+                                }
+                            );
+
+                            const dataTutor = await resTutor.json();
+
+                            return {
+                                ...grupo,
+                                tutor_nombre: dataTutor?.data?.nombre_completo || "No disponible"
+                            };
+
+                        } catch (error) {
+                            console.error("Error obteniendo tutor:", error);
+                            return { ...grupo, tutor_nombre: "Error" };
+                        }
+                    })
+                );
+
+                setGrupos(gruposConTutor);
             } catch (err) {
                 console.error("Error cargando grupos:", err);
                 setError("Error al cargar los grupos");
@@ -141,16 +189,15 @@ const Grupos = () => {
     // Función para que el alumno se una a un grupo
     const handleUnirme = async () => {
         if (!codigoGrupo.trim()) {
-            setMensaje("⚠️ Ingresa un código de grupo válido.");
+            setMensaje(" Ingresa un código de grupo válido.");
             return;
         }
 
         try {
-            setMensaje("🔎 Buscando grupo...");
+            setMensaje(" Buscando grupo...");
             const token = usuario.accessToken;
             const idAlumno = usuario.id;
 
-            // 1️⃣ GET grupo por código
             const resGrupo = await fetch(
                 `https://apis-patu.onrender.com/api/grupos/codigo/${codigoGrupo}`,
                 {
@@ -165,17 +212,14 @@ const Grupos = () => {
             const dataGrupo = await resGrupo.json();
 
             if (!resGrupo.ok || !dataGrupo.success || !dataGrupo.data) {
-                setMensaje("❌ No se encontró un grupo con ese código.");
-                console.error("Error GET grupo:", dataGrupo);
+                setMensaje(" No se encontró un grupo con ese código.");
                 return;
             }
 
             const { id: id_grupo, id_tutor } = dataGrupo.data;
-            console.log("✅ Grupo encontrado:", { id_grupo, id_tutor });
 
-            setMensaje("🔄 Asignando grupo y tutor...");
+            setMensaje(" Asignando grupo y tutor...");
 
-            // 2️⃣ PATCH actualizar alumno con grupo y tutor
             const bodyActualizar = { id_tutor, id_grupo };
 
             const resAsignar = await fetch(
@@ -193,13 +237,11 @@ const Grupos = () => {
             const dataAsignar = await resAsignar.json();
 
             if (!resAsignar.ok || !dataAsignar.success) {
-                setMensaje(`❌ ${dataAsignar.message || "No se pudo unir al grupo."}`);
-                console.error("Error PATCH alumno:", dataAsignar);
+                setMensaje(` ${dataAsignar.message || "No se pudo unir al grupo."}`);
                 return;
             }
 
-            console.log("✅ Asignación exitosa:", dataAsignar);
-            setMensaje("🎉 ¡Te has unido al grupo correctamente!");
+            setMensaje(" ¡Te has unido al grupo correctamente!");
 
             setTimeout(() => {
                 setMostrarModal(false);
@@ -208,7 +250,7 @@ const Grupos = () => {
 
         } catch (error) {
             console.error("Error inesperado al unirse al grupo:", error);
-            setMensaje("❌ Error al conectarse con el servidor.");
+            setMensaje(" Error al conectarse con el servidor.");
         }
     };
 
@@ -232,10 +274,10 @@ const Grupos = () => {
                                     return (
                                         <GrupoCard
                                             key={grupo.id}
+                                            id={grupo.id}
                                             titulo={grupo.nombre || "Sin nombre"}
                                             semestre={grupo.semestre || "Semestre no definido"}
-                                            codigo={grupo.codigo || "Sin código"}
-                                            alumnos={grupo.num_alumnos || 0}
+                                            tutor={grupo.tutor_nombre || "No disponible"}
                                             colorClase={colors.border}
                                             colorTextoClase={colors.text}
                                         />
@@ -262,7 +304,7 @@ const Grupos = () => {
                             </div>
                         )}
 
-                        {esTutor && <NuevoGrupoBoton />}
+                        {esCoordinador && <NuevoGrupoBoton />}
                     </>
                 )}
             </main>
@@ -306,7 +348,7 @@ const Grupos = () => {
                 </div>
             )}
 
-            {/* Modal para tutor (compartir código) */}
+            {/* Modal tutor (mostrar código) */}
             {mostrarModal && esTutor && (
                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
                     <div className="bg-white border-4 border-[#F1CC5A] rounded-2xl shadow-2xl p-8 w-96 text-center relative animate-fadeIn scale-100 transition-transform duration-300 ease-out">
@@ -322,7 +364,9 @@ const Grupos = () => {
                         </h3>
 
                         <div className="flex items-center justify-center gap-2 mb-3">
-                            <p className="text-4xl font-extrabold text-[#4F3E9B]">{codigoGrupo || 'Cargando...'}</p>
+                            <p className="text-4xl font-extrabold text-[#4F3E9B]">
+                                {codigoGrupo || 'Cargando...'}
+                            </p>
                             <FaRegCopy
                                 className="text-gray-500 hover:text-gray-700 cursor-pointer text-2xl"
                                 onClick={() => {
