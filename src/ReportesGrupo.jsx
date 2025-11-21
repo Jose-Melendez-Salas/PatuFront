@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import Navbar from "./Navbar.jsx";
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -65,12 +66,32 @@ const ReportesGrupo = () => {
             setLoading(true);
             setErrorMsg("");
 
+<<<<<<< HEAD
             const usuario = JSON.parse(localStorage.getItem("usuario"));
             const token = usuario?.accessToken;
 
             if (!token) {
                 throw new Error("No hay token de sesión. Inicia sesión nuevamente.");
             }
+=======
+                    const usuario = JSON.parse(localStorage.getItem("usuario"));
+                    const token = usuario?.accessToken;
+
+            if (!token) {
+                throw new Error("No hay token de sesión. Inicia sesión nuevamente.");
+            }
+
+                const res = await fetch(
+                    `https://apis-patu.onrender.com/api/sesiones/reporte-grupo-semana/${idGrupo}`,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                             Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                console.log(res);
+>>>>>>> aja
 
             const res = await fetch(
                 `https://apis-patu.onrender.com/api/sesiones/reporte-grupo-semana/${idGrupo}`,
@@ -82,9 +103,15 @@ const ReportesGrupo = () => {
                 }
             );
 
+<<<<<<< HEAD
             if (!res.ok) {
                 throw new Error("No se pudieron obtener los reportes del grupo");
             }
+=======
+                const body = await res.json();
+                console.log("📌 Respuesta completa del backend:", body);
+                console.log("📌 body.data (lo que debería tener las semanas):", body.data);
+>>>>>>> aja
 
             const body = await res.json();
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import Login from "./Login";
@@ -19,6 +20,28 @@ import Mensajes from "./Mensajes";
 import MensajesCordi from "./Mensajescordi";
 import Landing from "./Landing";
 import ReportesGrupo from "./ReportesGrupo";
+=======
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+
+import Login from './Login'
+import Registro from './Registro'
+import AccesosMaestros from './accesosMaestros'
+import Pruebas_temp from './Pruebas_temp'
+import RecuperarContra from './RecuperarContra'
+import EventoCalendario from './EventoCalendario'
+import Calendario from './Calendario'
+import Grupos from './Grupos'
+import ListaAlumnos from './ListaAlumnos'
+import FichaAlumno from './FichaAlumno'
+import NuevoGrupo from './NuevoGrupo'
+import HomeAlumno from './HomeAlumno'
+import Contacto from './Contacto'
+import RegistroBitacora from './RegistroBitacora'
+import Reportes from './Reportes'
+import Mensajes from './Mensajes'
+import MensajesCordi from './Mensajescordi'
+import ReportesGrupo from './ReportesGrupo'
+>>>>>>> aja
 
 function App() {
   return (
@@ -44,6 +67,12 @@ function App() {
         <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
+<<<<<<< HEAD
+=======
+  
+
+
+>>>>>>> aja
 
       </Routes>
     </Router>
