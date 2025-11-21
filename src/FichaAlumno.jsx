@@ -341,7 +341,7 @@ const FichaAlumno = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <header className="relative bg-[#4F3E9B] text-white flex items-center justify-between px-5 h-20">
+            <header className="relative bg-[#8C1F2F] text-white flex items-center justify-between px-5 h-20">
                 {usuario && (<div className="text-3xl font-bold"> ¡Hola, {usuario.nombre}! </div>)}
                 <div className="flex items-center gap-4 text-4xl font-bold ml-auto"> PATU <img src={logoImg} alt="Logo" className="w-12 h-12" /> </div>
             </header>
@@ -354,13 +354,13 @@ const FichaAlumno = () => {
                             <ArrowLeft className="mr-2" /> Volver
                         </Link>
                         <div className="flex items-center gap-4">
-                            <button onClick={() => navigate("/EventoCalendario")} className="flex items-center justify-center gap-2 bg-yellow-400 text-black font-bold px-5 py-2 rounded-full shadow-md hover:bg-yellow-300 transition-transform hover:scale-[1.03]">
+                            <button onClick={() => navigate("/EventoCalendario")} className="flex items-center justify-center gap-2 bg-[#E4CD87] text-black font-bold px-5 py-2 rounded-full shadow-md hover:bg-[#E4CD87] transition-transform hover:scale-[1.03]">
                                 <FaPlus className="text-sm" /> Registrar evento
                             </button>
-                            <Link to={`/Reportes`} state={{ alumno: alumnoData }} className="flex items-center bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 py-2 rounded-full font-semibold shadow-md transition-transform hover:scale-[1.03]">
+                            <Link to={`/Reportes`} state={{ alumno: alumnoData }} className="flex items-center bg-[#3A8A4F] hover:bg-[#1f6b5e] text-white px-5 py-2 rounded-full font-semibold shadow-md transition-transform hover:scale-[1.03]">
                                 <FileText className="mr-2" /> Crear reporte
                             </Link>
-                            <Link to={`/Reportes`} state={{ alumno: alumnoData }} className="flex items-center bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 py-2 rounded-full font-semibold shadow-md transition-transform hover:scale-[1.03]">
+                            <Link to={`/Reportes`} state={{ alumno: alumnoData }} className="flex items-center bg-[#3A8A4F] hover:bg-[#1f6b5e] text-white px-5 py-2 rounded-full font-semibold shadow-md transition-transform hover:scale-[1.03]">
                                  Enviar a  psicología
                             </Link>
                             
@@ -368,7 +368,7 @@ const FichaAlumno = () => {
                     </div>
 
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">Ficha de Alumno:</h2>
-                    <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+                    <div className="w-full h-1 bg-[#C7952C] mb-8"></div>
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Columna Izquierda */}
@@ -387,7 +387,7 @@ const FichaAlumno = () => {
                             {/* Bitácora */}
                             <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col">
                                 <h3 className="text-2xl font-bold mb-4">Bitácora de {alumnoData.nombre || "Alumno"}</h3>
-                                <div className="w-full h-1 bg-yellow-400 mb-4"></div>
+                                <div className="w-full h-1 bg-[#C7952C] mb-4"></div>
                                 <div className="flex-grow space-y-4 max-h-[500px] overflow-y-auto pr-2">
                                     {bitacoraData.length > 0 ? (
                                         bitacoraData.map((item) => (
@@ -482,7 +482,7 @@ const FichaAlumno = () => {
                                 {!mostrarFormulario && (
                                     <button
                                         onClick={() => setMostrarFormulario(true)}
-                                        className="mb-4 flex items-center justify-center gap-2 bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white font-bold py-2 px-4 rounded-full shadow-md transition-all w-full"
+                                        className="mb-4 flex items-center justify-center gap-2 bg-[#3A8A4F] hover:bg-[#1f6b5e] text-white font-bold py-2 px-4 rounded-full shadow-md transition-all w-full"
                                     >
                                         <FaPlus /> Agregar Disponibilidad
                                     </button>
