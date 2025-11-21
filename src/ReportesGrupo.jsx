@@ -7,20 +7,21 @@ import { Info, BookX, ClipboardList, HeartHandshake, UserCheck, HelpCircle } fro
 import { useParams } from "react-router-dom";
 
 const TIPO_META = {
-    general: { label: "general", hex: "#22c55e", Icono: Info },
-    "problemas académicos": { label: "problemas académicos", hex: "#f97316", Icono: BookX },
-    seguimiento: { label: "seguimiento", hex: "#3b82f6", Icono: ClipboardList },
-    "problemas personales": { label: "problemas personales", hex: "#8b5cf6", Icono: HeartHandshake },
-    "cambio de tutor": { label: "cambio de tutor", hex: "#ec4899", Icono: UserCheck },
-    "sin tipo": { label: "sin tipo", hex: "#6b7280", Icono: HelpCircle },
+    general: { label: "General", hex: "#22c55e", Icono: Info },
+    problemas_academicos: { label: "Problemas académicos", hex: "#f97316", Icono: BookX },
+    seguimiento: { label: "Seguimiento", hex: "#3b82f6", Icono: ClipboardList },
+    problemas_personales: { label: "Problemas personales", hex: "#8b5cf6", Icono: HeartHandshake },
+    cambio_tutor: { label: "Cambio de tutor", hex: "#ec4899", Icono: UserCheck },
+    sin_tipo: { label: "Sin tipo", hex: "#6b7280", Icono: HelpCircle },
 };
 
 const TIPOS = Object.keys(TIPO_META);
 
 function aggregateData(dataSemanal, start, end, granularity) {
     const filtered = dataSemanal
-        .filter((d) => d.semana >= start && d.semana <= end)
-        .map((d) => ({ ...d, label: `Semana ${d.semana}` }));
+        .filter((d) => d.semanaNumero >= start && d.semanaNumero <= end)
+        .map((d) => ({ ...d, label: `Semana ${d.semanaNumero}` }));
+
 
     if (granularity === "semanal") return filtered;
 
@@ -28,7 +29,7 @@ function aggregateData(dataSemanal, start, end, granularity) {
     const buckets = new Map();
 
     filtered.forEach((d) => {
-        const idx = Math.floor((d.semana - start) / bucketSize);
+        const idx = Math.floor((d.semanaNumero - start) / bucketSize);
         const from = start + idx * bucketSize;
         const to = Math.min(from + bucketSize - 1, end);
         const key = `${from}-${to}`;
@@ -59,38 +60,62 @@ const ReportesGrupo = () => {
     const [visibleTipos, setVisibleTipos] = useState(new Set(TIPOS));
 
     useEffect(() => {
-        const fetchDatos = async () => {
-            try {
-                setLoading(true);
-                setErrorMsg("");
+    const fetchDatos = async () => {
+        try {
+            setLoading(true);
+            setErrorMsg("");
 
-                const token = localStorage.getItem("token");
+            const usuario = JSON.parse(localStorage.getItem("usuario"));
+            const token = usuario?.accessToken;
 
-                const res = await fetch(
-                    `${import.meta.env.VITE_API_URL}/reportes/id/${idTutorGrupo}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                        },
-                    }
-                );
+            if (!token) {
+                throw new Error("No hay token de sesión. Inicia sesión nuevamente.");
+            }
 
-                if (!res.ok) {
-                    throw new Error("No se pudieron obtener los reportes del grupo");
+            const res = await fetch(
+                `https://apis-patu.onrender.com/api/sesiones/reporte-grupo-semana/${idGrupo}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
+            );
 
-                const body = await res.json();
+            if (!res.ok) {
+                throw new Error("No se pudieron obtener los reportes del grupo");
+            }
 
-                const normalizados = (body.data || []).map((item) => ({
+            const body = await res.json();
+
+            console.log("📌 Respuesta completa del backend:", body);
+            console.log("📌 body.data (lo que debería tener las semanas):", body.data);
+
+
+            const normalizados = (body.data || []).map((item) => {
+                const tipos = item.conteoPorTipo || {};
+                const semanaNumero = parseInt(item.semana.match(/\d+/)[0]);
+
+                return {
                     semana: item.semana,
-                    general: item.general ?? 0,
-                    "problemas académicos": item.problemas_academicos ?? 0,
-                    seguimiento: item.seguimiento ?? 0,
-                    "problemas personales": item.problemas_personales ?? 0,
-                    "cambio de tutor": item.cambio_tutor ?? 0,
-                    "sin tipo": item.sin_tipo ?? 0,
-                }));
+                    semanaNumero,
+                    label: `Semana ${semanaNumero}`,
+
+                    general: Object.values(tipos).reduce((a, b) => a + b, 0),
+
+                    problemas_academicos: tipos["problemas académicos"] ?? 0,
+                    seguimiento: tipos["seguimiento"] ?? 0,
+                    problemas_personales: tipos["problemas personales"] ?? 0,
+                    cambio_tutor: tipos["cambio de tutor"] ?? 0,
+                    sin_tipo: tipos["sin tipo"] ?? 0,
+                };
+                    });
+                    
+
+
+
+            console.log("Normalizados:", normalizados);
+
 
                 setDatos(normalizados);
             } catch (err) {
@@ -109,6 +134,14 @@ const ReportesGrupo = () => {
             setErrorMsg("No se proporcionó un id de grupo en la ruta.");
         }
     }, [idGrupo]);
+        useEffect(() => {
+    if (datos.length > 0) {
+        setWeekStart(datos[0].semanaNumero);
+        setWeekEnd(datos[datos.length - 1].semanaNumero);
+    }
+}, [datos]);
+
+
 
     const dataAgregada = useMemo(
         () => aggregateData(datos, weekStart, weekEnd, granularity),
@@ -261,16 +294,16 @@ const ReportesGrupo = () => {
                                 <Tooltip />
                                 <Legend onClick={onLegendClick} formatter={legendFormatter} />
 
-                                {TIPOS.filter((t) => visibleTipos.has(t)).map((t) => (
-                                    <Bar
-                                        key={t}
-                                        dataKey={t}
-                                        name={t}
-                                        stackId={stacked ? "a" : undefined}
-                                        fill={TIPO_META[t]?.hex || "#6b7280"}
-                                        maxBarSize={38}
-                                    />
-                                ))}
+                            {TIPOS.filter((t) => visibleTipos.has(t)).map((t) => (
+                                <Bar
+                                    key={t}
+                                    dataKey={t}
+                                    name={TIPO_META[t].label}
+                                    stackId={stacked ? "a" : undefined}
+                                    fill={TIPO_META[t].hex}
+                                />
+                            ))}
+
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

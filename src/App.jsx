@@ -43,7 +43,7 @@ function App() {
         <Route path="/Reportes" element={<Reportes />} />
         <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
-        <Route path="/ReportesGrupo/:idTutorGrupo" element={<ReportesGrupo />} />
+        <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
 
       </Routes>
     </Router>
