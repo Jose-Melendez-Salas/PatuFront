@@ -45,7 +45,7 @@ const Contacto = () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Sesión expirada',
-                    text: '⚠️ No se encontró el token de autenticación. Por favor inicia sesión nuevamente.',
+                    text: ' No se encontró el token de autenticación. Por favor inicia sesión nuevamente.',
                     confirmButtonColor: '#3CB9A5'
                 });
                 setCargando(false);
@@ -72,7 +72,7 @@ const Contacto = () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Mensaje enviado',
-                    text: '✅ Tu mensaje ha sido enviado al coordinador.',
+                    text: 'Tu mensaje ha sido enviado al coordinador.',
                     confirmButtonColor: '#3CB9A5'
                 });
                 setAsunto('');
@@ -82,7 +82,7 @@ const Contacto = () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error al enviar',
-                    text: data.error || '❌ Ocurrió un error. Intenta de nuevo.',
+                    text: data.error || ' Ocurrió un error. Intenta de nuevo.',
                     confirmButtonColor: '#3CB9A5'
                 });
             }
@@ -91,7 +91,7 @@ const Contacto = () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error de conexión',
-                text: '❌ No se pudo conectar con el servidor. Inténtalo más tarde.',
+                text: ' No se pudo conectar con el servidor. Inténtalo más tarde.',
                 confirmButtonColor: '#3CB9A5'
             });
         } finally {
@@ -115,8 +115,8 @@ const Contacto = () => {
 
                 {/* Formulario */}
                 <div className="flex-1 md:w-1/2 lg:w-1/2 flex flex-col items-center justify-center p-4 md:p-7 md:ml-1">
-                    <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl animate-fadeIn border-7 border-gray-300 flex flex-col items-center">
-                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2 w-full">
+                    <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl animate-fadeIn border-7 border-[#E9DBCD] flex flex-col items-center">
+                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2 w-full">
                             Contacto
                         </h2>
 
@@ -128,7 +128,7 @@ const Contacto = () => {
                                     value={nombre}
                                     onChange={(e) => setNombre(e.target.value)}
                                     placeholder="Tu nombre"
-                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
+                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2"
                                 />
                             </label>
 
@@ -139,7 +139,7 @@ const Contacto = () => {
                                     value={correo}
                                     onChange={(e) => setCorreo(e.target.value)}
                                     placeholder="Tu correo electrónico"
-                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
+                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2"
                                 />
                             </label>
 
@@ -150,7 +150,7 @@ const Contacto = () => {
                                     value={asunto}
                                     onChange={(e) => setAsunto(e.target.value)}
                                     placeholder="Asunto del mensaje"
-                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
+                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2"
                                 />
                             </label>
 
@@ -160,15 +160,15 @@ const Contacto = () => {
                                     value={mensaje}
                                     onChange={(e) => setMensaje(e.target.value)}
                                     placeholder="Escribe tu mensaje aquí..."
-                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2 h-32 resize-none"
+                                    className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2 h-32 resize-none"
                                 />
                             </label>
 
                             <button
                                 type="submit"
                                 disabled={cargando}
-                                className={`${cargando ? 'bg-gray-400' : 'bg-[#3CB9A5] hover:bg-[#1f6b5e]'
-                                    } text-white py-3 px-6 rounded-2xl font-bold text-xl mt-4 transition duration-300`}
+                                className={`${cargando ? 'bg-gray-400' : 'bg-[#E4CD87] hover:bg-[#E9DBCD]'
+                                    } text-black py-3 px-6 rounded-2xl font-bold text-xl mt-4 transition duration-300`}
                             >
                                 {cargando ? 'Enviando...' : 'Enviar Mensaje'}
                             </button>

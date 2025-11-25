@@ -19,14 +19,14 @@ const Calendario = ({ nombreUsuario }) => {
   const [loading, setLoading] = useState(false);
   const [detalleEvento, setDetalleEvento] = useState(null);
 
-  // 🔄 Cargar eventos según rol
+  //  Cargar eventos según rol
   useEffect(() => {
     const fetchEventos = async () => {
       try {
         setLoading(true);
         const usuario = JSON.parse(localStorage.getItem('usuario'));
         if (!usuario || !usuario.accessToken) {
-          setError("⚠️ Debes iniciar sesión primero");
+          setError(" Debes iniciar sesión primero");
           setLoading(false);
           return;
         }
@@ -43,7 +43,7 @@ const Calendario = ({ nombreUsuario }) => {
         });
         const data = await res.json();
         if (!res.ok) {
-          setError(data.message || "❌ No se pudieron cargar los eventos");
+          setError(data.message || " No se pudieron cargar los eventos");
           setLoading(false);
           return;
         }
@@ -76,7 +76,7 @@ const Calendario = ({ nombreUsuario }) => {
         setError('');
       } catch (err) {
         console.error(err);
-        setError("⚠️ Error de conexión con la API");
+        setError(" Error de conexión con la API");
       } finally {
         setLoading(false);
       }
@@ -92,8 +92,8 @@ const Calendario = ({ nombreUsuario }) => {
     title: `${evento.tipo || 'Sesión'} - ${evento.alumno?.nombre}`,
     start: `${evento.fecha}T${evento.hora_inicio}`,
     end: `${evento.fecha}T${evento.hora_fin}`,
-    backgroundColor: evento.estado === 'completada' ? '#10b981' : '#8b5cf6',
-    borderColor: evento.estado === 'completada' ? '#059669' : '#7c3aed',
+    backgroundColor: evento.estado === 'completada' ? '#10b981' : '#E4CD87',
+    borderColor: evento.estado === 'completada' ? '#059669' : '#E4CD87',
     extendedProps: { ...evento }
   }));
 
@@ -182,7 +182,7 @@ const Calendario = ({ nombreUsuario }) => {
           <style>{`
             /* Estilos personalizados para FullCalendar (sin cambios) */
             .fc { font-family: inherit; }
-            .fc .fc-toolbar { padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 1rem; margin-bottom: 1.5rem; }
+            .fc .fc-toolbar { padding: 1rem; background: linear-gradient(135deg, #8C1F2F 0%, #8C1F2F 100%); border-radius: 1rem; margin-bottom: 1.5rem; }
             .fc .fc-toolbar-title { font-size: 1.5rem !important; font-weight: 700; color: white; text-transform: capitalize; }
             .fc .fc-button { background: rgba(255, 255, 255, 0.2) !important; border: 2px solid rgba(255, 255, 255, 0.3) !important; color: white !important; font-weight: 600; padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 0.5rem; transition: all 0.3s ease; }
             .fc .fc-button:hover { background: rgba(255, 255, 255, 0.3) !important; transform: translateY(-2px); }
@@ -270,7 +270,7 @@ const Calendario = ({ nombreUsuario }) => {
             >
               ×
             </button>
-            <h2 className="text-2xl font-bold mb-6 text-purple-600 border-b-4 border-purple-400 pb-2">
+            <h2 className="text-2xl font-bold mb-6 text-black-600 border-b-4 border-[#C7952C] pb-2">
               Detalles de la sesión
             </h2>
             <div className="space-y-3">
@@ -296,7 +296,7 @@ const Calendario = ({ nombreUsuario }) => {
             {JSON.parse(localStorage.getItem('usuario'))?.rol === 'tutor' && (
               <button
                 onClick={() => navigate(`/bitacora/${detalleEvento.id_sesion}`)}
-                className="mt-6 w-full flex items-center justify-center gap-2 bg-[#3CB9A5] text-white font-bold py-3 rounded-lg hover:bg-[#1f6b5e] transition-all"
+                className="mt-6 w-full flex items-center justify-center gap-2 bg-[#E4CD87] text-blac font-bold py-3 rounded-lg hover:bg-[#E9DBCD] transition-all"
               >
                 Registrar Bitácora
               </button>
