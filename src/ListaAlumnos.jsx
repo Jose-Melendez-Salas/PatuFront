@@ -237,7 +237,7 @@ const handleEliminarGrupo = async () => {
           {esCoordinador  && idGrupo && (
             <Link
               to={`/ReportesGrupo/${idGrupo}`}
-              className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
+              className="text-[#3C7DD9] hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
             >
               Ver reportes del grupo
             </Link>

@@ -132,7 +132,7 @@ const NuevoGrupo = () => {
       <main className="p-6 md:p-10 flex flex-col items-center justify-center flex-grow">
         <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-200 w-full max-w-lg">
           <h2 className="text-3xl font-bold mb-2 text-gray-800">Nuevo grupo</h2>
-          <div className="w-full h-1 bg-yellow-400 mb-6"></div>
+          <div className="w-full h-1 bg-[#C7952C]"></div>
 
           <form onSubmit={handleCrearGrupo} className="space-y-6">
             {/* ===================== Nombre ===================== */}
@@ -205,7 +205,7 @@ const NuevoGrupo = () => {
               <button
                 type="submit"
                 disabled={cargando}
-                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
+                className={`bg-[#E4CD87] hover:bg-[#C7952C] text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
                   cargando && "opacity-70 cursor-not-allowed"
                 }`}
               >
