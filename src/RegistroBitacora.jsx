@@ -62,9 +62,9 @@ const RegistroBitacora = () => {
   return (
     <>
       <Navbar />
-      <main className="p-6 flex flex-col items-center">
-        <div className="bg-white rounded-3xl shadow-lg p-8 w-full max-w-3xl border border-gray-200">
-          <h2 className="text-2xl font-bold mb-6 border-b-4 border-yellow-400 pb-3 text-center">
+      <main className="p-6 flex flex-col items-center pt-40">
+        <div className="bg-white rounded-3xl shadow-lg p-8 w-full max-w-3xl border-7 border-[#E9DBCD] pt-20">
+          <h2 className="text-2xl font-bold mb-6 border-b-4 border-[#C7952C] pb-3 text-center">
             Registro de Bitácora
           </h2>
 
@@ -103,7 +103,7 @@ const RegistroBitacora = () => {
             <textarea
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
-              className="w-full p-3 border rounded-xl border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#E9DBCD]"
               rows="3"
             ></textarea>
           </div>
@@ -113,7 +113,7 @@ const RegistroBitacora = () => {
             <textarea
               value={acuerdos}
               onChange={(e) => setAcuerdos(e.target.value)}
-              className="w-full p-3 border rounded-xl border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#E9DBCD]"
               rows="2"
             ></textarea>
           </div>
@@ -123,7 +123,7 @@ const RegistroBitacora = () => {
             <textarea
               value={compromisos}
               onChange={(e) => setCompromisos(e.target.value)}
-              className="w-full p-3 border rounded-xl border-gray-300"
+              className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#E9DBCD]"
               rows="2"
             ></textarea>
           </div>
@@ -134,7 +134,7 @@ const RegistroBitacora = () => {
             className={`w-full py-3 rounded-2xl font-bold text-lg transition ${
               loading
                 ? 'bg-gray-300 text-gray-500'
-                : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
+                : 'bg-[#E4CD87] hover:bg-[#E9DBCD] text-black'
             }`}
           >
             {loading ? 'Guardando...' : 'Guardar bitácora'}

@@ -100,7 +100,7 @@ const Contacto = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-20">
             <Navbar />
 
             <main className="flex flex-col md:flex-row p-4 animate-fadeIn relative z-10 max-w-8xl mx-auto">

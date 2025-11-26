@@ -3,6 +3,7 @@ import { FaSpinner } from 'react-icons/fa';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logoImg from './assets/logo.png';
+import Navbar from './Navbar';
 
 const Reportes = () => {
     const [mensaje, setMensaje] = useState('');
@@ -27,12 +28,12 @@ const Reportes = () => {
 
         if (!mensaje.trim()) {
             // Reemplazamos alert() con setAlerta() para un mejor feedback
-            setAlerta('❌ Por favor escribe un mensaje antes de enviar.');
+            setAlerta(' Por favor escribe un mensaje antes de enviar.');
             return;
         }
 
         if (!alumnoData) {
-            setAlerta('❌ No se recibió información del alumno.');
+            setAlerta(' No se recibió información del alumno.');
             return;
         }
 
@@ -81,32 +82,23 @@ const Reportes = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-20">
 
             {/* Navbar */}
-            <header className="relative bg-[#4F3E9B] text-white flex items-center justify-between px-5 h-20">
-                {usuario && (
-                    <div className="text-3xl font-bold">
-                        ¡Hola, {usuario.nombre}!
-                    </div>
-                )}
-                <div className="flex items-center gap-4 text-4xl font-bold ml-auto">
-                    PATU
-                    <img src={logoImg} alt="Logo" className="w-12 h-12" />
-                </div>
-            </header>
+            <Navbar />
 
             <main className="flex flex-col items-center p-4 md:p-8 animate-fadeIn relative z-10 max-w-8xl mx-auto">
-                <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl border-7 border-gray-300">
+                <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl border-7 border-[#E9DBCD]">
                     <div className="relative">
                         <ArrowLeft
-                            className="w-6 h-6 absolute top-4 left-4 text-gray-600 hover:text-gray-800 cursor-pointer"
+                            className="w-6 h-6 absolute top-4 left-4 text-[#8C1F2F] hover:text-[#8C1F2F] cursor-pointer"
+                            
                             // --- CAMBIO AQUÍ ---
                             // Se llama a la nueva función handleBackClick
                             onClick={handleBackClick}
                         />
 
-                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2">
+                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2">
                             Crear Reporte
                         </h2>
                     </div>
@@ -137,7 +129,7 @@ const Reportes = () => {
                                 value={mensaje}
                                 onChange={(e) => setMensaje(e.target.value)}
                                 placeholder="Añade tus comentarios aquí..."
-                                className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2 h-32 resize-none placeholder-normal"
+                                className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2 h-32 resize-none placeholder-normal"
                             />
                         </label>
 
@@ -150,7 +142,7 @@ const Reportes = () => {
                         <button
                             type="submit"
                             disabled={loadingEnviar || !alumnoData} // Deshabilitar si no hay alumno
-                            className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-xl mt-4 flex justify-center items-center gap-2 ${loadingEnviar || !alumnoData ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`bg-[#E4CD87] hover:bg-[#E9DBCD] text-black py-3 px-6 rounded-2xl font-bold text-xl mt-4 flex justify-center items-center gap-2 ${loadingEnviar || !alumnoData ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {loadingEnviar && <FaSpinner className="animate-spin" />}
                             <FileText className="w-5 h-5" />

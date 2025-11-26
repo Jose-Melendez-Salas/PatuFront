@@ -189,11 +189,11 @@ const EventoCalendario = () => {
     <>
       <Navbar />
 
-      <main className="p-4 sm:p-6 md:p-8 flex justify-center">
-        <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl">
+      <main className="p-4 sm:p-6 md:p-8 flex justify-center ">
+        <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl pt-20">
           {/* 🧾 Formulario principal */}
-          <div className="flex-1 bg-white rounded-3xl shadow-lg p-6 sm:p-8 border border-gray-200">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 border-b-4 border-yellow-400 pb-3 text-center sm:text-left">
+          <div className="flex-1 bg-white rounded-3xl shadow-lg p-6 sm:p-8 border-7 border-[#E9DBCD]">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 border-b-4 border-[#C7952C] pb-3 text-center sm:text-left">
               Nuevo evento
             </h2>
 
@@ -231,7 +231,7 @@ const EventoCalendario = () => {
                 />
                 <button
                   onClick={handleBuscar}
-                  className="bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white px-5 py-3 rounded-2xl font-bold flex justify-center items-center"
+                  className="bg-[#E4CD87] hover:bg-[#E9DBCD] text-black px-5 py-3 rounded-2xl font-bold flex justify-center items-center"
                 >
                   <FaSearch />
                 </button>
@@ -364,7 +364,7 @@ const EventoCalendario = () => {
                 className={`px-8 py-3 rounded-2xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors duration-300 ${
                   botonDeshabilitado
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
+                    : 'bg-[#E4CD87] hover:bg-[#E9DBCD] text-white'
                 }`}
               >
                 {loading && <FaSpinner className="animate-spin" />} Guardar
@@ -376,7 +376,7 @@ const EventoCalendario = () => {
                 className={`px-8 py-3 rounded-2xl font-bold text-lg shadow-md transition-colors duration-300 ${
                   loading
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white'
+                    : 'bg-[#E4CD87] hover:bg-[#E9DBCD] text-black'
                 }`}
               >
                 Regresar al calendario
@@ -386,8 +386,8 @@ const EventoCalendario = () => {
 
           {/* 🕒 Panel derecho: Disponibilidad del alumno */}
           {usuario.rol === 'tutor' && (
-            <div className="w-full md:w-1/3 bg-white rounded-3xl shadow-lg p-6 border border-gray-200">
-              <h3 className="text-xl font-bold mb-4 border-b-2 border-yellow-400 pb-2">
+            <div className="w-full md:w-1/3 bg-white rounded-3xl shadow-lg p-6 border-7 border-[#E9DBCD]">
+              <h3 className="text-xl font-bold mb-4 border-b-2 border-[#C7952C] pb-2">
                 Horario disponible del alumno
               </h3>
 

@@ -152,7 +152,7 @@ const Registro = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100 pt-20">
       <Navbar />
 
       <main className="flex-1 bg-white">
@@ -162,7 +162,7 @@ const Registro = () => {
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center p-7 md:-ml-65">
-            <div className="bg-white rounded-3xl shadow-3xl p-10 w-full max-w-3xl animate-fadeIn border-7 border-gray-300">
+            <div className="bg-white rounded-3xl shadow-3xl p-10 w-full max-w-3xl animate-fadeIn border-7 border-[#E9DBCD]">
               <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2">Registro</h2>
 
               <form className="flex flex-col gap-6 items-center relative w-full" onSubmit={handleSubmit}>
@@ -194,7 +194,7 @@ const Registro = () => {
                 <button
                   type="submit"
                   disabled={!formValido || loading}
-                  className={`bg-[#E4CD87] hover:bg-[#C7952C] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`bg-[#C7952C] hover:bg-[#E4CD87] text-black py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">

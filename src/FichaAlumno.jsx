@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, FileText, Info, BookX, ClipboardList, UserCheck, HeartHandshake, HelpCircle, Clock, Trash2 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, YAxis, Tooltip, Cell } from "recharts";
-import logoImg from './assets/logo.png';
+import Navbar from "./Navbar";
 import { FaPlus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -350,12 +350,9 @@ const FichaAlumno = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-20">
             {/* Header */}
-            <header className="relative bg-[#8C1F2F] text-white flex items-center justify-between px-5 h-20">
-                {usuario && (<div className="text-3xl font-bold"> ¡Hola, {usuario.nombre}! </div>)}
-                <div className="flex items-center gap-4 text-4xl font-bold ml-auto"> PATU <img src={logoImg} alt="Logo" className="w-12 h-12" /> </div>
-            </header>
+                <Navbar />
 
             <main className="p-4 animate-fadeIn relative z-10">
                 <div className="max-w-6xl mx-auto">

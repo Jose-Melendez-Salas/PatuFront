@@ -28,6 +28,7 @@ const AlumnoFicha = ({ nombre, matricula, carrera, semestre, puedeVerFicha }) =>
 
 const ListaAlumnos = () => {
   const { idGrupo } = useParams();
+  const [nombreTutor, setNombreTutor] = useState("");
   const [codigoGrupo, setCodigoGrupo] = useState('');
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [alumnosData, setAlumnosData] = useState([]);
@@ -89,6 +90,26 @@ const ListaAlumnos = () => {
             'Content-Type': 'application/json',
           },
         });
+        
+        const fetchTutor = async (idTutor) => {
+          try {
+            const resTutor = await fetch(`https://apis-patu.onrender.com/api/tutores/id/${idTutor}`, {
+              headers: {
+                Authorization: `Bearer ${user.accessToken}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (!resTutor.ok) throw new Error('Error al obtener datos del tutor');
+            const dataTutor = await resTutor.json();
+
+            if (dataTutor.success && dataTutor.data) {
+              setNombreTutor(dataTutor.data.nombre_completo || 'Sin nombre');
+            }
+          } catch (err) {
+            console.error('Error obteniendo datos del tutor:', err);
+          }
+        };
 
         if (!resGrupo.ok) throw new Error('Error al obtener datos del grupo');
         const dataGrupo = await resGrupo.json();
@@ -97,6 +118,11 @@ const ListaAlumnos = () => {
           setCodigoGrupo(dataGrupo.data.codigo || '');
           setNombreGrupo(dataGrupo.data.nombre || 'Sin nombre');
            setIdTutorGrupo(dataGrupo.data.id_tutor || null);
+
+           if (dataGrupo.data.id_tutor) {
+        fetchTutor(dataGrupo.data.id_tutor);
+    }
+           
         }
       } catch (err) {
         console.error('Error obteniendo datos del grupo:', err);
@@ -186,6 +212,7 @@ const handleEliminarGrupo = async () => {
       }
     );
 
+
     const data = await res.json();
 
     if (res.ok && data.success) {
@@ -204,13 +231,17 @@ const handleEliminarGrupo = async () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
+    <div className="min-h-screen bg-gray-50 animate-fadeIn relative pt-20">
       <Navbar />
 
       <main className={`p-4 relative z-10 transition-all duration-300 ${mostrarModal ? 'blur-sm' : ''}`}>
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-end mb-1">
-            <h2 className="text-3xl font-bold text-gray-800">Lista de alumnos del grupo {nombreGrupo}</h2>
+          <div className="flex justify-between items-start mb-1">
+            <div>
+            <h2 className="text-3xl font-bold text-gray-700">Lista de alumnos del grupo: {nombreGrupo || "Cargando.."}.</h2>
+            <p className="text-3xl font-bold text-gray-700">Tutor: {nombreTutor || "Cargando.."}.</p>
+            </div>
+            
             {esCoordinador && (
               <button
                 onClick={handleEliminarGrupo}
@@ -218,7 +249,7 @@ const handleEliminarGrupo = async () => {
               >
                  Eliminar grupo
               </button>
-)}
+              )}
 
         {/*    
             Boton de invitar alumnos solo para tutores opcional
@@ -289,7 +320,7 @@ const handleEliminarGrupo = async () => {
                     </Link>
                     <button
                       onClick={() => handleAgregarAlumno(resultadoBusqueda)}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-4 py-2 rounded-xl text-sm"
+                      className="bg-[#E4CD87] hover:bg-[#E9DBCD] text-black font-semibold px-4 py-2 rounded-xl text-sm"
                     >
                       ➕ Agregar al grupo
                     </button>

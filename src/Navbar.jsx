@@ -63,7 +63,7 @@ const Navbar = () => {
     };
 
     return (
-        <header className="relative bg-[#8C1F2F] text-white flex items-center justify-between px-5 h-20">
+        <header className="fixed top-0 left-0 right-0 w-full bg-[#8C1F2F] text-white flex items-center justify-between px-5 h-20 z-50">
             {usuario && (
                 <div className="flex items-center gap-8">
                     <div
@@ -87,7 +87,7 @@ const Navbar = () => {
             </div>
 
             {usuario && (
-  <nav className={`absolute top-20 left-0 w-72 h-[calc(100vh-80px)] bg-[#FFFBF4] p-5 flex-col gap-3 overflow-y-auto shadow-lg z-50 ${menuAbierto ? 'flex' : 'hidden'}`}>
+  <nav className={`fixed top-20 left-0 w-72 h-[calc(100vh-80px)] bg-[#FFFBF4] p-5 flex-col gap-3 overflow-y-auto shadow-lg z-50 ${menuAbierto ? 'flex' : 'hidden'}`}>
 
     {/* Inicio según rol */}
     {usuario.rol === 'tutor' && (

@@ -171,14 +171,14 @@ const Calendario = ({ nombreUsuario }) => {
     <>
       <Navbar />
       {error && (
-        <div className="bg-red-100 text-red-700 p-4 text-center font-bold">
+        <div className="bg-red-100 text-red-700 p-4 text-center font-bold pt-20">
           {error}
         </div>
       )}
 
-      <main className="p-8 flex flex-col lg:flex-row gap-6">
+      <main className="p-8 flex flex-col lg:flex-row gap-6 pt-28">
         {/* Calendario FullCalendar - Izquierda */}
-        <div className="bg-white rounded-3xl shadow-xl/40 p-6 flex-1">
+        <div className="bg-white rounded-3xl shadow-xl/40 p-6 flex-1 border-4 border-[#E9DBCD]">
           <style>{`
             /* Estilos personalizados para FullCalendar (sin cambios) */
             .fc { font-family: inherit; }
@@ -225,25 +225,25 @@ const Calendario = ({ nombreUsuario }) => {
         </div>
 
         {/* Eventos del mes - Derecha */}
-        <div className="bg-white rounded-3xl shadow-xl/40 p-6 w-full lg:w-90 flex flex-col">
-          <h3 className="text-xl font-bold mb-4 border-b-4 border-[#C7952C] pb-2">Eventos del mes:</h3>
+        <div className="bg-white rounded-3xl shadow-xl/40 p-6 w-full lg:w-90 flex flex-col border-4 border-[#E9DBCD]">
+          <h3 className="text-xl font-bold mb-4 border-b-4 border-[#C7952C] pb-2 ">Eventos del mes:</h3>
           {loading ? (
             <p className="text-gray-500">Cargando...</p>
           ) : eventosOriginales.length === 0 ? (
             <p className="text-gray-500">No hay eventos registrados</p>
           ) : (
-            <div className="overflow-y-auto max-h-96 mb-4">
+            <div className="overflow-y-auto max-h-[40rem] mb-4 pr-2">
               {eventosOriginales.map((evento) => (
-                <div key={evento.id_sesion} className="border-2 border-purple-400 rounded-xl p-4 mb-4">
-                  <p className="text-sm font-bold">{evento.fecha}</p>
-                  <p className="text-sm font-semibold">{`${evento.hora_inicio} - ${evento.hora_fin}`}</p>
-                  <h4 className="font-bold">{evento.tipo || "Sin tipo"}</h4>
-                  <p className="text-sm">Alumno: {evento.alumno?.nombre}</p>
+                <div key={evento.id_sesion} className="border-2 border-[#8C1F2F] rounded-xl p-4 mb-4">
+                  <p className="text-sm font-bold">Fecha: {evento.fecha}</p>
+                  <p className="text-sm font-semibold">Hora: {`${evento.hora_inicio} - ${evento.hora_fin}`}</p>
+                  <h4 className="font-bold">Tipo: {evento.tipo || "Sin tipo"}</h4>
+                  <p className="text-sm font-bold">Alumno: {evento.alumno?.nombre}</p>
                   <div className="flex justify-between mt-2">
                     <button onClick={() => setDetalleEvento(evento)} className="text-blue-500 flex items-center gap-1 underline text-sm">
                       <FaEye /> Ver detalles
                     </button>
-                    <button onClick={() => handleEliminar(evento.id_sesion)} className="text-red-500 flex items-center gap-1 text-sm">
+                    <button onClick={() => handleEliminar(evento.id_sesion)} className="text-[#8C1F2F] flex items-center gap-1 text-sm">
                       <FaTrash /> Eliminar
                     </button>
                   </div>
@@ -253,7 +253,7 @@ const Calendario = ({ nombreUsuario }) => {
           )}
           <button
             onClick={() => navigate("/EventoCalendario")}
-            className="mt-auto flex items-center justify-center gap-2 bg-yellow-400 text-black font-bold py-3 rounded-full shadow-md hover:bg-yellow-300 transition-all"
+            className="mt-auto flex items-center justify-center gap-2 bg-[#E4CD87] text-black font-bold py-3 rounded-full shadow-md hover:bg-[#E9DBCD] transition-all"
           >
             <FaPlus /> Registrar evento
           </button>
@@ -281,14 +281,14 @@ const Calendario = ({ nombreUsuario }) => {
               <p><strong>Tutor:</strong> {`${detalleEvento.tutor?.nombre} ${detalleEvento.tutor?.apellido_paterno}`}</p>
               <p>
                 <strong>✓ Estado:</strong>
-                <span className={`ml-2 px-3 py-1 rounded-full text-sm font-semibold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'}`}>
+                <span className={`ml-2 px-3 py-1 rounded-full text-sm font-bold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-[#E4CD87] text-black-900'}`}>
                   {detalleEvento.estado}
                 </span>
               </p>
             </div>
             <button
               onClick={() => handleEliminar(detalleEvento.id_sesion)}
-              className="mt-6 w-full flex items-center justify-center gap-2 bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600 transition-all"
+              className="mt-6 w-full flex items-center justify-center gap-2 bg-[#8C1F2F] text-white font-bold py-3 rounded-lg hover:bg-[#8C1F2F] transition-all"
             >
               <FaTrash /> Eliminar sesión
             </button>
