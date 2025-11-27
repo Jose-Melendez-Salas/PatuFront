@@ -34,10 +34,18 @@ const Mensajes = () => {
 
                 if (res.ok && data.success) {
                     setMensajes(data.data || []);
+                    setError(null);
                 } else {
-                    setError(data.message || "No se pudieron obtener los mensajes.");
-                    setMensajes([]);
+                    // Si la API indica que no hay reportes, NO lo tratamos como error
+                    if (data.message?.includes("no") || data.data?.length === 0) {
+                        setMensajes([]);
+                        setError(null);
+                    } else {
+                        setError(data.message || "No se pudieron obtener los mensajes.");
+                        setMensajes([]);
+                    }
                 }
+
             } catch (err) {
                 console.error(err);
                 setError("Hubo un problema al cargar los mensajes.");
@@ -97,10 +105,10 @@ const Mensajes = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
+        <div className="min-h-screen bg-gray-50 animate-fadeIn relative pb-20">
             <Navbar />
 
-            <main className="p-4 relative z-10">
+            <main className="p-4 relative z-10 pb-20">
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">Mensajes</h2>
                     <div className="w-full h-1 bg-yellow-400 mb-8"></div>
