@@ -18,6 +18,7 @@ import Mensajes from "./Mensajes";
 import MensajesCordi from "./Mensajescordi";
 import Landing from "./Landing";
 import ReportesGrupo from "./ReportesGrupo";
+import { Homepsicologa } from "./Homepsicologa";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
+        <Route path="/Homepsicologa" element={<Homepsicologa />} />
 
       </Routes>
     </Router>

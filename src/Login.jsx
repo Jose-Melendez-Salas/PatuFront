@@ -71,6 +71,8 @@ const Login = ({ onLogin }) => {
         navigate(`/HomeAlumno/${data.data.matricula}`); // usar matrícula
       } else if (data.data.rol === "admin") {
         navigate("/Registro"); // <-- admin va a registro
+        } else if (data.data.rol === "psicologia") {
+        navigate("/Homepsicologa"); // <-- psicologia va a Homepsicologa
       } else {
         navigate("/");
       }

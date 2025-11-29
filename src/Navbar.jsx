@@ -1,57 +1,38 @@
 import React, { useState } from 'react';
 import logoImg from './assets/logo.png';
-//import iconCasita from './assets/casita.png';
 import { IoHome } from "react-icons/io5";
-import { BsPersonWorkspace } from "react-icons/bs"; // Maestro
-import { FaRegCalendarAlt } from "react-icons/fa";// Agenda
-import { AiFillMessage } from "react-icons/ai";// Mensajes
-import { CiLogout } from "react-icons/ci";// Cerrar sesión
-import { HiMiniUserGroup } from "react-icons/hi2"; // Grupos
-
-import iconAlumnos from './assets/alumnos.png';
-import iconAgenda from './assets/agenda.png';
-import iconMail from './assets/mail.png';
-import iconCerrarsesion from './assets/cerrarsesion.png';
-import iconMensajes from './assets/mensajes.png';
-import iconChatIA from './assets/ia.png';
+import { BsPersonWorkspace } from "react-icons/bs"; 
+import { FaRegCalendarAlt } from "react-icons/fa";
+import { AiFillMessage } from "react-icons/ai";
+import { CiLogout } from "react-icons/ci";
+import { HiMiniUserGroup } from "react-icons/hi2"; 
 import { Link } from 'react-router-dom';
-
-// Creacion de los estilos del Navbar
-const colores = {
-  icono: "#C7952C",
-  fondoHover: "#FFEDE7",
-  sombraHover: "rgba(190,162,106,0.45)",
-  sombraInterior: "#A14B12",
-};
 
 const estilos = {
   contenedorAccesos: {
     contenedor: `
-      group flex items-center gap-2 text-black text-xl font-bold 
+      group flex items-center gap-4 text-black font-bold 
       p-3 rounded-xl transition-all duration-300
-      hover:bg-[#FFEDE7]
-      hover:shadow-[0_4px_10px_rgba(190,162,106,0.45)]
+      text-lg hover:bg-[#FFEDE7] hover:shadow-md
+      cursor-pointer
     `,
     icono: {
-      base: {
-        color: colores.icono,
-        transition: "all 0.3s",
-        filter: "drop-shadow(0 0 0 transparent)" // sin sombra por defecto
-      },
-      hover: {
-        filter: "drop-shadow(2px 4px 6px #A14B12)" // sombra interior al hacer hover
-      }
+      color: "#C7952C",
+      fontSize: "1.5rem" 
     }
   }
 };
 
-
-
 const Navbar = () => {
     const [menuAbierto, setMenuAbierto] = useState(false);
+    
     const [usuario, setUsuario] = useState(() => {
-        const user = localStorage.getItem('usuario');
-        return user ? JSON.parse(user) : null;
+        try {
+            const user = localStorage.getItem('usuario');
+            return user ? JSON.parse(user) : null;
+        } catch (e) {
+            return null;
+        }
     });
 
     const toggleMenu = () => setMenuAbierto(!menuAbierto);
@@ -63,102 +44,108 @@ const Navbar = () => {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 w-full bg-[#8C1F2F] text-white flex items-center justify-between px-5 h-20 z-50">
+        <header className="fixed top-0 left-0 right-0 w-full bg-[#8C1F2F] text-white flex items-center justify-between px-4 md:px-5 h-16 md:h-20 z-50 shadow-md">
+            
             {usuario && (
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-4 md:gap-8">
+                    {/* Botón Hamburguesa */}
                     <div
-                        className="flex flex-col justify-between w-8 h-6 cursor-pointer"
+                        className="flex flex-col justify-between w-6 h-5 md:w-8 md:h-6 cursor-pointer z-50 hover:opacity-80 transition-opacity"
                         onClick={toggleMenu}
                     >
-                        <span className={`block h-1 w-full bg-white rounded transition-transform duration-300 ${menuAbierto ? 'translate-y-2 rotate-45' : ''}`} />
+                        <span className={`block h-1 w-full bg-white rounded transition-transform duration-300 ${menuAbierto ? 'translate-y-2 md:translate-y-2.5 rotate-45' : ''}`} />
                         <span className={`block h-1 w-full bg-white rounded transition-opacity duration-300 ${menuAbierto ? 'opacity-0' : 'opacity-100'}`} />
-                        <span className={`block h-1 w-full bg-white rounded transition-transform duration-300 ${menuAbierto ? '-translate-y-2 -rotate-45' : ''}`} />
+                        <span className={`block h-1 w-full bg-white rounded transition-transform duration-300 ${menuAbierto ? '-translate-y-2 md:-translate-y-2.5 -rotate-45' : ''}`} />
                     </div>
 
-                    <div className="text-3xl font-bold">
-                        ¡Hola, {usuario.nombre}!
+                    <div className="hidden md:block text-xl md:text-3xl font-bold truncate max-w-[200px] lg:max-w-none">
+                        ¡Hola, {usuario.nombre.split(' ')[0]}!
                     </div>
                 </div>
             )}
 
-            <div className="flex items-center gap-4 text-4xl font-bold ml-auto">
-                PATU
-                <img src={logoImg} alt="Logo" className="w-12 h-12" />
+            <div className="flex items-center gap-2 md:gap-4 ml-auto">
+                <span className="text-2xl md:text-4xl font-bold">PATU</span>
+                <img src={logoImg} alt="Logo" className="w-8 h-8 md:w-12 md:h-12 object-contain" />
             </div>
 
             {usuario && (
-  <nav className={`fixed top-20 left-0 w-72 h-[calc(100vh-80px)] bg-[#FFFBF4] p-5 flex-col gap-3 overflow-y-auto shadow-lg z-50 ${menuAbierto ? 'flex' : 'hidden'}`}>
+                <>
+                    {/* Overlay oscuro */}
+                    {menuAbierto && (
+                        <div 
+                            className="fixed inset-0 bg-black/50 z-40 md:hidden animate-fadeIn"
+                            onClick={toggleMenu}
+                        />
+                    )}
 
-    {/* Inicio según rol */}
-    {usuario.rol === 'tutor' && (
-        
-        //ICONOS DE CASITA
+                    {/* --- MENÚ LATERAL CORREGIDO --- */}
+                    <nav className={`
+                        fixed top-16 md:top-20 left-0 
+                        w-[85%] md:w-72 
+                        /* CORRECCIÓN 1: Usar dvh para móviles (altura dinámica) y pb-24 (padding bottom extra) */
+                        h-[calc(100dvh-64px)] md:h-[calc(100vh-80px)] 
+                        bg-[#FFFBF4] 
+                        p-5 pb-24 md:pb-5 
+                        flex flex-col gap-2 
+                        overflow-y-auto shadow-2xl z-50 
+                        transition-transform duration-300 ease-in-out
+                        ${menuAbierto ? 'translate-x-0' : '-translate-x-full'}
+                    `}>
 
-      <a href="/AccesosMaestros" className={estilos.contenedorAccesos.contenedor}>
-        <IoHome className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-        <style>{`.group:hover .w-9 { filter: ${estilos.contenedorAccesos.icono.hover.filter}; }`}</style>
-        Inicio
-      </a>
-    )}
-    {usuario.rol === 'alumno' && (
-      <a href={`/HomeAlumno/${usuario.matricula}`} className={estilos.contenedorAccesos.contenedor}>
-        <IoHome className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-        <style>{`.group:hover .w-9 { filter: ${estilos.contenedorAccesos.icono.hover.filter}; }`}</style>
-        Inicio
-      </a>
-    )}
-    {usuario.rol === 'admin' && (
-      <a href="/Registro" className={estilos.contenedorAccesos.contenedor}>
-        <IoHome className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-        <style>{`.group:hover .w-9 { filter: ${estilos.contenedorAccesos.icono.hover.filter}; }`}</style>
-        Inicio
-      </a>
-    )}
+                        <div className="md:hidden mb-4 pb-4 border-b border-gray-300 text-[#8C1F2F] font-bold text-xl">
+                            Hola, {usuario.nombre.split(' ')[0]}
+                        </div>
 
-    {/* Grupos */}
+                        {usuario.rol === 'tutor' && (
+                            <Link to="/AccesosMaestros" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                <IoHome style={estilos.contenedorAccesos.icono} /> Inicio
+                            </Link>
+                        )}
+                        {usuario.rol === 'alumno' && (
+                            <Link to={`/HomeAlumno/${usuario.matricula}`} className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                <IoHome style={estilos.contenedorAccesos.icono} /> Inicio
+                            </Link>
+                        )}
+                        {usuario.rol === 'admin' && (
+                            <Link to="/Registro" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                <IoHome style={estilos.contenedorAccesos.icono} /> Inicio
+                            </Link>
+                        )}
 
-    <a href="/Grupos" className={estilos.contenedorAccesos.contenedor}>
-      <HiMiniUserGroup className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-      Grupos
-    </a>
+                        <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                            <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
+                        </Link>
 
-    {/* Agenda */}
-    {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
-      <a href="/Calendario" className={estilos.contenedorAccesos.contenedor}>
-        <FaRegCalendarAlt className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-        Agenda
-      </a>
-    )}
+                        {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
+                            <>
+                                <Link to="/Calendario" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                    <FaRegCalendarAlt style={estilos.contenedorAccesos.icono} /> Agenda
+                                </Link>
+                                <Link to="/Contacto" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                    <BsPersonWorkspace style={estilos.contenedorAccesos.icono} /> Contacto
+                                </Link>
+                            </>
+                        )}
 
-    {/* Contacto */}
-    {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
-      <a href="/Contacto" className={estilos.contenedorAccesos.contenedor}>
-        <BsPersonWorkspace className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-        Contacto
-      </a>
-    )}
+                        {(usuario.rol === 'alumno' || usuario.rol === 'admin') && (
+                            <Link to={usuario.rol === 'admin' ? "/MensajesCordi" : "/Mensajes"} className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                <AiFillMessage style={estilos.contenedorAccesos.icono} /> Mensajes
+                            </Link>
+                        )}
 
-    {/* Mensajes */}
-    {(usuario.rol === 'alumno' || usuario.rol === 'admin') && (
-      <a href={usuario.rol === 'admin' ? "/MensajesCordi" : "/Mensajes"} className={estilos.contenedorAccesos.contenedor}>
-        <AiFillMessage className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-        Mensajes
-      </a>
-    )}
-
-    {/* Logout */}
-    <button
-      onClick={handleLogout}
-      className={`${estilos.contenedorAccesos.contenedor} mt-auto w-full text-left`}
-    >
-      < CiLogout className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
-      Cerrar sesión
-    </button>
-  </nav>
-)}
-
-
-
+                        {/* El botón ahora tiene margen superior automático para ir al fondo */}
+          {/* Logout */}
+                            <button
+                              onClick={handleLogout}
+                              className={`${estilos.contenedorAccesos.contenedor} mt-auto w-full text-left`}
+                            >
+                              < CiLogout className="w-9 h-9" style={estilos.contenedorAccesos.icono.base} />
+                              Cerrar sesión
+                        </button>
+                    </nav>
+                </>
+            )}
         </header>
     );
 };

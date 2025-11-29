@@ -50,9 +50,11 @@ const EventoCard = ({ evento, onVerDetalles }) => {
     };
 
     return (
-        <div className={`p-4 rounded-xl border-4 shadow hover:shadow-xl hover:scale-[1.02] transition-all duration-200 ${colorClasses}`}>
+        <div className={`p-3 sm:p-4 rounded-xl border-4 shadow hover:shadow-xl hover:scale-[1.02] transition-all duration-200 ${colorClasses}`}>
+
             <div className="flex items-center gap-4">
-                <Icono className="w-16 h-16 flex-shrink-0" />
+                <Icono className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0" />
+
                 <div className="flex flex-col">
                     <p className="font-bold">
                         {formatEventTime(evento.fecha, evento.hora_inicio)}
@@ -171,28 +173,57 @@ const AccesosMaestros = () => {
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />
-            <main className="p-5">
-                <div className="flex flex-col lg:flex-row justify-between items-center border-b-4 border-yellow-400 pb-2 mb-5 text-center lg:text-left gap-2">
+                <main className="pt-24 px-4 sm:px-8 lg:px-20">
+
+                {/* BARRA AMARILLA RESPONSIVA */}
+                <div className="flex flex-col md:flex-row justify-between items-center border-b-4 border-yellow-400 pb-3 mb-5 text-center md:text-left gap-3">
                     <h2 className="font-bold text-3xl">Tipos de Sesiones</h2>
-                    <h2 className="font-bold text-3xl">Próximos eventos</h2>
+
+                    {/* Este título solo se ve en pantallas grandes */}
+                    <h2 className="font-bold text-3xl hidden lg:block">Próximos eventos</h2>
                 </div>
-                <div className="flex flex-col lg:flex-row gap-5">
-                    <div className="bg-white rounded-xl shadow p-5 flex-1 lg:flex-[2] min-h-[400px] sm:min-h-[500px]">
+
+                {/* GRID RESPONSIVO */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+
+                    {/* --- GRAFICA --- */}
+                    <div className="bg-white rounded-xl shadow p-5 min-h-[350px] sm:min-h-[450px] lg:min-h-[500px]">
                         {loading ? (
-                            <div className="flex items-center justify-center h-full"><p>Cargando gráfica...</p></div>
+                            <div className="flex items-center justify-center h-full">
+                                <p>Cargando gráfica...</p>
+                            </div>
                         ) : problemasData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={500}>
                                 <PieChart>
-                                    <Pie data={problemasData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius="40%" outerRadius="70%" paddingAngle={3} labelLine={true} label={({ name, value }) => `${name}: ${value}`} >
+                                    <Pie
+                                        data={problemasData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius="40%"
+                                        outerRadius="70%"
+                                        paddingAngle={3}
+                                        labelLine={true}
+                                        label={({ name, value }) => `${name}: ${value}`}
+                                    >
                                         {problemasData.map((entry, index) => {
                                             const tipo = entry.name.toLowerCase();
                                             const estilo = ESTILOS_POR_TIPO[tipo] || ESTILOS_POR_TIPO.default;
-                                            return <Cell key={`cell-${index}`} fill={estilo.hex} />
+                                            return <Cell key={`cell-${index}`} fill={estilo.hex} />;
                                         })}
                                     </Pie>
-                                    <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="font-bold" style={{ fontSize: window.innerWidth < 640 ? '16px' : '20px' }}>
+
+                                    <text
+                                        x="50%"
+                                        y="50%"
+                                        textAnchor="middle"
+                                        dominantBaseline="middle"
+                                        className="font-bold"
+                                    >
                                         {totalSesiones} Sesiones
                                     </text>
+
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -203,12 +234,21 @@ const AccesosMaestros = () => {
                         )}
                     </div>
 
-                    <div className="flex-1 flex flex-col">
-                        <div className="flex-grow space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    {/* --- EVENTOS PRÓXIMOS --- */}
+                    <div className="flex flex-col">
+
+                        {/* Este título solo se ve en móvil */}
+                        <h2 className="font-bold text-3xl block lg:hidden text-center mb-3">
+                            Próximos eventos
+                        </h2>
+
+                        <div className="flex-grow space-y-4 max-h-[400px] sm:max-h-[500px] overflow-y-auto pr-2">
                             {loading ? (
                                 <div className="text-center text-gray-500 p-4">Cargando eventos...</div>
                             ) : error ? (
-                                <div className="text-center text-red-600 font-semibold p-4 bg-red-50 rounded-lg">{error}</div>
+                                <div className="text-center text-red-600 font-semibold p-4 bg-red-50 rounded-lg">
+                                    {error}
+                                </div>
                             ) : eventosProximos.length > 0 ? (
                                 eventosProximos.map((evento) => (
                                     <EventoCard key={evento.id_sesion} evento={evento} onVerDetalles={setDetalleEvento} />
@@ -219,40 +259,67 @@ const AccesosMaestros = () => {
                                 </div>
                             )}
                         </div>
-                        <a href="/Calendario" className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold">
+
+                        <a
+                            href="/Calendario"
+                            className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold"
+                        >
                             Ver agenda completa
                         </a>
                     </div>
                 </div>
-            </main>
 
-            {detalleEvento && (
-                <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex justify-center items-center z-50">
-                    <div className="bg-white p-8 rounded-2xl w-96 relative shadow-xl max-w-full mx-4">
-                        <button className="absolute top-4 right-4 text-red-500 font-bold text-2xl hover:text-red-700" onClick={() => setDetalleEvento(null)}> × </button>
-                        <h2 className="text-2xl font-bold mb-6 text-purple-600 border-b-4 border-purple-400 pb-2"> Detalles de la sesión </h2>
-                        {/* --- 🌟 CONTENIDO RESTAURADO --- */}
-                        <div className="space-y-3">
-                            <p><strong>Fecha:</strong> {detalleEvento.fecha}</p>
-                            <p><strong>Hora:</strong> {detalleEvento.hora_inicio?.substring(0, 5)} - {detalleEvento.hora_fin?.substring(0, 5)}</p>
-                            <p><strong>Tipo:</strong> {capitalizeFirstLetter(detalleEvento.tipo) || "Sin tipo"}</p>
-                            <p><strong>Alumno:</strong> {`${detalleEvento.alumno?.nombre} ${detalleEvento.alumno?.apellido_paterno}`}</p>
-                            <p><strong>Tutor:</strong> {`${detalleEvento.tutor?.nombre} ${detalleEvento.tutor?.apellido_paterno}`}</p>
-                            <p>
-                                <strong>Estado:</strong>
-                                <span className={`ml-2 px-3 py-1 rounded-full text-sm font-semibold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'}`}>
-                                    {detalleEvento.estado}
-                                </span>
-                            </p>
-                        </div>
-                        <button onClick={() => handleEliminar(detalleEvento.id_sesion)} className="mt-6 w-full flex items-center justify-center gap-2 bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600 transition-all">
-                            <FaTrash /> Eliminar sesión
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
+                </main>
+
+
+
+    {detalleEvento && (
+          <div className="fixed inset-0 bg-gray bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-8 rounded-2xl w-96 relative shadow-xl/40 max-w-full mx-4">
+              <button
+                className="absolute top-4 right-4 text-red-500 font-bold text-2xl hover:text-red-700"
+                onClick={() => setDetalleEvento(null)}
+              >
+                ×
+              </button>
+              <h2 className="text-2xl font-bold mb-6 text-black-600 border-b-4 border-[#C7952C] pb-2">
+                Detalles de la sesión
+              </h2>
+              <div className="space-y-3">
+                <p><strong>Fecha:</strong> {detalleEvento.fecha}</p>
+                <p><strong>Hora:</strong> {detalleEvento.hora_inicio} - {detalleEvento.hora_fin}</p>
+                <p><strong>Tipo:</strong> {detalleEvento.tipo || "Sin tipo"}</p>
+                <p><strong>Alumno:</strong> {`${detalleEvento.alumno?.nombre} ${detalleEvento.alumno?.apellido_paterno}`}</p>
+                <p><strong>Tutor:</strong> {`${detalleEvento.tutor?.nombre} ${detalleEvento.tutor?.apellido_paterno}`}</p>
+                <p>
+                  <strong>✓ Estado:</strong>
+                  <span className={`ml-2 px-3 py-1 rounded-full text-sm font-bold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-[#E4CD87] text-black-900'}`}>
+                    {detalleEvento.estado}
+                  </span>
+                </p>
+              </div>
+              <button
+                onClick={() => handleEliminar(detalleEvento.id_sesion)}
+                className="mt-6 w-full flex items-center justify-center gap-2 bg-[#8C1F2F] text-white font-bold py-3 rounded-lg hover:bg-[#8C1F2F] transition-all"
+              >
+                <FaTrash /> Eliminar sesión
+              </button>
+  
+              {JSON.parse(localStorage.getItem('usuario'))?.rol === 'tutor' && (
+                <button
+                  onClick={() => navigate(`/bitacora/${detalleEvento.id_sesion}`)}
+                  className="mt-6 w-full flex items-center justify-center gap-2 bg-[#E4CD87] text-blac font-bold py-3 rounded-lg hover:bg-[#E9DBCD] transition-all"
+                >
+                  Registrar Bitácora
+                </button>
+              )}
+  
+  
+            </div>
+          </div>
+              )}
+          </div>
+      );
+  };
 
 export default AccesosMaestros;

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Cell } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid } from "recharts";
 import { FaEye, FaTrash } from 'react-icons/fa';
 import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { Info, BookX, HeartHandshake, HelpCircle, ClipboardList, UserCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Agregado useNavigate
 
 const ESTILOS_POR_TIPO = {
     'general': { color: 'green', Icono: Info, hex: '#22c55e' },
@@ -22,10 +22,12 @@ const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-// Componente para cada evento
+// --- Componente EventoCard Responsivo ---
 const EventoCard = ({ evento, onVerDetalles }) => {
     const tipoEvento = evento.tipo?.toLowerCase() || 'default';
     const { color, Icono } = ESTILOS_POR_TIPO[tipoEvento] || ESTILOS_POR_TIPO.default;
+    
+    // Mapeo de colores completo para Tailwind
     const classes = {
         blue: 'border-blue-500 bg-blue-50 text-blue-600',
         green: 'border-green-500 bg-green-50 text-green-600',
@@ -41,21 +43,32 @@ const EventoCard = ({ evento, onVerDetalles }) => {
         const manana = new Date(); manana.setDate(hoy.getDate() + 1);
         const fechaEvento = new Date(`${fecha}T00:00:00`);
         let diaTexto = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric' }).format(fechaEvento);
-        if (hoy.toDateString() === fechaEvento.toDateString()) diaTexto = 'Hoy';
-        else if (manana.toDateString() === fechaEvento.toDateString()) diaTexto = 'Mañana';
-        return `${diaTexto}, ${hora.substring(0, 5)}`;
+        
+        // Comparación simple de fechas
+        const isSameDay = (d1, d2) => d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+
+        if (isSameDay(hoy, fechaEvento)) diaTexto = 'Hoy';
+        else if (isSameDay(manana, fechaEvento)) diaTexto = 'Mañana';
+        
+        return `${diaTexto}, ${hora ? hora.substring(0, 5) : '--:--'}`;
     };
 
     return (
-        <div className={`p-4 rounded-xl border-4 shadow hover:shadow-xl hover:scale-[1.02] transition-all duration-200 ${colorClasses}`}>
-            <div className="flex items-center gap-4">
-                <Icono className="w-16 h-16 flex-shrink-0" />
-                <div className="flex flex-col">
-                    <p className="font-bold">{formatEventTime(evento.fecha, evento.hora_inicio)}</p>
-                    <p className="font-semibold mt-1">{capitalizeFirstLetter(evento.tipo) || "Sesión"}</p>
-                    <p className="text-sm mt-1">Alumno: {`${evento.alumno?.nombre || ''} ${evento.alumno?.apellido_paterno || ''}`}</p>
-                    <button onClick={() => onVerDetalles(evento)} className="flex items-center gap-1 underline mt-2 font-semibold text-left">
-                        <FaEye /> Ver detalles
+        <div className={`p-3 md:p-4 rounded-xl border-l-4 md:border-4 shadow-sm hover:shadow-md transition-all duration-200 ${colorClasses} w-full`}>
+            <div className="flex items-start md:items-center gap-3 md:gap-4">
+                {/* Icono más pequeño en móvil (w-10) y normal en desktop (w-14) */}
+                <div className="p-2 bg-white/50 rounded-full flex-shrink-0">
+                    <Icono className="w-8 h-8 md:w-12 md:h-12" />
+                </div>
+                
+                <div className="flex flex-col min-w-0 flex-1">
+                    <p className="font-bold text-sm md:text-base truncate">{formatEventTime(evento.fecha, evento.hora_inicio)}</p>
+                    <p className="font-semibold text-xs md:text-sm mt-0.5 uppercase tracking-wide opacity-90">{capitalizeFirstLetter(evento.tipo) || "Sesión"}</p>
+                    <button 
+                        onClick={() => onVerDetalles(evento)} 
+                        className="flex items-center gap-1 mt-2 text-sm font-bold hover:underline w-fit"
+                    >
+                        <FaEye /> <span className="hidden sm:inline">Ver detalles</span><span className="sm:hidden">Ver</span>
                     </button>
                 </div>
             </div>
@@ -64,6 +77,7 @@ const EventoCard = ({ evento, onVerDetalles }) => {
 };
 
 const HomeAlumno = () => {
+    const navigate = useNavigate();
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
     const [alumnoData] = useState({
@@ -79,60 +93,90 @@ const HomeAlumno = () => {
     const [error, setError] = useState('');
     const [detalleEvento, setDetalleEvento] = useState(null);
 
-    // Fetch de eventos
+    const [materias, setMaterias] = useState([]);
+    const [cursadas, setCursadas] = useState([]);
+    const [calificaciones, setCalificaciones] = useState([]);
+
     useEffect(() => {
-        const fetchEventos = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
                 if (!usuario || !usuario.accessToken || usuario.rol !== 'alumno') {
-                    setError("No se puede cargar eventos: usuario inválido");
+                    setError("No se puede cargar datos: usuario inválido");
                     return;
                 }
 
-                const res = await fetch(`https://apis-patu.onrender.com/api/sesiones/alumno/${usuario.id}`, {
-                    headers: { "Authorization": `Bearer ${usuario.accessToken}` }
-                });
-                const data = await res.json();
-                if (!res.ok) { setError(data.message || "No se pudieron cargar eventos"); return; }
+                const headers = { "Authorization": `Bearer ${usuario.accessToken}` };
 
-                const eventosConNombres = await Promise.all(
-                    data.data.map(async evento => {
-                        const alumnoRes = await fetch(`https://apis-patu.onrender.com/api/usuarios/id/${evento.id_alumno}`, { headers: { "Authorization": `Bearer ${usuario.accessToken}` } });
-                        const alumnoData = await alumnoRes.json();
-                        return { ...evento, alumno: alumnoData.data };
-                    })
-                );
+                // 1. Eventos
+                const resEventos = await fetch(`https://apis-patu.onrender.com/api/sesiones/alumno/${usuario.id}`, { headers });
+                const dataEventos = await resEventos.json();
+                
+                if (resEventos.ok) {
+                    const eventosConNombres = await Promise.all(
+                        dataEventos.data.map(async evento => {
+                            // Intentar obtener datos del alumno si es necesario, aunque en HomeAlumno ya sabemos quién es
+                            return { ...evento, alumno: { nombre: usuario.nombre, apellido_paterno: usuario.apellido_paterno } };
+                        })
+                    );
 
-                const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-                const semana = new Date(); semana.setDate(hoy.getDate() + 7);
-                const eventosFiltrados = eventosConNombres.filter(e => {
-                    const fechaEvento = new Date(e.fecha + 'T00:00:00');
-                    return fechaEvento >= hoy && fechaEvento <= semana;
-                }).sort((a, b) => new Date(`${a.fecha}T${a.hora_inicio}`) - new Date(`${b.fecha}T${b.hora_inicio}`));
+                    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+                    const semana = new Date(); semana.setDate(hoy.getDate() + 7);
+                    
+                    const eventosFiltrados = eventosConNombres.filter(e => {
+                        const fechaEvento = new Date(e.fecha + 'T00:00:00');
+                        return fechaEvento >= hoy && fechaEvento <= semana;
+                    }).sort((a, b) => new Date(`${a.fecha}T${a.hora_inicio}`) - new Date(`${b.fecha}T${b.hora_inicio}`));
 
-                setEventosProximos(eventosFiltrados);
-                // 🔹 Calcular cantidad de sesiones por tipo
-                const conteoPorTipo = eventosConNombres.reduce((acc, evento) => {
-                    const tipo = capitalizeFirstLetter(evento.tipo) || 'Sin tipo';
-                    acc[tipo] = (acc[tipo] || 0) + 1;
-                    return acc;
-                }, {});
+                    setEventosProximos(eventosFiltrados);
 
-                const datosParaGrafica = Object.keys(conteoPorTipo).map(key => ({
-                    tipo: key,
-                    sesiones: conteoPorTipo[key]
-                }));
+                    const conteoPorTipo = eventosConNombres.reduce((acc, evento) => {
+                        const tipo = capitalizeFirstLetter(evento.tipo) || 'Sin tipo';
+                        acc[tipo] = (acc[tipo] || 0) + 1;
+                        return acc;
+                    }, {});
 
-                setChartDataVisual(datosParaGrafica);
+                    const datosParaGrafica = Object.keys(conteoPorTipo).map(key => ({
+                        tipo: key,
+                        sesiones: conteoPorTipo[key]
+                    }));
+                    setChartDataVisual(datosParaGrafica);
+                }
+
+                // 2. Datos Académicos
+                const [resMat, resCurs, resCalif] = await Promise.all([
+                    fetch(`https://apis-patu.onrender.com/api/materias/`, { headers }),
+                    fetch(`https://apis-patu.onrender.com/api/cursada/alumno/${usuario.id}`, { headers }),
+                    fetch(`https://apis-patu.onrender.com/api/calificacion/alumno/${usuario.id}`, { headers })
+                ]);
+
+                if (resMat.ok) { const d = await resMat.json(); setMaterias(d.data || []); }
+                if (resCurs.ok) { const d = await resCurs.json(); setCursadas(d.data || []); }
+                if (resCalif.ok) { const d = await resCalif.json(); setCalificaciones(d.data || []); }
 
                 setError('');
             } catch (err) {
-                console.error(err); setError("Error de conexión con la API");
-            } finally { setLoading(false); }
+                console.error(err);
+                setError("Error de conexión con la API");
+            } finally {
+                setLoading(false);
+            }
         };
 
-        fetchEventos();
+        fetchData();
     }, []);
+
+    const materiasCursadasConDetalle = (() => {
+        const mapaMaterias = {};
+        materias.forEach(m => { mapaMaterias[m.id] = m; });
+        return cursadas.map(c => {
+            const matInfo = mapaMaterias[c.id_materia];
+            const califs = calificaciones.filter(cal => Number(cal.id_materia) === Number(c.id_materia));
+            const objeto = { nombre: matInfo ? matInfo.nombre : `Materia ${c.id_materia}` };
+            califs.forEach(cal => { objeto[`unidad_${cal.unidad}`] = Number(cal.calificacion); });
+            return objeto;
+        });
+    })();
 
     const handleEliminar = async (id_sesion) => {
         const result = await Swal.fire({
@@ -154,131 +198,190 @@ const HomeAlumno = () => {
         } catch { await Swal.fire('Error', 'No se pudo conectar', 'error'); }
     };
 
-    const CustomBarLabel = ({ x, y, width, value }) => (
-        <text x={x + width / 2} y={y} dy={-8} fill="#4F3E9B" fontSize={12} textAnchor="middle">{value}</text>
-    );
-
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-20">
             <Navbar />
+            
             <main className="p-4 animate-fadeIn relative z-10">
                 <div className="max-w-6xl mx-auto">
-                    <h2 className="text-3xl font-bold text-gray-800 mb-2">Tu ficha:</h2>
-                    <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+                    
+                    {/* Encabezado Responsive */}
+                    <div className="mb-6">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                            Bienvenido, <span className="text-[#8C1F2F]">{usuario?.nombre}</span>
+                        </h2>
+                        <div className="w-full h-1 border-[#C7952C] border-2 mb-6 rounded-full"></div>
+                    </div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        {/* Información del alumno */}
-                        <div className="lg:w-3/5 flex flex-col gap-8">
-                            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                                <h3 className="text-2xl font-bold mb-3">{alumnoData.nombre_completo}</h3>
-                                <p className="text-lg"><span className="font-semibold">Matrícula:</span> {alumnoData.matricula}</p>
-                                <p className="text-lg"><span className="font-semibold">Carrera:</span> {alumnoData.carrera}</p>
-                                <p className="text-lg"><span className="font-semibold">Semestre:</span> {alumnoData.semestre}</p>
+                    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                        
+                        {/* COLUMNA IZQUIERDA */}
+                        <div className="lg:w-3/5 flex flex-col gap-6">
+                            
+                            {/* Tarjeta de Información Alumno */}
+                            <div className="bg-white p-5 md:p-6 rounded-2xl shadow-md border border-gray-100">
+                                <h3 className="text-xl md:text-2xl font-bold mb-3 text-gray-800">{alumnoData.nombre_completo}</h3>
+                                <div className="space-y-1 text-sm md:text-lg text-gray-600">
+                                    <p><span className="font-semibold text-gray-800">Matrícula:</span> {alumnoData.matricula}</p>
+                                    <p><span className="font-semibold text-gray-800">Carrera:</span> {alumnoData.carrera}</p>
+                                    <p><span className="font-semibold text-gray-800">Semestre:</span> {alumnoData.semestre}</p>
+                                </div>
                             </div>
 
-                            {/* Próximos eventos */}
-                            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col">
-                                <h3 className="text-2xl font-bold mb-4">Próximos eventos</h3>
-                                {/* Aquí agregamos la línea amarilla */}
-                                <div className="w-full h-1 bg-yellow-400 mb-4"></div>
-
-                                <div className="flex-grow space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                                    {loading ? (
-                                        <p className="text-center text-gray-500 p-4">Cargando eventos...</p>
-                                    ) : error ? (
-                                        <p className="text-center text-red-600 font-semibold p-4 bg-red-50 rounded-lg">{error}</p>
-                                    ) : eventosProximos.length > 0 ? (
-                                        eventosProximos.map(e => <EventoCard key={e.id_sesion} evento={e} onVerDetalles={setDetalleEvento} />)
-                                    ) : (
-                                        <p className="text-center text-gray-600 p-4 bg-gray-50 rounded-lg shadow">
-                                            No tienes eventos programados para los próximos 7 días.
-                                        </p>
-                                    )}
+                            {/* Tarjeta de Próximos Eventos */}
+                            <div className="bg-white p-5 md:p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col h-full">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-xl md:text-2xl font-bold text-gray-800">Próximos eventos</h3>
+                                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold">7 días</span>
                                 </div>
-                                <Link to="/Calendario" className="text-blue-500 hover:text-blue-700 underline mt-4 text-lg text-right font-semibold">
-                                    Ver agenda completa
+                                <div className="w-full h-1 border-[#C7952C] border-2 mb-4 rounded-full"></div>
+                                
+                                <div className="flex-grow space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {loading ? <p className="text-center text-gray-500 py-8">Cargando datos...</p> : 
+                                     error ? <p className="text-center text-red-600 font-semibold py-8">{error}</p> :
+                                     eventosProximos.length > 0 ? eventosProximos.map(e => <EventoCard key={e.id_sesion} evento={e} onVerDetalles={setDetalleEvento} />) :
+                                     <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                                         <p className="text-gray-500 font-medium">No tienes eventos programados.</p>
+                                     </div>}
+                                </div>
+                                <Link to="/Calendario" className="text-blue-600 hover:text-blue-800 text-sm md:text-base font-semibold text-right mt-4 block">
+                                    Ver agenda completa →
                                 </Link>
                             </div>
-
                         </div>
 
-                        {/* Gráfico de calificaciones */}
-                        <div className="lg:w-2/5 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                            <h3 className="text-xl font-bold text-gray-800 text-center mb-4">Tipos de sesiones</h3>
-                            <p className="text-center text-gray-600 mb-6">Distribución de tus sesiones recientes</p>
-                            {chartDataVisual.length === 0 && <p className="text-gray-500 text-center mb-4">No hay sesiones registradas.</p>}
-                            <div className="h-[350px]">
-                                <ResponsiveContainer width="100%" height="80%">
-                                    <BarChart data={chartDataVisual}>
-                                        <YAxis
-                                            domain={[0, 20]}          // límite de 0 a 50
-                                            tickCount={11}            // número aproximado de divisiones
-                                            allowDecimals={false}     // 🔹 evita decimales
-                                            tickFormatter={(value) => Math.floor(value)} // seguridad extra
-                                        />
-
-                                        <Tooltip />
-                                        <Bar dataKey="sesiones" barSize={50} isAnimationActive={false}>
-                                            {chartDataVisual.map((entry, index) => {
-                                                const estilo = ESTILOS_POR_TIPO[entry.tipo?.toLowerCase()] || ESTILOS_POR_TIPO.default;
-                                                return <Cell key={`cell-${index}`} fill={estilo.hex} />;
-                                            })}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-
-                                {/* 🔹 Leyenda personalizada debajo de la gráfica */}
-                                <div className="flex flex-wrap justify-center gap-3 mt-4">
+                        {/* COLUMNA DERECHA */}
+                        <div className="lg:w-2/5 flex flex-col gap-6">
+                            
+                            {/* Gráfica 1: Tipos de sesión */}
+                            <div className="bg-white p-5 md:p-6 rounded-2xl shadow-md border border-gray-100">
+                                <h3 className="text-lg md:text-xl font-bold text-gray-800 text-center mb-1">Tipos de sesiones</h3>
+                                <p className="text-center text-gray-500 text-xs md:text-sm mb-4">Distribución reciente</p>
+                                
+                                {chartDataVisual.length === 0 && !loading && <p className="text-gray-400 text-center py-10 text-sm">No hay datos suficientes.</p>}
+                                
+                                <div className="h-[250px] md:h-[300px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={chartDataVisual}>
+                                            <YAxis allowDecimals={false} fontSize={12} width={30} />
+                                            <Tooltip cursor={{fill: 'transparent'}} />
+                                            <Bar dataKey="sesiones" radius={[4, 4, 0, 0]}>
+                                                {chartDataVisual.map((entry, index) => {
+                                                    const estilo = ESTILOS_POR_TIPO[entry.tipo?.toLowerCase()] || ESTILOS_POR_TIPO.default;
+                                                    return <Cell key={`cell-${index}`} fill={estilo.hex} />;
+                                                })}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                
+                                <div className="flex flex-wrap justify-center gap-2 mt-4">
                                     {chartDataVisual.map((entry, index) => {
                                         const estilo = ESTILOS_POR_TIPO[entry.tipo?.toLowerCase()] || ESTILOS_POR_TIPO.default;
                                         return (
-                                            <div key={index} className="flex items-center gap-2">
-                                                <div
-                                                    className="w-4 h-4 rounded"
-                                                    style={{ backgroundColor: estilo.hex }}
-                                                ></div>
-                                                <span className="text-sm font-medium text-gray-700">{entry.tipo}</span>
+                                            <div key={index} className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: estilo.hex }}></div>
+                                                <span className="text-xs font-medium text-gray-600">{entry.tipo}</span>
                                             </div>
                                         );
                                     })}
                                 </div>
-
-
-
                             </div>
+
+                            {/* Gráfica 2: Rendimiento */}
+                            <div className="bg-white p-5 md:p-6 rounded-2xl shadow-md border border-gray-100">
+                                <h3 className="text-lg md:text-xl font-bold text-gray-800 text-center mb-4">Rendimiento Académico</h3>
+                                <div className="w-16 h-1 border-[#C7952C] border-2 mb-6 mx-auto rounded-full"></div>
+                                
+                                {materiasCursadasConDetalle.length === 0 ? (
+                                    <p className="text-gray-400 text-center py-10 text-sm">No hay materias registradas.</p>
+                                ) : (
+                                    <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                                        {materiasCursadasConDetalle.map((mat, idx) => {
+                                            const unidadesKeys = Object.keys(mat).filter(k => k.startsWith('unidad_')).sort((a,b) => Number(a.split('_')[1]) - Number(b.split('_')[1]));
+                                            const data = [ mat ];
+                                            return (
+                                                <div key={idx} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                                    <h4 className="font-bold mb-2 text-center text-xs text-gray-700 truncate px-2" title={mat.nombre}>{mat.nombre}</h4>
+                                                    <div className="h-[150px] w-full">
+                                                        <ResponsiveContainer width="100%" height="100%">
+                                                            <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                                <XAxis dataKey="nombre" hide={true} />
+                                                                <YAxis domain={[0, 100]} allowDecimals={false} fontSize={10} width={25} />
+                                                                <Tooltip />
+                                                                {unidadesKeys.map((uk, i) => (
+                                                                    <Bar key={uk} dataKey={uk} name={`U${uk.split('_')[1]}`} fill={["#4F3E9B","#f97316","#3b82f6","#22c55e","#8b5cf6"][i % 5]} radius={[2, 2, 0, 0]} />
+                                                                ))}
+                                                            </BarChart>
+                                                        </ResponsiveContainer>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
                     </div>
                 </div>
-
                 <style>{`
-                    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+                    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } } 
                     .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+                    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
                 `}</style>
             </main>
 
-            {/* Modal de detalles */}
+            {/* Modal Detalles Responsive */}
             {detalleEvento && (
-                <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex justify-center items-center z-50">
-                    <div className="bg-white p-8 rounded-2xl w-96 relative shadow-xl max-w-full mx-4">
-                        <button className="absolute top-4 right-4 text-red-500 font-bold text-2xl hover:text-red-700"
-                            onClick={() => setDetalleEvento(null)}>×</button>
-                        <h2 className="text-2xl font-bold mb-6 text-purple-600 border-b-4 border-purple-400 pb-2">Detalles de la sesión</h2>
-                        <div className="space-y-3">
-                            <p><strong>Fecha:</strong> {detalleEvento.fecha}</p>
-                            <p><strong>Hora:</strong> {detalleEvento.hora_inicio?.substring(0, 5)} - {detalleEvento.hora_fin?.substring(0, 5)}</p>
-                            <p><strong>Tipo:</strong> {capitalizeFirstLetter(detalleEvento.tipo) || "Sin tipo"}</p>
-                            <p><strong>Alumno:</strong> {`${detalleEvento.alumno?.nombre} ${detalleEvento.alumno?.apellido_paterno}`}</p>
-                            <p>
-                                <strong>Estado:</strong>
-                                <span className={`ml-2 px-3 py-1 rounded-full text-sm font-semibold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'}`}>
-                                    {detalleEvento.estado}
-                                </span>
-                            </p>
-                        </div>
-                        <button onClick={() => handleEliminar(detalleEvento.id_sesion)}
-                            className="mt-6 w-full flex items-center justify-center gap-2 bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600 transition-all">
-                            <FaTrash /> Eliminar sesión
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+                    <div className="bg-white p-6 rounded-2xl w-full max-w-md relative shadow-2xl animate-fadeIn">
+                        <button
+                            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 font-bold text-2xl transition-colors"
+                            onClick={() => setDetalleEvento(null)}
+                        >
+                            ×
                         </button>
+                        
+                        <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800 pr-8">
+                            Detalles de sesión
+                        </h2>
+                        <div className="w-full h-1 border-[#C7952C] border-2 mb-6 rounded-full"></div>
+                        
+                        <div className="space-y-3 text-sm md:text-base text-gray-700">
+                            <p><strong className="text-gray-900">Fecha:</strong> {detalleEvento.fecha}</p>
+                            <p><strong className="text-gray-900">Hora:</strong> {detalleEvento.hora_inicio?.slice(0,5)} - {detalleEvento.hora_fin?.slice(0,5)}</p>
+                            <p><strong className="text-gray-900">Tipo:</strong> {detalleEvento.tipo || "Sin tipo"}</p>
+                            <p><strong className="text-gray-900">Alumno:</strong> {`${detalleEvento.alumno?.nombre || ''} ${detalleEvento.alumno?.apellido_paterno || ''}`}</p>
+                            
+                            <div className="flex items-center gap-2 mt-2">
+                                <strong className="text-gray-900">Estado:</strong>
+                                <span className={`ml-2 px-3 py-1 rounded-full text-sm font-bold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-[#E4CD87] text-black-900'}`}>
+                                 { detalleEvento.estado}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex flex-col gap-3">
+                            <button
+                                onClick={() => handleEliminar(detalleEvento.id_sesion)}
+                                className="w-full flex items-center justify-center gap-2 bg-[#8C1F2F] border-2 border-[#8C1F2F] text-white font-bold py-2.5 rounded-xl hover:bg-red-50 transition-all"
+                            >
+                                <FaTrash /> Eliminar sesión
+                            </button>
+
+                            {usuario?.rol === 'tutor' && (
+                                <button
+                                    onClick={() => navigate(`/bitacora/${detalleEvento.id_sesion}`)}
+                                    className="w-full flex items-center justify-center gap-2 bg-[#E4CD87] text-black font-bold py-3 rounded-xl hover:bg-[#dcb95b] transition-all shadow-md"
+                                >
+                                    Registrar Bitácora
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

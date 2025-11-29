@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { FaSpinner } from 'react-icons/fa';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logoImg from './assets/logo.png';
+// import logoImg from './assets/logo.png'; // No se usa en el render, se puede comentar
 import Navbar from './Navbar';
 
 const Reportes = () => {
     const [mensaje, setMensaje] = useState('');
     const [loadingEnviar, setLoadingEnviar] = useState(false);
     const [alerta, setAlerta] = useState('');
-    const [mensajes, setMensajes] = useState([]);
+    // const [mensajes, setMensajes] = useState([]); // No se usa actualmente
     const navigate = useNavigate();
     const location = useLocation();
-    const alumnoData = location.state?.alumno; // Alumno que viene de FichaAlumno
+    const alumnoData = location.state?.alumno; 
 
     const usuario = JSON.parse(localStorage.getItem('usuario'));
 
     useEffect(() => {
         if (!usuario) {
-            navigate('/login'); // Redirigir si no hay sesión
+            navigate('/login'); 
         }
     }, [usuario, navigate]);
 
@@ -27,13 +27,12 @@ const Reportes = () => {
         setAlerta('');
 
         if (!mensaje.trim()) {
-            // Reemplazamos alert() con setAlerta() para un mejor feedback
-            setAlerta(' Por favor escribe un mensaje antes de enviar.');
+            setAlerta('⚠️ Por favor escribe un mensaje antes de enviar.');
             return;
         }
 
         if (!alumnoData) {
-            setAlerta(' No se recibió información del alumno.');
+            setAlerta('⚠️ No se recibió información del alumno.');
             return;
         }
 
@@ -56,27 +55,23 @@ const Reportes = () => {
             const data = await res.json();
 
             if (res.ok && data.success) {
-                setAlerta(' Reporte enviado exitosamente.');
+                setAlerta('✅ Reporte enviado exitosamente.');
                 setMensaje('');
-                // Opcional: podrías querer actualizar una lista de reportes enviados si la hubiera
-                // setMensajes((prev) => [data.data, ...prev]);
             } else {
-                setAlerta(` Error: ${data.message || 'No se pudo enviar el reporte.'}`);
+                setAlerta(`❌ Error: ${data.message || 'No se pudo enviar el reporte.'}`);
             }
         } catch (err) {
             console.error(err);
-            setAlerta(' Error al conectar con el servidor.');
+            setAlerta('❌ Error al conectar con el servidor.');
         } finally {
             setLoadingEnviar(false);
         }
     };
 
     const handleBackClick = () => {
-        // Navegar de regreso a la ficha del alumno usando su matrícula
         if (alumnoData && alumnoData.matricula) {
             navigate(`/alumnos/${alumnoData.matricula}/ficha`);
         } else {
-            // Fallback: si no hay datos del alumno, volver a la página anterior o a una ruta por defecto
             navigate(-1);
         }
     };
@@ -87,79 +82,96 @@ const Reportes = () => {
             {/* Navbar */}
             <Navbar />
 
-            <main className="flex flex-col items-center p-4 md:p-8 animate-fadeIn relative z-10 max-w-8xl mx-auto">
-                <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl border-7 border-[#E9DBCD]">
-                    <div className="relative">
-                        <ArrowLeft
-                            className="w-6 h-6 absolute top-4 left-4 text-[#8C1F2F] hover:text-[#8C1F2F] cursor-pointer"
-                            
-                            // --- CAMBIO AQUÍ ---
-                            // Se llama a la nueva función handleBackClick
+            <main className="flex flex-col items-center p-4 animate-fadeIn relative z-10 w-full">
+                
+                {/* --- CONTENEDOR PRINCIPAL RESPONSIVE --- */}
+                {/* max-w-2xl para que no sea excesivamente ancho en escritorio, w-full para móvil */}
+                <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10 w-full max-w-2xl border-4 border-[#E9DBCD]">
+                    
+                    <div className="relative mb-6">
+                        {/* Botón regresar alineado y con tamaño táctil adecuado */}
+                        <button 
                             onClick={handleBackClick}
-                        />
+                            className="absolute -left-2 -top-2 p-2 text-[#8C1F2F] hover:bg-red-50 rounded-full transition-colors"
+                            aria-label="Volver"
+                        >
+                            <ArrowLeft className="w-6 h-6 md:w-8 md:h-8" />
+                        </button>
 
-                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2">
+                        <h2 className="text-2xl md:text-4xl font-bold text-center border-b-4 border-[#C7952C] pb-3 pt-1 px-8">
                             Crear Reporte
                         </h2>
                     </div>
 
-                    {/* Contenedor del alumno */}
+                    {/* Contenedor del alumno (Tarjeta visual) */}
                     <div className="mb-6">
-                        <label className="font-medium text-lg block mb-2">Alumno Seleccionado:</label>
+                        <label className="font-medium text-lg block mb-2 text-gray-700">Alumno Seleccionado:</label>
                         {alumnoData ? (
-                            <div className="mt-3 p-3 bg-green-100 border border-green-400 rounded-xl">
-                                <p className="font-bold">
+                            <div className="mt-2 p-4 bg-green-50 border border-green-200 rounded-xl shadow-sm">
+                                <p className="font-bold text-lg text-green-900 break-words">
                                     {alumnoData.nombre_completo || `${alumnoData.nombre || ''} ${alumnoData.apellido_paterno || ''} ${alumnoData.apellido_materno || ''}`}
                                 </p>
-                                <p>Matrícula: {alumnoData.matricula}</p>
-                                <p>Correo: {alumnoData.correo || 'No disponible'}</p>
-                                <p>Carrera: {alumnoData.carrera || 'No especificada'}</p>
-                                <p>Semestre: {alumnoData.semestre || '—'}</p>
+                                <div className="text-sm md:text-base text-green-800 mt-1 space-y-1">
+                                    <p><span className="font-semibold">Matrícula:</span> {alumnoData.matricula}</p>
+                                    <p className="break-all"><span className="font-semibold">Correo:</span> {alumnoData.correo || 'No disponible'}</p>
+                                    <div className="flex flex-wrap gap-x-4">
+                                        <p><span className="font-semibold">Carrera:</span> {alumnoData.carrera || 'N/A'}</p>
+                                        <p><span className="font-semibold">Semestre:</span> {alumnoData.semestre || '—'}</p>
+                                    </div>
+                                </div>
                             </div>
                         ) : (
-                            <p className="text-red-500 font-semibold">No se recibió información del alumno.</p>
+                            <div className="mt-2 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                                <p className="text-red-600 font-semibold">⚠️ No se recibió información del alumno.</p>
+                                <button onClick={() => navigate(-1)} className="text-sm text-red-800 underline mt-2">Volver atrás</button>
+                            </div>
                         )}
                     </div>
 
                     {/* Formulario de reporte */}
                     <form className="w-full flex flex-col gap-4" onSubmit={handleSubmit}>
-                        <label className="font-medium">
+                        <label className="font-medium text-gray-700">
                             Comentarios del reporte:
                             <textarea
                                 value={mensaje}
                                 onChange={(e) => setMensaje(e.target.value)}
-                                placeholder="Añade tus comentarios aquí..."
-                                className="p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2 h-32 resize-none placeholder-normal"
+                                placeholder="Describe la situación, incidencia o motivo del reporte aquí..."
+                                className="p-4 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2 h-40 resize-none text-base shadow-inner transition-shadow focus:shadow-md"
                             />
                         </label>
 
+                        {/* Área de alertas */}
                         {alerta && (
-                            <p className={`text-center font-bold mt-2 ${alerta.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
+                            <div className={`p-3 rounded-lg text-center font-bold text-sm md:text-base animate-fadeIn ${alerta.includes('exitosamente') ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-yellow-50 text-yellow-800 border border-yellow-300'}`}>
                                 {alerta}
-                            </p>
+                            </div>
                         )}
 
                         <button
                             type="submit"
-                            disabled={loadingEnviar || !alumnoData} // Deshabilitar si no hay alumno
-                            className={`bg-[#E4CD87] hover:bg-[#E9DBCD] text-black py-3 px-6 rounded-2xl font-bold text-xl mt-4 flex justify-center items-center gap-2 ${loadingEnviar || !alumnoData ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            disabled={loadingEnviar || !alumnoData}
+                            className={`
+                                bg-[#E4CD87] hover:bg-[#dcb95b] text-black 
+                                py-3 px-6 rounded-2xl font-bold text-lg md:text-xl 
+                                mt-2 flex justify-center items-center gap-3 shadow-md 
+                                transition-all active:scale-95 w-full
+                                ${loadingEnviar || !alumnoData ? 'opacity-70 cursor-not-allowed grayscale' : ''}
+                            `}
                         >
-                            {loadingEnviar && <FaSpinner className="animate-spin" />}
-                            <FileText className="w-5 h-5" />
+                            {loadingEnviar ? <FaSpinner className="animate-spin" /> : <FileText className="w-6 h-6" />}
                             {loadingEnviar ? 'Enviando...' : 'Crear Reporte'}
                         </button>
-
                     </form>
                 </div>
             </main>
 
             <style>{`
-                @keyframes fadeIn { 
-                    from { opacity: 0; transform: translateY(10px); } 
-                    to { opacity: 1; transform: translateY(0); } 
-                }
-                .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-            `}</style>
+                @keyframes fadeIn { 
+                    from { opacity: 0; transform: translateY(10px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+                .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+            `}</style>
         </div>
     );
 };
