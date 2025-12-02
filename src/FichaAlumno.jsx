@@ -2,13 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, FileText, Clock, Trash2, AlertOctagon, Pencil } from "lucide-react";
 
-import { ResponsiveContainer, BarChart, Bar, YAxis, XAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, YAxis, XAxis, Tooltip, CartesianGrid, Legend, Cell } from "recharts";
 import Navbar from "./Navbar";
 import { FaAnchor, FaArrowUp, FaPlus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { FaArrowTrendUp } from "react-icons/fa6";
 
+
+const ESTILOS_POR_TIPO = {
+    'general': { color: 'green', hex: '#22c55e' },
+    'problemas académicos': { color: 'orange', hex: '#f97316' },
+    'seguimiento': { color: 'blue', hex: '#3b82f6' },
+    'problemas personales': { color: 'purple', hex: '#8b5cf6' },
+    'cambio de tutor': { color: 'pink', hex: '#ec4899' },
+    'sin tipo': { color: 'gray', hex: '#6b7280' },
+    'default': { color: 'gray', hex: '#6b7280' }
+};
 // --- Utilidades ---
 const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -68,7 +78,7 @@ const FichaAlumno = () => {
     // Usuario / alumno
     const [usuario, setUsuario] = useState(null);
     const [alumnoData, setAlumnoData] = useState(null);
-
+    const [chartDataVisual, setChartDataVisual] = useState([]); 
     // Bitácora y disponibilidades (mantengo lo que ya tenías)
     const [bitacoraData, setBitacoraData] = useState([]);
     const [disponibilidades, setDisponibilidades] = useState([]);
@@ -112,9 +122,9 @@ const FichaAlumno = () => {
     // --- Carga inicial (alumno + bitacora + disponibilidades + materias/cursadas/calificaciones) ---
     useEffect(() => {
         const usuarioGuardado = localStorage.getItem("usuario");
-        if (!usuarioGuardado) { setError("⚠️ No hay sesión activa..."); setLoading(false); return; }
+        if (!usuarioGuardado) { setError(" No hay sesión activa..."); setLoading(false); return; }
         const user = JSON.parse(usuarioGuardado);
-        if (!user || !user.accessToken || !user.id) { setError("⚠️ Sesión inválida..."); setLoading(false); return; }
+        if (!user || !user.accessToken || !user.id) { setError(" Sesión inválida..."); setLoading(false); return; }
         setUsuario(user);
 
         const fetchData = async () => {
@@ -146,6 +156,19 @@ const FichaAlumno = () => {
                     throw new Error("Datos del alumno inválidos o falta id.");
                 }
                 setAlumnoData(alumno);
+
+                // 2. Sesiones (Para la gráfica de tipos)
+                const resSesiones = await fetch(`https://apis-patu.onrender.com/api/sesiones/alumno/${alumno.id_usuario}`, { headers });
+                if (resSesiones.ok) {
+                    const sesJson = await resSesiones.json();
+                    const sesiones = sesJson.data || [];
+                    const conteo = sesiones.reduce((acc, curr) => {
+                        const tipo = capitalizeFirstLetter(curr.tipo) || 'Sin tipo';
+                        acc[tipo] = (acc[tipo] || 0) + 1;
+                        return acc;
+                    }, {});
+                    setChartDataVisual(Object.keys(conteo).map(k => ({ tipo: k, sesiones: conteo[k] })));
+                }
 
                 // 2) Bitácora del alumno (por matrícula)
                 const resBitacora = await fetch(`https://apis-patu.onrender.com/api/bitacora/alumno/${alumno.matricula}`, { headers });
@@ -243,6 +266,8 @@ const FichaAlumno = () => {
             console.error("Error al filtrar por día:", e);
         }
     };
+
+    
 
     // --- Formulario crear materia (MANTENIDO) ---
     const handleCrearMateria = async (e) => {
@@ -706,6 +731,39 @@ const handleActualizarCalificacion = async (e) => {
                             </div>
                         )}
                     </div>
+
+
+                                        {/* --- SECCIÓN GRÁFICAS --- */}
+                                        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+                                            {/* 1. GRÁFICA DE TIPOS DE SESIONES (RECUPERADA) */}
+                                            <div className="lg:w-1/3 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                                                <h3 className="text-xl font-bold text-center mb-4">Tipos de Sesiones</h3>
+                                                <div style={{ width: '100%', height: 250 }}>
+                                                    {chartDataVisual.length === 0 ? <p className="text-center text-gray-500 mt-10">Sin sesiones registradas.</p> :
+                                                        <ResponsiveContainer>
+                                                            <BarChart data={chartDataVisual}>
+                                                                <YAxis allowDecimals={false} />
+                                                                <Tooltip />
+                                                                <Bar dataKey="sesiones" barSize={40}>
+                                                                    {chartDataVisual.map((e, i) => <Cell key={i} fill={ESTILOS_POR_TIPO[e.tipo?.toLowerCase()]?.hex || '#6b7280'} />)}
+                                                                </Bar>
+                                                            </BarChart>
+                                                        </ResponsiveContainer>
+                                                    }
+                                                </div>
+                                                <div className="flex flex-wrap justify-center gap-2 mt-4">
+                                                    {chartDataVisual.map((e, i) => (
+                                                        <div key={i} className="flex items-center gap-1 text-xs">
+                                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ESTILOS_POR_TIPO[e.tipo?.toLowerCase()]?.hex }}></div>
+                                                            <span>{e.tipo}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                    
+                                            {/* 2. GRÁFICA DE RENDIMIENTO (GRID) */}
+
+                                        </div>
 
                         {/* --- LAYOUT COLUMNAS INFO / BITÁCORA --- */}
                     <div className="flex flex-col lg:flex-row gap-6">

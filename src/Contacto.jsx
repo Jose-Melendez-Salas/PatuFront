@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar.jsx';
 import ilustracionImg from './assets/contacto.png';
-import Swal from 'sweetalert2'; // ← 🟢 Instálalo con: npm install sweetalert2
+import Swal from 'sweetalert2'; 
 
 const Contacto = () => {
     const [nombre, setNombre] = useState('');

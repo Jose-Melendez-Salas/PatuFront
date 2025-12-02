@@ -20,7 +20,7 @@ const MensajesCordi = () => {
                     setModal({
                         abierto: true,
                         tipo: 'error',
-                        mensaje: '⚠️ No se encontró el token. Inicia sesión nuevamente.'
+                        mensaje: ' No se encontró el token. Inicia sesión nuevamente.'
                     });
                     setCargando(false);
                     return;
