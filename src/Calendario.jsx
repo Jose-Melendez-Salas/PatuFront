@@ -278,7 +278,7 @@ const Calendario = ({ nombreUsuario }) => {
               <p><strong>Hora:</strong> {detalleEvento.hora_inicio} - {detalleEvento.hora_fin}</p>
               <p><strong>Tipo:</strong> {detalleEvento.tipo || "Sin tipo"}</p>
               <p><strong>Alumno:</strong> {`${detalleEvento.alumno?.nombre} ${detalleEvento.alumno?.apellido_paterno}`}</p>
-              <p><strong>Tutor:</strong> {`${detalleEvento.tutor?.nombre} ${detalleEvento.tutor?.apellido_paterno}`}</p>
+              <p><strong>Responsable:</strong> {`${detalleEvento.tutor?.nombre} ${detalleEvento.tutor?.apellido_paterno}`}</p>
               <p>
                 <strong>✓ Estado:</strong>
                 <span className={`ml-2 px-3 py-1 rounded-full text-sm font-bold ${detalleEvento.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-[#E4CD87] text-black-900'}`}>
