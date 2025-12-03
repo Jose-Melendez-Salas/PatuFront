@@ -19,6 +19,7 @@ import MensajesCordi from "./Mensajescordi";
 import Landing from "./Landing";
 import ReportesGrupo from "./ReportesGrupo";
 import { Homepsicologa } from "./Homepsicologa";
+import Pruebas from "./PruebasEduardo";
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
         <Route path="/Homepsicologa" element={<Homepsicologa />} />
-
+        <Route path="/pruebas/:matricula/ficha" element={<Pruebas />} />
       </Routes>
     </Router>
   );
