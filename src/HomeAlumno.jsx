@@ -111,7 +111,7 @@ const HomeAlumno = () => {
                 }).sort((a, b) => new Date(`${a.fecha}T${a.hora_inicio}`) - new Date(`${b.fecha}T${b.hora_inicio}`));
 
                 setEventosProximos(eventosFiltrados);
-                // 🔹 Calcular cantidad de sesiones por tipo
+                // Calcular cantidad de sesiones por tipo
                 const conteoPorTipo = eventosConNombres.reduce((acc, evento) => {
                     const tipo = capitalizeFirstLetter(evento.tipo) || 'Sin tipo';
                     acc[tipo] = (acc[tipo] || 0) + 1;
@@ -164,7 +164,7 @@ const HomeAlumno = () => {
             <main className="p-4 animate-fadeIn relative z-10">
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">Tu ficha:</h2>
-                    <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+                    <div className="w-full h-1 bg-[#C7952C] mb-8"></div>
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Información del alumno */}

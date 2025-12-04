@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import Navbar from './Navbar.jsx';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegCopy } from 'react-icons/fa6';
-import NoEncontrado from './assets/NoEncontrado.jpg';
+import NoEncontrado from './assets/NoEncontrado.png';
 
 // Componente para mostrar cada alumno
 const AlumnoFicha = ({ nombre, matricula, carrera, semestre, puedeVerFicha }) => (

@@ -7,10 +7,10 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import Navbar from './Navbar';
 
 const ESTILOS_POR_TIPO = {
-    'general': { color: 'green', Icono: Info, hex: '#22c55e' },
-    'problemas académicos': { color: 'orange', Icono: BookX, hex: '#f97316' },
+    'general': { color: 'green', Icono: Info, hex: '#3A8A4F' },
+    'problemas académicos': { color: 'orange', Icono: BookX, hex: '#D9792B' },
     'seguimiento': { color: 'blue', Icono: ClipboardList, hex: '#3b82f6' },
-    'problemas personales': { color: 'purple', Icono: HeartHandshake, hex: '#8b5cf6' },
+    'problemas personales': { color: 'purple', Icono: HeartHandshake, hex: '#D4CCF2' },
     'cambio de tutor': { color: 'pink', Icono: UserCheck, hex: '#ec4899' },
     'sin tipo': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' },
     'default': { color: 'gray', Icono: HelpCircle, hex: '#6b7280' }
@@ -27,9 +27,9 @@ const EventoCard = ({ evento, onVerDetalles }) => {
     const { color, Icono } = ESTILOS_POR_TIPO[tipoEvento] || ESTILOS_POR_TIPO.default;
 
     const classes = {
-        blue: 'border-blue-500 bg-blue-50 text-blue-600',
-        green: 'border-green-500 bg-green-50 text-green-600',
-        orange: 'border-orange-500 bg-orange-50 text-orange-600',
+        blue: 'border-[#3C7DD9] bg-[#3C7DD9] text-[#3C7DD9]',
+        green: 'border-[#3A8A4F] bg-[#FFFFFF] text-[#3A8A4F]',
+        orange: 'border-[#D9792B] bg-[#D9792B] text-[#D9792B]',
         purple: 'border-purple-500 bg-purple-50 text-purple-600',
         gray: 'border-gray-500 bg-gray-50 text-gray-600',
         pink: 'border-pink-500 bg-pink-50 text-pink-600'
@@ -172,7 +172,7 @@ const AccesosMaestros = () => {
         <div className="min-h-screen bg-gray-100">
             <Navbar />
             <main className="p-5">
-                <div className="flex flex-col lg:flex-row justify-between items-center border-b-4 border-yellow-400 pb-2 mb-5 text-center lg:text-left gap-2">
+                <div className="flex flex-col lg:flex-row justify-between items-center border-b-4 border-[#C7952C] pb-2 mb-5 text-center lg:text-left gap-2">
                     <h2 className="font-bold text-3xl">Tipos de Sesiones</h2>
                     <h2 className="font-bold text-3xl">Próximos eventos</h2>
                 </div>

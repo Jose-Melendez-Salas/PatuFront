@@ -4,12 +4,12 @@ import Navbar from './Navbar.jsx';
 import { HiMiniUserGroup } from "react-icons/hi2";
 import { IoAddCircleSharp } from "react-icons/io5";
 import { FaRegCopy } from 'react-icons/fa6';
-import NoEncontrado from './assets/NoEncontrado.jpg';
+import NoEncontrado from './assets/NoEncontrado.png';
 
 // Colores de las tarjetas
 const colorPalette = [
-    { border: "border-blue-400", text: "text-blue-500" },
-    { border: "border-orange-500", text: "text-orange-500" },
+    { border: "border-[#3C7DD9]", text: "text-[#3C7DD9]" },
+    { border: "border-[#D9792B]", text: "text-[#D9792B]" },
     { border: "border-green-500", text: "text-green-500" },
     { border: "border-purple-400", text: "text-purple-500" },
 ];
@@ -260,10 +260,10 @@ const Grupos = () => {
 
             <main className="p-4 md:p-8 relative z-10 max-w-7xl mx-auto">
                 <h2 className="text-4xl font-extrabold mb-1 text-gray-800">Tus Grupos</h2>
-                <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+                <div className="w-full h-1 bg-[#C7952C] mb-8"></div>
 
                 {loading && <p className="text-gray-600 mt-10 text-center">Cargando grupos...</p>}
-                {error && <p className="text-red-600 mt-10 text-center">{error}</p>}
+                {error && <p className="text-[#D9792B] mt-10 text-center">{error}</p>}
 
                 {!loading && !error && (
                     <>
@@ -289,8 +289,8 @@ const Grupos = () => {
                                 <img src={NoEncontrado} alt="Sin grupo" className="w-72 h-72 object-contain mb-4 opacity-90" />
                                 <p className="text-gray-600 text-lg font-medium mb-6">
                                     {esTutor
-                                        ? "Aún no has creado ningún grupo"
-                                        : "Aún no te has inscrito a un grupo"}
+                                        ? "Aún no se te ha asignado ningún grupo"
+                                        : "Parece que no te han agregado a un grupo"}
                                 </p>
 
                                 {esAlumno && (

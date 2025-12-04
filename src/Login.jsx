@@ -127,7 +127,7 @@ const Login = ({ onLogin }) => {
         {/* Lado derecho - Formulario */}
         <div className="flex-1 flex items-center justify-center p-6 md:p-10">
           <div className="bg-white rounded-3xl shadow-3xl p-8 md:p-10 w-full max-w-3xl animate-fadeIn border-2 border-gray-300">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center border-b-4 border-yellow-400 pb-2">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2">
               Iniciar Sesión
             </h2>
 
@@ -142,7 +142,7 @@ const Login = ({ onLogin }) => {
                   value={correo}
                   onChange={(e) => setCorreo(e.target.value)}
                   placeholder="Correo Electrónico"
-                  className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
+                  className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#C7952C] mt-2"
                 />
                 {/* Tooltip informativo */}
                 <span className="absolute top-full left-0 mt-1 text-sm text-gray-600 bg-yellow-100 border border-yellow-400 px-3 py-1 rounded-xl shadow-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
@@ -159,7 +159,7 @@ const Login = ({ onLogin }) => {
                     value={contraseña}
                     onChange={(e) => setContraseña(e.target.value)}
                     placeholder="Ingresa tu contraseña aquí"
-                    className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 text-base sm:text-sm"
+                    className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#C7952C] text-base sm:text-sm"
                   />
                   <button
                     type="button"
@@ -193,7 +193,7 @@ const Login = ({ onLogin }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`bg-[#3CB9A5] hover:bg-[#1f6b5e] text-white py-3 px-6 rounded-2xl font-bold text-xl md:text-2xl mt-4 flex justify-center items-center gap-2 ${
+                className={`bg-[#E4CD87] hover:bg-[#C7952C] text-white py-3 px-6 rounded-2xl font-bold text-xl md:text-2xl mt-4 flex justify-center items-center gap-2 ${
                   loading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >
