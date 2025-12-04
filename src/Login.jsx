@@ -26,6 +26,12 @@ const Login = ({ onLogin }) => {
     }
     setError("");
     setLoading(true); // ✅ inicia loading
+
+    // 1. Quitamos espacios en blanco (por si acaso)
+    const usuarioLimpio = correo.replace(/\s/g, "").trim();
+    // 2. Concatenamos el dominio manualmente
+    const correoFinal = `${usuarioLimpio}@itsmante.edu.mx`;
+
     try {
       const res = await fetch(
         "https://apis-patu.onrender.com/api/usuarios/login",
@@ -33,7 +39,7 @@ const Login = ({ onLogin }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            correo: correo,
+            correo: correoFinal,
             password: contraseña, // backend espera "password"
           }),
         }
@@ -71,7 +77,7 @@ const Login = ({ onLogin }) => {
         navigate(`/HomeAlumno/${data.data.matricula}`); // usar matrícula
       } else if (data.data.rol === "admin") {
         navigate("/Registro"); // <-- admin va a registro
-        } else if (data.data.rol === "psicologia") {
+      } else if (data.data.rol === "psicologia") {
         navigate("/Homepsicologa"); // <-- psicologia va a Homepsicologa
       } else {
         navigate("/");
@@ -139,17 +145,30 @@ const Login = ({ onLogin }) => {
             >
               <label className="text-gray-700 font-medium w-full max-w-md relative group">
                 Correo Electrónico <span className="text-red-500">*</span>
-                <input
-                  type="text"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
-                  placeholder="Correo Electrónico"
-                  className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-2"
-                />
-                {/* Tooltip informativo */}
-                <span className="absolute top-full left-0 mt-1 text-sm text-gray-600 bg-yellow-100 border border-yellow-400 px-3 py-1 rounded-xl shadow-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
-                  Debe ser un correo institucional{" "}
-                  <strong>@itsmante.edu.mx</strong>
+                {/* Contenedor relativo para posicionar el texto del dominio */}
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={correo}
+                    onChange={(e) => {
+                      const textoLimpio = e.target.value.replace(/[@ \s]/g, "");
+                      setCorreo(textoLimpio);
+                    }}
+                    placeholder="apellido.apellido.xxxxx" // Un placeholder más corto
+                    // Agregamos 'pr-40' (padding-right) para que el texto del usuario no se encime con el dominio
+                    className="p-4 pr-44 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD]"
+                  />
+
+                  {/* El texto del dominio fijo a la derecha */}
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                    <span className="text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded-lg">
+                      @itsmante.edu.mx
+                    </span>
+                  </div>
+                </div>
+                {/* Tooltip (Ya no es tan necesario el mensaje de "Debe ser...", pero lo puedes dejar o cambiar) */}
+                <span className="absolute top-full left-0 mt-1 text-sm text-gray-600 bg-yellow-100 border border-yellow-400 px-3 py-1 rounded-xl shadow-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 z-20">
+                  El dominio se autocompleta automáticamente.
                 </span>
               </label>
 
@@ -160,7 +179,7 @@ const Login = ({ onLogin }) => {
                     type={showPassword ? "text" : "password"}
                     value={contraseña}
                     onChange={(e) => setContraseña(e.target.value)}
-                    placeholder="Ingresa tu contraseña aquí"
+                    placeholder="Contraseña"
                     className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] text-base sm:text-sm"
                   />
                   <button
