@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./Login";
 import Registro from "./Registro";
 import AccesosMaestros from "./accesosMaestros";
-import Pruebas_temp from "./Pruebas_temp";
 import RecuperarContra from "./RecuperarContra";
 import EventoCalendario from "./EventoCalendario";
 import Calendario from "./Calendario";
@@ -19,6 +18,7 @@ import Mensajes from "./Mensajes";
 import MensajesCordi from "./Mensajescordi";
 import Landing from "./Landing";
 import ReportesGrupo from "./ReportesGrupo";
+import { Homepsicologa } from "./Homepsicologa";
 
 function App() {
   return (
@@ -28,7 +28,6 @@ function App() {
         <Route path="/Login" element={<Login />} />
         <Route path="/Registro" element={<Registro />} />
         <Route path="/AccesosMaestros" element={<AccesosMaestros />} />
-        <Route path="/Pruebas_temp" element={<Pruebas_temp />} />
         <Route path="/RecuperarContra" element={<RecuperarContra />} />
         <Route path="/EventoCalendario" element={<EventoCalendario />} />
         <Route path="/Calendario" element={<Calendario />} />
@@ -44,7 +43,7 @@ function App() {
         <Route path="/Mensajes" element={<Mensajes />} />
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
-
+        <Route path="/Homepsicologa" element={<Homepsicologa />} />
       </Routes>
     </Router>
   );

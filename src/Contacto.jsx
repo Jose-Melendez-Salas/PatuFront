@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar.jsx';
 import ilustracionImg from './assets/contacto.png';
-import Swal from 'sweetalert2'; // ← 🟢 Instálalo con: npm install sweetalert2
+import Swal from 'sweetalert2'; 
 
 const Contacto = () => {
     const [nombre, setNombre] = useState('');
@@ -91,7 +91,7 @@ const Contacto = () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error de conexión',
-                text: '❌ No se pudo conectar con el servidor. Inténtalo más tarde.',
+                text: ' No se pudo conectar con el servidor. Inténtalo más tarde.',
                 confirmButtonColor: '#3CB9A5'
             });
         } finally {
@@ -100,7 +100,7 @@ const Contacto = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-20">
             <Navbar />
 
             <main className="flex flex-col md:flex-row p-4 animate-fadeIn relative z-10 max-w-8xl mx-auto">

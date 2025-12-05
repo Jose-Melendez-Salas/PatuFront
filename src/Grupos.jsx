@@ -255,7 +255,7 @@ const Grupos = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-20">
             <Navbar />
 
             <main className="p-4 md:p-8 relative z-10 max-w-7xl mx-auto">

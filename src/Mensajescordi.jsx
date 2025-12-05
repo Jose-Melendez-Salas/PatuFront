@@ -20,7 +20,7 @@ const MensajesCordi = () => {
                     setModal({
                         abierto: true,
                         tipo: 'error',
-                        mensaje: '⚠️ No se encontró el token. Inicia sesión nuevamente.'
+                        mensaje: ' No se encontró el token. Inicia sesión nuevamente.'
                     });
                     setCargando(false);
                     return;
@@ -110,7 +110,7 @@ const MensajesCordi = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 animate-fadeIn relative">
+        <div className="min-h-screen bg-gray-50 animate-fadeIn relative pt-20">
             <Navbar />
 
             <main className="p-4 relative z-10">
@@ -124,7 +124,7 @@ const MensajesCordi = () => {
                         placeholder="Buscar por correo..."
                         value={filtroCorreo}
                         onChange={(e) => setFiltroCorreo(e.target.value)}
-                        className="mb-6 p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        className="mb-6 p-3 border border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD]"
                     />
 
                     {cargando ? (

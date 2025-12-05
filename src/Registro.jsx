@@ -152,7 +152,7 @@ const Registro = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100 pt-20">
       <Navbar />
 
       <main className="flex-1 bg-white">
@@ -162,7 +162,7 @@ const Registro = () => {
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center p-7 md:-ml-65">
-            <div className="bg-white rounded-3xl shadow-3xl p-10 w-full max-w-3xl animate-fadeIn border-7 border-gray-300">
+            <div className="bg-white rounded-3xl shadow-3xl p-10 w-full max-w-3xl animate-fadeIn border-7 border-[#E9DBCD]">
               <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2">Registro</h2>
 
               <form className="flex flex-col gap-6 items-center relative w-full" onSubmit={handleSubmit}>
@@ -194,7 +194,7 @@ const Registro = () => {
                 <button
                   type="submit"
                   disabled={!formValido || loading}
-                  className={`bg-[#E4CD87] hover:bg-[#C7952C] text-white py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`bg-[#C7952C] hover:bg-[#E4CD87] text-black py-3 px-6 rounded-2xl font-bold text-2xl mt-4 mx-auto w-[80%] sm:w-1/2 transition-all duration-300 ${(!formValido || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -250,7 +250,7 @@ export default Registro;
 const InputField = ({ label, value, onChange, error, tipo = "text", tooltip = false, obligatorio = false }) => (
   <label className="text-gray-700 font-medium w-4/5 relative">
     {label} {obligatorio && <span className="text-red-500">*</span>}
-    <input type={tipo} value={value} onChange={e => onChange(e.target.value)} placeholder={label} className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-1" />
+    <input type={tipo} value={value} onChange={e => onChange(e.target.value)} placeholder={label} className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-1" />
     {error && value && tooltip && <div className="tooltip">{error}</div>}
   </label>
 );
@@ -259,7 +259,7 @@ const PasswordField = ({ label, value, onChange, error, show, setShow, obligator
   <label className="text-gray-700 font-medium w-4/5 relative">
     {label} {obligatorio && <span className="text-red-500">*</span>}
     <div className="relative w-full mt-2">
-      <input type={show ? 'text' : 'password'} value={value} onChange={e => onChange(e.target.value)} placeholder={label} className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 text-base sm:text-sm" />
+      <input type={show ? 'text' : 'password'} value={value} onChange={e => onChange(e.target.value)} placeholder={label} className="p-4 pr-12 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] text-base sm:text-sm" />
       <button type="button" onClick={() => setShow(!show)} className="absolute inset-y-0 right-4 flex items-center" tabIndex={-1}>
         {show ? <EyeOff size={22} color="#4F3E9B" className="transition-transform duration-200 hover:scale-110" /> : <Eye size={22} color="#4F3E9B" className="transition-transform duration-200 hover:scale-110" />}
       </button>
@@ -271,7 +271,7 @@ const PasswordField = ({ label, value, onChange, error, show, setShow, obligator
 const SelectField = ({ label, value, onChange, options, obligatorio = false }) => (
   <label className="text-gray-700 font-medium w-4/5">
     {label} {obligatorio && <span className="text-red-500">*</span>}
-    <select value={value} onChange={e => onChange(e.target.value)} className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-purple-400 mt-1 bg-white">
+    <select value={value} onChange={e => onChange(e.target.value)} className="p-4 border border-gray-300 rounded-2xl w-full focus:outline-none focus:ring-2 focus:ring-[#E9DBCD] mt-1 bg-white">
       <option value="" disabled>Selecciona una opción</option>
       {options.map((opt, i) => <option key={i} value={opt}>{opt}</option>)}
     </select>
