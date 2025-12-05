@@ -113,6 +113,8 @@ const Navbar = () => {
                             </Link>
                         )}
 
+                        
+
                         <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                             <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
                         </Link>
@@ -127,6 +129,28 @@ const Navbar = () => {
                                 </Link>
                             </>
                         )}
+
+                        {usuario.rol === 'psicologia' && (
+  <>
+    <Link
+      to="/Homepsicologa"
+      className={estilos.contenedorAccesos.contenedor}
+      onClick={toggleMenu}
+    >
+      <IoHome style={estilos.contenedorAccesos.icono} /> Inicio
+    </Link>
+
+    <Link
+      to="/CalendarioPsico"
+      className={estilos.contenedorAccesos.contenedor}
+      onClick={toggleMenu}
+    >
+      <FaRegCalendarAlt style={estilos.contenedorAccesos.icono} /> Calendario
+    </Link>
+
+    
+  </>
+)}
 
                         {(usuario.rol === 'alumno' || usuario.rol === 'admin') && (
                             <Link to={usuario.rol === 'admin' ? "/MensajesCordi" : "/Mensajes"} className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
