@@ -44,7 +44,6 @@ function App() {
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
         <Route path="/Homepsicologa" element={<Homepsicologa />} />
-
       </Routes>
     </Router>
   );
