@@ -4,7 +4,7 @@ import Navbar from "./Navbar.jsx";
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
-import { Info, BookX, ClipboardList, HeartHandshake, UserCheck, HelpCircle } from "lucide-react";
+import { Info, BookX, ClipboardList, HeartHandshake, UserCheck, HelpCircle,ArrowLeft } from "lucide-react";
 
 const TIPO_META = {
     general: { label: "General", hex: "#22c55e", Icono: Info },
@@ -47,6 +47,7 @@ function aggregateData(dataSemanal, start, end, granularity) {
 
 const ReportesGrupo = () => {
     const { idGrupo } = useParams();
+    const navigate = useNavigate();
     const [datos, setDatos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
@@ -133,15 +134,28 @@ const ReportesGrupo = () => {
         if(key) toggleTipo(key);
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50 pt-20">
-            <Navbar />
+return (
+    <div className="min-h-screen bg-gray-50 pt-20">
+        <Navbar />
 
-            <main className="p-4 md:p-8 max-w-7xl mx-auto animate-fadeIn">
-                <div className="mb-6">
-                    <h2 className="text-2xl md:text-4xl font-extrabold text-gray-800">Reportes por Grupo</h2>
-                    <div className="w-full h-1 bg-[#C7952C] mt-2 mb-6 rounded-full"></div>
-                </div>
+        {/* 1. Botón de Volver fuera del 'main' para evitar el centrado,
+               o al inicio con un margen para forzarlo a la izquierda */}
+        <div className="max-w-7xl mx-auto p-4 md:p-8 pt-4 md:pt-8">
+            <button
+                onClick={() => navigate(`/ListaAlumnos/${idGrupo}`)}
+                // Eliminamos 'w-fit' y usamos clases para alinear
+                className="flex items-center text-[#8C1F2F] hover:text-[#C7952C] transition font-medium mb-6"
+            >
+                <ArrowLeft className="mr-2"  /> Volver 
+            </button>
+        </div>
+
+        {/* 2. El 'main' ahora contiene el resto del contenido y mantiene el centrado */}
+        <main className="p-4 md:p-8 max-w-7xl mx-auto animate-fadeIn -mt-10 md:-mt-14"> {/* Ajuste de margen superior */}
+            <div className="mb-6">
+                <h2 className="text-2xl md:text-4xl font-extrabold text-gray-800">Reportes por Grupo</h2>
+                <div className="w-full h-1 bg-[#C7952C] mt-2 mb-6 rounded-full"></div>
+            </div>
 
                 <div className="bg-white shadow-lg rounded-2xl border border-gray-100 p-4 md:p-6 mb-6">
                     

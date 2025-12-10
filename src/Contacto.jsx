@@ -116,9 +116,11 @@ const Contacto = () => {
                 {/* Formulario */}
                 <div className="flex-1 md:w-1/2 lg:w-1/2 flex flex-col items-center justify-center p-4 md:p-7 md:ml-1">
                     <div className="bg-white rounded-3xl shadow-3xl p-6 md:p-10 w-full max-w-3xl animate-fadeIn border-7 border-[#E9DBCD] flex flex-col items-center">
-                        <h2 className="text-4xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2 w-full">
-                            Contacto
+                        <h2 className="text-3xl font-bold mb-8 text-center border-b-4 border-[#C7952C] pb-2 w-full">
+                            Contacto con coordinador.
+                          
                         </h2>
+                        
 
                         <form className="w-full flex flex-col gap-4" onSubmit={handleSubmit}>
                             <label className="font-medium">

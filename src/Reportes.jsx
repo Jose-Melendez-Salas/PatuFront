@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { FaSpinner } from 'react-icons/fa';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-// import logoImg from './assets/logo.png'; // No se usa en el render, se puede comentar
 import Navbar from './Navbar';
 
 const Reportes = () => {
@@ -55,14 +54,14 @@ const Reportes = () => {
             const data = await res.json();
 
             if (res.ok && data.success) {
-                setAlerta('✅ Reporte enviado exitosamente.');
+                setAlerta(' Reporte enviado exitosamente.');
                 setMensaje('');
             } else {
-                setAlerta(`❌ Error: ${data.message || 'No se pudo enviar el reporte.'}`);
+                setAlerta(` Error: ${data.message || 'No se pudo enviar el reporte.'}`);
             }
         } catch (err) {
             console.error(err);
-            setAlerta('❌ Error al conectar con el servidor.');
+            setAlerta(' Error al conectar con el servidor.');
         } finally {
             setLoadingEnviar(false);
         }
@@ -122,8 +121,8 @@ const Reportes = () => {
                             </div>
                         ) : (
                             <div className="mt-2 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-                                <p className="text-red-600 font-semibold">⚠️ No se recibió información del alumno.</p>
-                                <button onClick={() => navigate(-1)} className="text-sm text-red-800 underline mt-2">Volver atrás</button>
+                                <p className="text-red-600 font-semibold"> No se recibió información del alumno.</p>
+                                <button onClick={handleBackClick} className="text-sm text-red-800 underline mt-2">Volver atrás</button>
                             </div>
                         )}
                     </div>

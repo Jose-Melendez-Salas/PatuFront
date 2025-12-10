@@ -385,7 +385,7 @@ const ListaAlumnos = () => {
                     to={`/ReportesGrupo/${idGrupo}`}
                     className="bg-white border border-[#3C7DD9] text-[#3C7DD9] hover:bg-blue-50 px-4 py-2 rounded-xl font-semibold text-center w-full sm:w-auto transition-transform hover:scale-105"
                     >
-                    Ver reportes
+                    Ver sesiones del grupo
                     </Link>
                 )}
               </div>

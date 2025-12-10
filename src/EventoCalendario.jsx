@@ -269,7 +269,13 @@ const EventoCalendario = () => {
             setErrorBusqueda(' Error al conectar con la API.');
         }
     };
-
+    const handleBackClick = () => {
+        if (alumnoData && alumnoData.matricula) {
+            navigate(`/alumnos/${alumnoData.matricula}/ficha`);
+        } else {
+            navigate(-1);
+        }
+    };
 
     // ---------------------------------------------------------
     // 💾 FUNCIÓN DE GUARDAR
@@ -570,6 +576,13 @@ const EventoCalendario = () => {
                             <button onClick={() => (window.location.href = '/calendario')} disabled={loading} className={`px-8 py-3 rounded-2xl font-bold text-lg shadow-md transition-colors duration-300 ${loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-[#E4CD87] hover:bg-[#E9DBCD] text-black'}`}>
                                 Regresar al calendario
                             </button>
+                            <button 
+                            onClick={handleBackClick}
+                            className="absolute -left-2 -top-2 p-2 text-[#8C1F2F] hover:bg-red-50 rounded-full transition-colors"
+                            aria-label="Volver"
+                        >
+                            
+                        </button>
                         </div>
                     </div>
 

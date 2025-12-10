@@ -1,24 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  FileText,
-  Clock,
-  Trash2,
-  AlertOctagon,
-  Pencil,
-} from "lucide-react";
-
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  YAxis,
-  XAxis,
-  Tooltip,
-  CartesianGrid,
-  Legend,
-} from "recharts";
+import {ArrowLeft,FileText,Clock,Trash2,AlertOctagon,Pencil,} from "lucide-react";
+import { Cell,ResponsiveContainer,BarChart,Bar,YAxis,XAxis,Tooltip,CartesianGrid,Legend,} from "recharts";
 import Navbar from "./Navbar";
 import { FaAnchor, FaArrowUp, FaPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
@@ -113,7 +96,7 @@ const FichaAlumno = () => {
   // Usuario / alumno
   const [usuario, setUsuario] = useState(null);
   const [alumnoData, setAlumnoData] = useState(null);
-
+ const [chartDataVisual, setChartDataVisual] = useState([]); 
   // Bitácora y disponibilidades (mantengo lo que ya tenías)
   const [bitacoraData, setBitacoraData] = useState([]);
   const [disponibilidades, setDisponibilidades] = useState([]);
@@ -251,6 +234,18 @@ const FichaAlumno = () => {
           throw new Error("Datos del alumno inválidos o falta id.");
         }
         setAlumnoData(alumno);
+
+         const resSesiones = await fetch(`https://apis-patu.onrender.com/api/sesiones/alumno/${alumno.id_usuario}`, { headers });
+                if (resSesiones.ok) {
+                    const sesJson = await resSesiones.json();
+                    const sesiones = sesJson.data || [];
+                    const conteo = sesiones.reduce((acc, curr) => {
+                        const tipo = capitalizeFirstLetter(curr.tipo) || 'Sin tipo';
+                        acc[tipo] = (acc[tipo] || 0) + 1;
+                        return acc;
+                    }, {});
+                    setChartDataVisual(Object.keys(conteo).map(k => ({ tipo: k, sesiones: conteo[k] })));
+                }
 
         // 2) Bitácora del alumno (por matrícula)
         const resBitacora = await fetch(
@@ -961,6 +956,7 @@ const FichaAlumno = () => {
 
             {/* Botones de acción principales en Grid para móviles */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                {usuario?.rol !== "admin" && (
               <Link
                 to={`/EventoCalendario`}
                 state={{ alumno: alumnoData }}
@@ -968,6 +964,7 @@ const FichaAlumno = () => {
               >
                 <FaPlus className="mr-2" /> Registrar evento
               </Link>
+                )}
               <Link
                 to={`/Reportes`}
                 state={{ alumno: alumnoData }}
@@ -1102,6 +1099,37 @@ const FichaAlumno = () => {
               </div>
             )}
           </div>
+
+                                              {/* --- SECCIÓN GRÁFICAS --- */}
+                                        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+                                            {/* 1. GRÁFICA DE TIPOS DE SESIONES (RECUPERADA) */}
+                                            <div className="lg:w-1/3 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                                                <h3 className="text-xl font-bold text-center mb-4">Tipos de Sesiones</h3>
+                                                <div style={{ width: '100%', height: 250 }}>
+                                                    {chartDataVisual.length === 0 ? <p className="text-center text-gray-500 mt-10">Sin sesiones registradas.</p> :
+                                                        <ResponsiveContainer>
+                                                            <BarChart data={chartDataVisual}>
+                                                                <YAxis allowDecimals={false} />
+                                                                <Tooltip />
+                                                                <Bar dataKey="sesiones" barSize={40}>
+                                                                    {chartDataVisual.map((e, i) => <Cell key={i} fill={ESTILOS_POR_TIPO[e.tipo?.toLowerCase()]?.hex || '#6b7280'} />)}
+                                                                </Bar>
+                                                            </BarChart>
+                                                        </ResponsiveContainer>
+                                                    }
+                                                </div>
+                                                <div className="flex flex-wrap justify-center gap-2 mt-4">
+                                                    {chartDataVisual.map((e, i) => (
+                                                        <div key={i} className="flex items-center gap-1 text-xs">
+                                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ESTILOS_POR_TIPO[e.tipo?.toLowerCase()]?.hex }}></div>
+                                                            <span>{e.tipo}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+            
+
 
           {/* --- LAYOUT COLUMNAS INFO / BITÁCORA --- */}
           <div className="flex flex-col lg:flex-row gap-6">
