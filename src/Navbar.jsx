@@ -111,11 +111,22 @@ const Navbar = () => {
                             <Link to="/Registro" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                                 <IoHome style={estilos.contenedorAccesos.icono} /> Inicio
                             </Link>
+                            
                         )}
 
-                        <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
-                            <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
-                        </Link>
+                        
+
+                        
+                           {usuario.rol === 'psicologia' && (
+                            <>
+                            <Link to="/Homepsicologa" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                <IoHome style={estilos.contenedorAccesos.icono} /> Inicio
+                            </Link>
+                            <Link to="/Calendario" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                    <FaRegCalendarAlt style={estilos.contenedorAccesos.icono} /> Agenda
+                                </Link>
+                           </> 
+                        )}
 
                         {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
                             <>
@@ -125,13 +136,21 @@ const Navbar = () => {
                                 <Link to="/Contacto" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                                     <BsPersonWorkspace style={estilos.contenedorAccesos.icono} /> Contacto
                                 </Link>
+                                <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                            <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
+                        </Link>
                             </>
                         )}
 
-                        {(usuario.rol === 'alumno' || usuario.rol === 'admin') && (
+                        {( usuario.rol === 'admin') && (
+                            <>
                             <Link to={usuario.rol === 'admin' ? "/MensajesCordi" : "/Mensajes"} className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                                 <AiFillMessage style={estilos.contenedorAccesos.icono} /> Mensajes
                             </Link>
+                            <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                            <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
+                        </Link>
+                            </>
                         )}
 
                         {/* El botón ahora tiene margen superior automático para ir al fondo */}

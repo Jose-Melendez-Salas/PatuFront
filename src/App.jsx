@@ -19,6 +19,9 @@ import MensajesCordi from "./Mensajescordi";
 import Landing from "./Landing";
 import ReportesGrupo from "./ReportesGrupo";
 import { Homepsicologa } from "./Homepsicologa";
+import EventoPsicologia from "./EventoPsicologa";
+import RegistroNotasPsicologia from "./RegistroNotasPsicologia";
+import ListadoNotasPsicologia from "./ListadoNotasPsicologia";
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
         <Route path="/MensajesCordi" element={<MensajesCordi />} />
         <Route path="/ReportesGrupo/:idGrupo" element={<ReportesGrupo />} />
         <Route path="/Homepsicologa" element={<Homepsicologa />} />
+        <Route path="/Eventopsicologia" element={<EventoPsicologia />} />
+        <Route path="/RegistroNotasPsicologia/:idSesion" element={<RegistroNotasPsicologia />} />
+        <Route path="/bitacora/recientes" element={<ListadoNotasPsicologia />} />
       </Routes>
     </Router>
   );
