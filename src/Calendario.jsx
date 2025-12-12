@@ -348,7 +348,7 @@ const Calendario = ({ nombreUsuario }) => {
             </div>
           ) : eventosOriginales.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-gray-400 text-5xl mb-4">📅</div>
+              <div className="text-gray-400 text-5xl mb-4"></div>
               <p className="text-gray-500 font-medium">No hay eventos registrados</p>
               <p className="text-gray-400 text-sm mt-2">¡Comienza agregando tu primer evento!</p>
             </div>
