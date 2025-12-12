@@ -128,7 +128,7 @@ const Navbar = () => {
                            </> 
                         )}
 
-                        {(usuario.rol === 'alumno' || usuario.rol === 'tutor') && (
+                        {(usuario.rol === 'alumno') && (
                             <>
                                 <Link to="/Calendario" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                                     <FaRegCalendarAlt style={estilos.contenedorAccesos.icono} /> Agenda
@@ -139,10 +139,28 @@ const Navbar = () => {
                                 <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                             <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
                         </Link>
+                        <Link to="/Mensajes" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                <AiFillMessage style={estilos.contenedorAccesos.icono} /> Reportes
+                            </Link>
                             </>
                         )}
 
-                        {( usuario.rol === 'admin') && (
+                        {( usuario.rol === 'tutor') && (
+                            <>
+                                <Link to="/Calendario" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                    <FaRegCalendarAlt style={estilos.contenedorAccesos.icono} /> Agenda
+                                </Link>
+                                <Link to="/Contacto" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                                    <BsPersonWorkspace style={estilos.contenedorAccesos.icono} /> Contacto
+                                </Link>
+                                <Link to="/Grupos" className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
+                            <HiMiniUserGroup style={estilos.contenedorAccesos.icono} /> Grupos
+                        </Link>
+
+                            </>
+                        )}
+
+                        {( usuario.rol === 'admin' ) && (
                             <>
                             <Link to={usuario.rol === 'admin' ? "/MensajesCordi" : "/Mensajes"} className={estilos.contenedorAccesos.contenedor} onClick={toggleMenu}>
                                 <AiFillMessage style={estilos.contenedorAccesos.icono} /> Mensajes
